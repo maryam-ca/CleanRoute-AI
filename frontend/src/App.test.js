@@ -1,8 +1,20 @@
-import { render, screen } from '@testing-library/react';
-import App from './App';
+import { API_BASE_URL, authHeaders } from './services/api';
 
-test('renders learn react link', () => {
-  render(<App />);
-  const linkElement = screen.getByText(/learn react/i);
-  expect(linkElement).toBeInTheDocument();
+describe('API helpers', () => {
+  beforeEach(() => {
+    localStorage.clear();
+  });
+
+  test('uses the default API base URL when no environment override is set', () => {
+    expect(API_BASE_URL).toBe('/api');
+  });
+
+  test('returns an authorization header when a token exists', () => {
+    localStorage.setItem('access_token', 'sample-token');
+    expect(authHeaders()).toEqual({ Authorization: 'Bearer sample-token' });
+  });
+
+  test('returns empty headers when the user is signed out', () => {
+    expect(authHeaders()).toEqual({});
+  });
 });

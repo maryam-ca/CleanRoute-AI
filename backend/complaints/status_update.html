@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Complaint Status Update</title>
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #F1F8E9; margin: 0; padding: 20px; }
+        .container { max-width: 600px; margin: 0 auto; background: white; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+        .header { background: linear-gradient(135deg, #1B5E20, #4CAF50); color: white; padding: 30px; text-align: center; }
+        .status-updated { background: #E8F5E9; padding: 15px; border-radius: 12px; text-align: center; margin: 20px 0; }
+        .old-status { text-decoration: line-through; color: #999; }
+        .new-status { font-size: 18px; font-weight: bold; color: #4CAF50; }
+        .button { display: inline-block; padding: 12px 24px; background: #4CAF50; color: white; text-decoration: none; border-radius: 8px; margin-top: 20px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔄 Complaint Status Update</h1>
+        </div>
+        <div class="content" style="padding: 30px;">
+            <h2>Status Changed</h2>
+            <p>Your complaint #{{ complaint_id }} status has been updated.</p>
+            
+            <div class="status-updated">
+                <div class="old-status">{{ old_status }}</div>
+                <div style="font-size: 24px;">→</div>
+                <div class="new-status">{{ new_status }}</div>
+            </div>
+            
+            <a href="http://localhost:3000" class="button">Track Progress</a>
+        </div>
+        <div class="footer" style="background: #F5F5F5; padding: 20px; text-align: center;">
+            <p>CleanRoute-AI - Keeping your city clean</p>
+        </div>
+    </div>
+</body>
+</html>

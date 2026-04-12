@@ -1,8 +1,10 @@
-from django.urls import path
-from . import views
+from django.urls import path, include
+from rest_framework.routers import DefaultRouter
+from .views import ComplaintViewSet
+
+router = DefaultRouter()
+router.register(r'complaints', ComplaintViewSet, basename='complaint')
 
 urlpatterns = [
-    path('', views.submit_complaint, name='submit_complaint'),
-    path('', views.optimize_routes, name='optimize_routes'),
-    path('', views.predict_waste_areas, name='predict_waste'),
+    path('', include(router.urls)),
 ]

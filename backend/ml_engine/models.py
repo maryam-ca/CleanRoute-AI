@@ -1,43 +1,39 @@
-from sklearn.naive_bayes import GaussianNB
-from sklearn.tree import DecisionTreeClassifier
-from sklearn.cluster import KMeans
-from sklearn.linear_model import LinearRegression
-import pandas as pd
-import numpy as np
-import joblib
-import os
+from django.db import models
 
-class WasteMLModels:
-    def __init__(self):
-        self.naive_bayes = None
-        self.decision_tree = None
-        self.kmeans = None
-        self.linear_reg = None
-        
-    def train_naive_bayes(self, X_train, y_train):
-        """Complaint type classification"""
-        self.naive_bayes = GaussianNB()
-        self.naive_bayes.fit(X_train, y_train)
-        joblib.dump(self.naive_bayes, 'ml_models/naive_bayes.pkl')
-        return self.naive_bayes
+class TrainingLog(models.Model):
+    MODEL_CHOICES = [
+        ('classifier', 'Complaint Classifier'),
+        ('predictor', 'Waste Predictor'),
+        ('optimizer', 'Route Optimizer'),
+    ]
     
-    def train_decision_tree(self, X_train, y_train):
-        """Priority detection (urgent/normal)"""
-        self.decision_tree = DecisionTreeClassifier()
-        self.decision_tree.fit(X_train, y_train)
-        joblib.dump(self.decision_tree, 'ml_models/decision_tree.pkl')
-        return self.decision_tree
+    STATUS_CHOICES = [
+        ('pending', 'Pending'),
+        ('running', 'Running'),
+        ('completed', 'Completed'),
+        ('failed', 'Failed'),
+    ]
     
-    def train_kmeans(self, locations, n_clusters=5):
-        """Route optimization"""
-        self.kmeans = KMeans(n_clusters=n_clusters, random_state=42)
-        self.kmeans.fit(locations)
-        joblib.dump(self.kmeans, 'ml_models/kmeans.pkl')
-        return self.kmeans
+    model_name = models.CharField(max_length=50, choices=MODEL_CHOICES)
+    accuracy = models.FloatField(null=True, blank=True)
+    loss = models.FloatField(null=True, blank=True)
+    training_date = models.DateTimeField(auto_now_add=True)
+    duration_seconds = models.IntegerField(null=True, blank=True)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
+    error_message = models.TextField(blank=True, null=True)
     
-    def train_linear_regression(self, X_train, y_train):
-        """Waste prediction"""
-        self.linear_reg = LinearRegression()
-        self.linear_reg.fit(X_train, y_train)
-        joblib.dump(self.linear_reg, 'ml_models/linear_reg.pkl')
-        return self.linear_reg
+    def __str__(self):
+        return f"{self.model_name} - {self.training_date}"
+
+class ModelMetrics(models.Model):
+    model_name = models.CharField(max_length=50)
+    accuracy = models.FloatField()
+    precision = models.FloatField(null=True, blank=True)
+    recall = models.FloatField(null=True, blank=True)
+    f1_score = models.FloatField(null=True, blank=True)
+    rmse = models.FloatField(null=True, blank=True)
+    r2_score = models.FloatField(null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    
+    def __str__(self):
+        return f"{self.model_name} - Acc: {self.accuracy}"

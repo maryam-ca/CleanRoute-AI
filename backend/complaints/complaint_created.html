@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Complaint Submitted</title>
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #F1F8E9; margin: 0; padding: 20px; }
+        .container { max-width: 600px; margin: 0 auto; background: white; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+        .header { background: linear-gradient(135deg, #1B5E20, #4CAF50); color: white; padding: 30px; text-align: center; }
+        .header h1 { margin: 0; font-size: 24px; }
+        .content { padding: 30px; }
+        .complaint-details { background: #F1F8E9; padding: 20px; border-radius: 12px; margin: 20px 0; }
+        .detail-row { display: flex; margin-bottom: 10px; }
+        .detail-label { font-weight: bold; width: 120px; color: #1B5E20; }
+        .detail-value { color: #333; }
+        .status { display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: bold; }
+        .status-pending { background: #FFC107; color: #333; }
+        .footer { background: #F5F5F5; padding: 20px; text-align: center; font-size: 12px; color: #666; }
+        .button { display: inline-block; padding: 12px 24px; background: #4CAF50; color: white; text-decoration: none; border-radius: 8px; margin-top: 20px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🌿 CleanRoute-AI</h1>
+            <p>Complaint Submitted Successfully</p>
+        </div>
+        <div class="content">
+            <h2>Thank you for your report!</h2>
+            <p>Your complaint has been received and will be processed shortly.</p>
+            
+            <div class="complaint-details">
+                <h3>Complaint Details</h3>
+                <div class="detail-row">
+                    <div class="detail-label">Complaint ID:</div>
+                    <div class="detail-value">#{{ complaint_id }}</div>
+                </div>
+                <div class="detail-row">
+                    <div class="detail-label">Type:</div>
+                    <div class="detail-value">{{ complaint_type }}</div>
+                </div>
+                <div class="detail-row">
+                    <div class="detail-label">Priority:</div>
+                    <div class="detail-value">{{ priority }}</div>
+                </div>
+                <div class="detail-row">
+                    <div class="detail-label">Location:</div>
+                    <div class="detail-value">{{ location }}</div>
+                </div>
+                <div class="detail-row">
+                    <div class="detail-label">Status:</div>
+                    <div class="detail-value">
+                        <span class="status status-pending">{{ status }}</span>
+                    </div>
+                </div>
+                <div class="detail-row">
+                    <div class="detail-label">Description:</div>
+                    <div class="detail-value">{{ description }}</div>
+                </div>
+            </div>
+            
+            <p>You can track the status of your complaint in your dashboard.</p>
+            <a href="http://localhost:3000" class="button">View Dashboard</a>
+        </div>
+        <div class="footer">
+            <p>CleanRoute-AI - AI-Powered Waste Management System</p>
+            <p>This is an automated message, please do not reply.</p>
+        </div>
+    </div>
+</body>
+</html>
