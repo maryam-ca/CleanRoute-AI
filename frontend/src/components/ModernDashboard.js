@@ -3,21 +3,15 @@ import {
   Box, Container, Grid, Card, CardContent, Typography, Chip,
   Table, TableBody, TableCell, TableContainer, TableHead, TableRow,
   TextField, InputAdornment, Button, CircularProgress, Avatar,
-  useTheme, IconButton, Tooltip, LinearProgress
+  useTheme, LinearProgress
 } from '@mui/material';
 import {
   Refresh as RefreshIcon,
   Search as SearchIcon,
-  TrendingUp as TrendingUpIcon,
-  TrendingDown as TrendingDownIcon,
-  LocationOn as LocationIcon,
-  AccessTime as TimeIcon,
   Warning as WarningIcon,
   CheckCircle as CheckIcon,
   Pending as PendingIcon,
-  Speed as SpeedIcon,
   DeleteSweep as CleanIcon,
-  Analytics as AnalyticsIcon,
   Assignment as TaskIcon,
   DoneAll as DoneAllIcon
 } from '@mui/icons-material';
@@ -53,6 +47,7 @@ const ModernDashboard = ({ token, user, setToken }) => {
     }
   };
 
+  // Chart Data
   const trendData = [
     { day: 'Mon', complaints: 12, resolved: 8 },
     { day: 'Tue', complaints: 15, resolved: 10 },
@@ -66,10 +61,16 @@ const ModernDashboard = ({ token, user, setToken }) => {
   const pieData = [
     { name: 'Overflowing', value: 35, color: '#F59E0B' },
     { name: 'Spillage', value: 25, color: '#3B82F6' },
-    { name: 'Missed', value: 20, color: '#2E7D32' },
+    { name: 'Missed', value: 20, color: '#EF4444' },
     { name: 'Illegal', value: 12, color: '#8B5CF6' },
-    { name: 'Other', value: 8, color: '#2E7D32' },
+    { name: 'Other', value: 8, color: '#10B981' },
   ];
+
+  const total = complaints.length;
+  const pending = complaints.filter(c => c.status === 'pending').length;
+  const assigned = complaints.filter(c => c.status === 'assigned').length;
+  const completed = complaints.filter(c => c.status === 'completed').length;
+  const closed = complaints.filter(c => c.status === 'closed').length;
 
   const StatCard = ({ title, value, icon, color, delay }) => (
     <motion.div
@@ -101,7 +102,7 @@ const ModernDashboard = ({ token, user, setToken }) => {
         </CardContent>
         <LinearProgress 
           variant="determinate" 
-          value={Math.min((value / (stats?.total_complaints || 1)) * 100, 100)} 
+          value={Math.min((value / (total || 1)) * 100, 100)} 
           sx={{ height: 3, bgcolor: `${color}20`, '& .MuiLinearProgress-bar': { bgcolor: color } }}
         />
       </Card>
@@ -110,18 +111,19 @@ const ModernDashboard = ({ token, user, setToken }) => {
 
   const getPriorityColor = (priority) => {
     switch(priority) {
-      case 'urgent': return '#2E7D32';
+      case 'urgent': return '#EF4444';
       case 'high': return '#F59E0B';
       case 'medium': return '#3B82F6';
-      default: return '#2E7D32';
+      default: return '#10B981';
     }
   };
 
   const getStatusIcon = (status) => {
     switch(status) {
-      case 'completed': return <CheckIcon sx={{ fontSize: 14, color: '#2E7D32' }} />;
+      case 'completed': return <CheckIcon sx={{ fontSize: 14, color: '#10B981' }} />;
       case 'assigned': return <PendingIcon sx={{ fontSize: 14, color: '#F59E0B' }} />;
-      default: return <WarningIcon sx={{ fontSize: 14, color: '#2E7D32' }} />;
+      case 'closed': return <DoneAllIcon sx={{ fontSize: 14, color: '#6B7280' }} />;
+      default: return <WarningIcon sx={{ fontSize: 14, color: '#EF4444' }} />;
     }
   };
 
@@ -131,15 +133,15 @@ const ModernDashboard = ({ token, user, setToken }) => {
   );
 
   return (
-    <Box sx={{ bgcolor: 'background.default', minHeight: '100vh' }}>
+    <Box sx={{ bgcolor: '#F5F5F5', minHeight: '100vh' }}>
       <Toaster position="top-right" />
       
       {/* Hero Section */}
       <Box sx={{ 
         background: 'linear-gradient(135deg, #2E7D32 0%, #1B5E20 100%)',
         color: 'white',
-        pt: 6,
-        pb: 8,
+        pt: 4,
+        pb: 6,
         position: 'relative',
         overflow: 'hidden'
       }}>
@@ -149,32 +151,33 @@ const ModernDashboard = ({ token, user, setToken }) => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
           >
-            <Typography variant="h3" sx={{ fontWeight: 800, mb: 2 }}>
-              Welcome back, {user || 'User'}! 👋
+            <Typography variant="h4" sx={{ fontWeight: 800, mb: 1 }}>
+              Welcome back, {user || 'User'}! 🚀
             </Typography>
-            <Typography variant="body1" sx={{ opacity: 0.9, maxWidth: 600 }}>
-              Here's what's happening with your waste management system today.
+            <Typography variant="body1" sx={{ opacity: 0.9 }}>
+              Real-time analytics and intelligent route optimization
             </Typography>
           </motion.div>
         </Container>
-        <Box sx={{ position: 'absolute', top: -50, right: -50, width: 200, height: 200, borderRadius: '50%', bgcolor: 'rgba(255,255,255,0.1)' }} />
-        <Box sx={{ position: 'absolute', bottom: -30, left: -30, width: 150, height: 150, borderRadius: '50%', bgcolor: 'rgba(255,255,255,0.05)' }} />
       </Box>
 
-      <Container maxWidth="xl" sx={{ mt: -4, pb: 6 }}>
+      <Container maxWidth="xl" sx={{ mt: -3, pb: 6 }}>
         {/* Stats Grid */}
         <Grid container spacing={3} sx={{ mb: 4 }}>
-          <Grid item xs={12} sm={6} md={3}>
-            <StatCard title="TOTAL COMPLAINTS" value={stats?.total_complaints || 0} icon={<CleanIcon />} color="#2E7D32" delay={0} />
+          <Grid item xs={6} sm={3} md={2.4}>
+            <StatCard title="TOTAL" value={total} icon={<CleanIcon />} color="#2E7D32" delay={0} />
           </Grid>
-          <Grid item xs={12} sm={6} md={3}>
-            <StatCard title="PENDING" value={stats?.pending_complaints || 0} icon={<PendingIcon />} color="#F59E0B" delay={1} />
+          <Grid item xs={6} sm={3} md={2.4}>
+            <StatCard title="PENDING" value={pending} icon={<PendingIcon />} color="#F59E0B" delay={1} />
           </Grid>
-          <Grid item xs={12} sm={6} md={3}>
-            <StatCard title="ASSIGNED" value={stats?.assigned_complaints || 0} icon={<TaskIcon />} color="#3B82F6" delay={2} />
+          <Grid item xs={6} sm={3} md={2.4}>
+            <StatCard title="ASSIGNED" value={assigned} icon={<TaskIcon />} color="#3B82F6" delay={2} />
           </Grid>
-          <Grid item xs={12} sm={6} md={3}>
-            <StatCard title="COMPLETED" value={stats?.completed_complaints || 0} icon={<DoneAllIcon />} color="#8B5CF6" delay={3} />
+          <Grid item xs={6} sm={3} md={2.4}>
+            <StatCard title="COMPLETED" value={completed} icon={<CheckIcon />} color="#4CAF50" delay={3} />
+          </Grid>
+          <Grid item xs={6} sm={3} md={2.4}>
+            <StatCard title="CLOSED" value={closed} icon={<DoneAllIcon />} color="#6B7280" delay={4} />
           </Grid>
         </Grid>
 
@@ -201,7 +204,7 @@ const ModernDashboard = ({ token, user, setToken }) => {
                       <ReTooltip contentStyle={{ borderRadius: 12, border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }} />
                       <Legend />
                       <Area type="monotone" dataKey="complaints" stroke="#2E7D32" strokeWidth={2} fill="url(#complaintGradient)" name="New Complaints" />
-                      <Area type="monotone" dataKey="resolved" stroke="#3B82F6" strokeWidth={2} fill="none" name="Resolved" />
+                      <Area type="monotone" dataKey="resolved" stroke="#00897B" strokeWidth={2} fill="none" name="Resolved" />
                     </AreaChart>
                   </ResponsiveContainer>
                 </CardContent>
@@ -245,61 +248,42 @@ const ModernDashboard = ({ token, user, setToken }) => {
                     placeholder="Search complaints..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    InputProps={{
-                      startAdornment: <InputAdornment position="start"><SearchIcon sx={{ color: '#9CA3AF' }} /></InputAdornment>,
-                    }}
+                    InputProps={{ startAdornment: <InputAdornment position="start"><SearchIcon /></InputAdornment> }}
                     sx={{ minWidth: 250 }}
                   />
-                  <Button 
-                    variant="contained" 
-                    startIcon={<RefreshIcon />} 
-                    onClick={fetchData} 
-                    disabled={loading}
-                    sx={{ background: 'linear-gradient(135deg, #2E7D32 0%, #1B5E20 100%)' }}
-                  >
+                  <Button startIcon={<RefreshIcon />} onClick={fetchData} variant="contained" sx={{ bgcolor: '#2E7D32' }}>
                     Refresh
                   </Button>
                 </Box>
               </Box>
 
               {loading ? (
-                <Box sx={{ py: 8, textAlign: 'center' }}>
-                  <CircularProgress sx={{ color: '#2E7D32' }} />
-                  <Typography sx={{ mt: 2, color: 'text.secondary' }}>Loading complaints...</Typography>
-                </Box>
+                <Box sx={{ py: 8, textAlign: 'center' }}><CircularProgress sx={{ color: '#2E7D32' }} /></Box>
               ) : complaints.length === 0 ? (
-                <Box sx={{ py: 8, textAlign: 'center' }}>
-                  <Typography color="text.secondary">No complaints found. Submit your first complaint!</Typography>
-                </Box>
+                <Box sx={{ py: 8, textAlign: 'center' }}><Typography>No complaints found</Typography></Box>
               ) : (
                 <TableContainer>
                   <Table>
                     <TableHead>
-                      <TableRow sx={{ bgcolor: '#F9FAFB' }}>
-                        <TableCell sx={{ fontWeight: 700 }}>ID</TableCell>
-                        <TableCell sx={{ fontWeight: 700 }}>Type</TableCell>
-                        <TableCell sx={{ fontWeight: 700 }}>Priority</TableCell>
-                        <TableCell sx={{ fontWeight: 700 }}>Status</TableCell>
-                        <TableCell sx={{ fontWeight: 700 }}>Location</TableCell>
-                        <TableCell sx={{ fontWeight: 700 }}>Submitted</TableCell>
+                      <TableRow sx={{ bgcolor: '#E8F5E9' }}>
+                        <TableCell>ID</TableCell>
+                        <TableCell>Type</TableCell>
+                        <TableCell>Priority</TableCell>
+                        <TableCell>Status</TableCell>
+                        <TableCell>Location</TableCell>
+                        <TableCell>Submitted</TableCell>
                       </TableRow>
                     </TableHead>
                     <TableBody>
                       {filteredComplaints.slice(0, 10).map((complaint, idx) => (
-                        <motion.tr
-                          key={complaint.id}
-                          initial={{ opacity: 0, x: -20 }}
-                          animate={{ opacity: 1, x: 0 }}
-                          transition={{ delay: idx * 0.03 }}
-                          style={{ borderBottom: '1px solid #E5E7EB' }}
-                        >
+                        <TableRow key={complaint.id} hover>
                           <TableCell>#{complaint.id}</TableCell>
                           <TableCell>
-                            <Chip label={complaint.complaint_type} size="small" sx={{ bgcolor: '#F5F5F5', color: '#1B5E20' }} />
+                            <Chip label={complaint.complaint_type} size="small" sx={{ bgcolor: '#E8F5E9', color: '#2E7D32' }} />
                           </TableCell>
                           <TableCell>
                             <Chip label={complaint.priority} size="small" sx={{ bgcolor: getPriorityColor(complaint.priority), color: 'white' }} />
-          </TableCell>
+                          </TableCell>
                           <TableCell>
                             <Box display="flex" alignItems="center" gap={1}>
                               {getStatusIcon(complaint.status)}
@@ -307,7 +291,7 @@ const ModernDashboard = ({ token, user, setToken }) => {
                             </Box>
                           </TableCell>
                           <TableCell>
-                            <Typography variant="body2" sx={{ fontFamily: 'monospace', fontSize: '0.75rem' }}>
+                            <Typography variant="caption" sx={{ fontFamily: 'monospace' }}>
                               {complaint.latitude?.toFixed(4)}, {complaint.longitude?.toFixed(4)}
                             </Typography>
                           </TableCell>
@@ -316,7 +300,7 @@ const ModernDashboard = ({ token, user, setToken }) => {
                               {new Date(complaint.created_at).toLocaleDateString()}
                             </Typography>
                           </TableCell>
-                        </motion.tr>
+                        </TableRow>
                       ))}
                     </TableBody>
                   </Table>
@@ -331,6 +315,3 @@ const ModernDashboard = ({ token, user, setToken }) => {
 };
 
 export default ModernDashboard;
-
-
-
