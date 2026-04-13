@@ -1,4 +1,4 @@
-const API_BASE_URL = 'http://127.0.0.1:8001/api/';
+const API_BASE_URL = process.env.NODE_ENV === 'production' ? 'https://cleanroute-ai-backend.onrender.com/api/' : 'http://127.0.0.1:8001/api/';
 
 const getToken = () => {
   return localStorage.getItem('token');
@@ -121,3 +121,4 @@ const api = {
 };
 
 export default api;
+
