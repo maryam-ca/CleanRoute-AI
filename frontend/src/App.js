@@ -3,7 +3,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import { ThemeProvider } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import { Box, CircularProgress } from '@mui/material';
-import { modernTheme } from './modernTheme';
+import { ecoTechTheme } from './ecoTechTheme';
 import { ColorModeProvider, useColorMode } from './ThemeContext';
 import Navigation from './components/Navigation';
 import Dashboard from './components/ModernDashboard';
@@ -39,7 +39,7 @@ const AppContent = () => {
   }
 
   return (
-    <ThemeProvider theme={mode === 'light' ? modernTheme.light : modernTheme.dark}>
+    <ThemeProvider theme={mode === 'light' ? ecoTechTheme.light : ecoTechTheme.dark}>
       <CssBaseline />
       <Router>
         <Navigation user={user} setToken={setToken} />
@@ -68,5 +68,6 @@ function App() {
 }
 
 export default App;
+
 
 

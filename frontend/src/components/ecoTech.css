@@ -1,0 +1,43 @@
+/* Eco-Tech Theme Global Styles */
+:root {
+  --primary-green: #2E7D32;
+  --primary-dark: #1B5E20;
+  --primary-light: #4CAF50;
+  --secondary-teal: #00897B;
+  --secondary-dark: #00695C;
+  --secondary-light: #26A69A;
+  --background-offwhite: #F5F5F5;
+  --surface-light: #FAFAFA;
+  --text-dark: #263238;
+  --text-gray: #546E7A;
+  --error-amber: #FF8F00;
+  --error-orange: #D84315;
+  --success-mint: #00ACC1;
+  --border-soft: #E0E0E0;
+}
+
+body {
+  background-color: var(--background-offwhite);
+  color: var(--text-dark);
+  font-family: 'Inter', 'Poppins', 'Roboto', sans-serif;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--surface-light);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--secondary-teal);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--secondary-dark);
+}
