@@ -1,21 +1,21 @@
 import { createTheme } from '@mui/material/styles';
 
-// Modern Purple-Red color scheme
+// Modern Red-Cyan color scheme
 export const modernTheme = {
   light: createTheme({
     palette: {
       mode: 'light',
       primary: {
-        main: '#7C3AED',      // Vibrant Purple
-        light: '#A78BFA',
-        dark: '#5B21B6',
-        gradient: 'linear-gradient(135deg, #7C3AED 0%, #5B21B6 100%)'
+        main: '#EF4444',      // Vibrant Red
+        light: '#F87171',
+        dark: '#DC2626',
+        gradient: 'linear-gradient(135deg, #EF4444 0%, #DC2626 100%)'
       },
       secondary: {
-        main: '#EC4899',      // Pink
-        light: '#F472B6',
-        dark: '#BE185D',
-        gradient: 'linear-gradient(135deg, #EC4899 0%, #BE185D 100%)'
+        main: '#06B6D4',      // Cyan
+        light: '#22D3EE',
+        dark: '#0891B2',
+        gradient: 'linear-gradient(135deg, #06B6D4 0%, #0891B2 100%)'
       },
       accent: {
         main: '#F59E0B',      // Amber
@@ -23,7 +23,7 @@ export const modernTheme = {
         dark: '#D97706',
       },
       background: {
-        default: '#FAF5FF',
+        default: '#FEF2F2',
         paper: '#FFFFFF',
       },
       text: {
@@ -51,11 +51,18 @@ export const modernTheme = {
             borderRadius: 12,
             padding: '10px 24px',
           },
-          contained: {
-            background: 'linear-gradient(135deg, #7C3AED 0%, #5B21B6 100%)',
-            boxShadow: '0 4px 14px rgba(124,58,237,0.3)',
+          containedPrimary: {
+            background: 'linear-gradient(135deg, #EF4444 0%, #DC2626 100%)',
+            boxShadow: '0 4px 14px rgba(239,68,68,0.3)',
             '&:hover': {
-              boxShadow: '0 6px 20px rgba(124,58,237,0.4)',
+              boxShadow: '0 6px 20px rgba(239,68,68,0.4)',
+            },
+          },
+          containedSecondary: {
+            background: 'linear-gradient(135deg, #06B6D4 0%, #0891B2 100%)',
+            boxShadow: '0 4px 14px rgba(6,182,212,0.3)',
+            '&:hover': {
+              boxShadow: '0 6px 20px rgba(6,182,212,0.4)',
             },
           },
         },
@@ -63,7 +70,7 @@ export const modernTheme = {
       MuiAppBar: {
         styleOverrides: {
           root: {
-            background: 'linear-gradient(135deg, #7C3AED 0%, #5B21B6 100%)',
+            background: 'linear-gradient(135deg, #EF4444 0%, #DC2626 100%)',
             boxShadow: '0 4px 20px rgba(0,0,0,0.1)',
           },
         },
@@ -87,18 +94,18 @@ export const modernTheme = {
     palette: {
       mode: 'dark',
       primary: {
-        main: '#A78BFA',
-        light: '#C4B5FD',
-        dark: '#8B5CF6',
+        main: '#F87171',
+        light: '#FCA5A5',
+        dark: '#EF4444',
       },
       secondary: {
-        main: '#F472B6',
-        light: '#F9A8D4',
-        dark: '#EC4899',
+        main: '#22D3EE',
+        light: '#67E8F9',
+        dark: '#06B6D4',
       },
       background: {
-        default: '#1E1B2E',
-        paper: '#2D2A3E',
+        default: '#1F1A1A',
+        paper: '#2D2222',
       },
       text: {
         primary: '#F3F4F6',
@@ -113,7 +120,7 @@ export const modernTheme = {
         styleOverrides: {
           root: {
             borderRadius: 24,
-            background: 'linear-gradient(135deg, #2D2A3E 0%, #1E1B2E 100%)',
+            background: 'linear-gradient(135deg, #2D2222 0%, #1F1A1A 100%)',
             border: '1px solid rgba(255,255,255,0.05)',
           },
         },
@@ -121,7 +128,7 @@ export const modernTheme = {
       MuiAppBar: {
         styleOverrides: {
           root: {
-            background: 'linear-gradient(135deg, #2D2A3E 0%, #1E1B2E 100%)',
+            background: 'linear-gradient(135deg, #2D2222 0%, #1F1A1A 100%)',
           },
         },
       },
