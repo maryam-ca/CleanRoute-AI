@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Complaint
+from .models import Complaint, Notification
 
 class ComplaintSerializer(serializers.ModelSerializer):
     user_name = serializers.SerializerMethodField()
@@ -15,3 +15,9 @@ class ComplaintSerializer(serializers.ModelSerializer):
     
     def get_assigned_to_name(self, obj):
         return obj.assigned_to.username if obj.assigned_to else 'Unassigned'
+
+class NotificationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Notification
+        fields = '__all__'
+        read_only_fields = ['id', 'created_at']

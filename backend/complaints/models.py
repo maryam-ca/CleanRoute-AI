@@ -20,11 +20,11 @@ class Complaint(models.Model):
     STATUS_CHOICES = [
         ('pending', 'Pending'),
         ('assigned', 'Assigned'),
-        ('resolved', 'Resolved'),
         ('completed', 'Completed'),
+        ('closed', 'Closed'),
     ]
     
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='complaints', null=True, blank=True)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='complaints')
     assigned_to = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True, related_name='assigned_complaints')
     complaint_type = models.CharField(max_length=20, choices=COMPLAINT_TYPES)
     priority = models.CharField(max_length=10, choices=PRIORITY_CHOICES, default='medium')
@@ -38,8 +38,28 @@ class Complaint(models.Model):
     description = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
     assigned_at = models.DateTimeField(null=True, blank=True)
-    resolved_at = models.DateTimeField(null=True, blank=True)
     completed_at = models.DateTimeField(null=True, blank=True)
     
     def __str__(self):
         return f"Complaint #{self.id} - {self.complaint_type}"
+
+class Notification(models.Model):
+    NOTIFICATION_TYPES = [
+        ('new_complaint', 'New Complaint'),
+        ('assigned', 'Assigned'),
+        ('completed', 'Completed'),
+    ]
+    
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='notifications')
+    complaint = models.ForeignKey(Complaint, on_delete=models.CASCADE, related_name='notifications')
+    notification_type = models.CharField(max_length=20, choices=NOTIFICATION_TYPES)
+    title = models.CharField(max_length=200)
+    message = models.TextField()
+    is_read = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    
+    class Meta:
+        ordering = ['-created_at']
+    
+    def __str__(self):
+        return f"{self.title} - {self.user.username}"

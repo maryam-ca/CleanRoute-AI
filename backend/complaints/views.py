@@ -5,7 +5,7 @@ from rest_framework.permissions import IsAuthenticated
 from django.contrib.auth.models import User
 from django.utils import timezone
 from django.db.models import Q
-from .models import Complaint
+from .models import Complaint, Notification
 from .serializers import ComplaintSerializer
 from ml_engine.waste_detection import waste_detector
 
@@ -28,11 +28,11 @@ class ComplaintViewSet(viewsets.ModelViewSet):
         
         if role == 'admin':
             return Complaint.objects.all().order_by('-created_at')
-        elif role == 'authority':
-            return Complaint.objects.all().order_by('-created_at')
         elif role == 'tester':
+            # Tester sees ONLY complaints assigned to them
             return Complaint.objects.filter(assigned_to=user).order_by('-created_at')
         else:
+            # Citizen sees only their own complaints
             return Complaint.objects.filter(user=user).order_by('-created_at')
     
     def create(self, request):
@@ -49,7 +49,7 @@ class ComplaintViewSet(viewsets.ModelViewSet):
         
         image_file = request.FILES.get('image')
         if image_file:
-            ai_result = waste_detector.analyze_waste_level(image_file)
+            ai_result = waste_detector.predict_priority(image_file, data['complaint_type'], False)
             data['priority'] = ai_result['priority']
             data['fill_level_before'] = ai_result['fill_level']
             print(f"AI Result: Fill={ai_result['fill_level']}%, Priority={ai_result['priority']}")
@@ -61,8 +61,7 @@ class ComplaintViewSet(viewsets.ModelViewSet):
                 'success': True,
                 'id': complaint.id,
                 'priority': complaint.priority,
-                'fill_level': complaint.fill_level_before,
-                'created_at': complaint.created_at.isoformat()
+                'fill_level': complaint.fill_level_before
             }, status=status.HTTP_201_CREATED)
         
         return Response({'error': serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
@@ -72,8 +71,6 @@ class ComplaintViewSet(viewsets.ModelViewSet):
         complaint = self.get_object()
         tester_username = request.data.get('tester_username')
         
-        print(f"=== ASSIGNING Complaint #{complaint.id} to tester: {tester_username} ===")
-        
         try:
             tester = User.objects.get(username=tester_username)
             complaint.assigned_to = tester
@@ -81,28 +78,23 @@ class ComplaintViewSet(viewsets.ModelViewSet):
             complaint.assigned_at = timezone.now()
             complaint.save()
             
-            print(f"✅ Assigned to {tester.username} (ID: {tester.id})")
-            
             return Response({
                 'success': True,
                 'assigned_to': tester.username,
-                'assigned_to_id': tester.id,
-                'status': complaint.status,
-                'assigned_at': complaint.assigned_at.isoformat()
+                'status': complaint.status
             })
         except User.DoesNotExist:
-            print(f"❌ Tester not found: {tester_username}")
             return Response({'error': 'Tester not found'}, status=404)
     
     @action(detail=True, methods=['post'])
-    def complete_by_tester(self, request, pk=None):
+    def complete_task(self, request, pk=None):
         complaint = self.get_object()
         after_image = request.FILES.get('after_image')
         
         if not after_image:
             return Response({'error': 'After cleaning image required'}, status=400)
         
-        ai_result = waste_detector.analyze_waste_level(after_image)
+        ai_result = waste_detector.predict_priority(after_image, complaint.complaint_type, False)
         
         complaint.after_image = after_image
         complaint.fill_level_after = ai_result['fill_level']
@@ -115,33 +107,8 @@ class ComplaintViewSet(viewsets.ModelViewSet):
             'fill_level_before': complaint.fill_level_before,
             'fill_level_after': complaint.fill_level_after,
             'reduction': complaint.fill_level_before - complaint.fill_level_after,
-            'status': complaint.status,
-            'completed_at': complaint.completed_at.isoformat()
+            'status': complaint.status
         })
-    
-    @action(detail=True, methods=['post'])
-    def update_status(self, request, pk=None):
-        complaint = self.get_object()
-        new_status = request.data.get('status')
-        
-        if new_status in ['pending', 'assigned', 'in_progress', 'completed', 'closed']:
-            complaint.status = new_status
-            if new_status == 'assigned':
-                complaint.assigned_at = timezone.now()
-            elif new_status == 'completed':
-                complaint.completed_at = timezone.now()
-            elif new_status == 'closed':
-                complaint.closed_at = timezone.now()
-            complaint.save()
-            return Response({'success': True, 'status': complaint.status})
-        
-        return Response({'error': 'Invalid status'}, status=400)
-    
-    @action(detail=False, methods=['get'])
-    def testers(self, request):
-        from users.models import UserProfile
-        testers = User.objects.filter(profile__role='tester')
-        return Response([{'id': t.id, 'username': t.username} for t in testers])
     
     @action(detail=False, methods=['get'])
     def dashboard_stats(self, request):
@@ -155,7 +122,7 @@ class ComplaintViewSet(viewsets.ModelViewSet):
         except:
             role = 'citizen'
         
-        if role in ['admin', 'authority']:
+        if role == 'admin':
             complaints = Complaint.objects.all()
         elif role == 'tester':
             complaints = Complaint.objects.filter(assigned_to=user)
@@ -166,13 +133,17 @@ class ComplaintViewSet(viewsets.ModelViewSet):
         pending = complaints.filter(status='pending').count()
         assigned = complaints.filter(status='assigned').count()
         completed = complaints.filter(status='completed').count()
-        closed = complaints.filter(status='closed').count()
         
         return Response({
             'total_complaints': total,
             'pending_complaints': pending,
             'assigned_complaints': assigned,
             'completed_complaints': completed,
-            'closed_complaints': closed,
-            'resolution_rate': round(((completed + closed) / total * 100) if total > 0 else 0, 2)
+            'resolution_rate': round((completed / total * 100) if total > 0 else 0, 2)
         })
+    
+    @action(detail=False, methods=['get'])
+    def testers(self, request):
+        from users.models import UserProfile
+        testers = User.objects.filter(profile__role='tester')
+        return Response([{'id': t.id, 'username': t.username} for t in testers])
