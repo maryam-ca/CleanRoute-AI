@@ -1,0 +1,48 @@
+/* Global CSS Fixes */
+
+/* Fix for fixed navbar */
+body {
+  padding-top: 0;
+  margin: 0;
+}
+
+/* Ensure content doesn't hide under navbar */
+.MuiBox-root {
+  scroll-margin-top: 80px;
+}
+
+/* Make stats cards more visible */
+.MuiCard-root {
+  transition: transform 0.2s ease-in-out;
+}
+
+.MuiCard-root:hover {
+  transform: translateY(-4px);
+}
+
+/* Chart container fixes */
+.recharts-wrapper {
+  margin: 0 auto;
+}
+
+.recharts-legend-wrapper {
+  bottom: 0 !important;
+}
+
+/* Make pie chart labels readable */
+.recharts-pie-label-text {
+  font-size: 12px;
+  font-weight: 600;
+  fill: #1B5E20;
+}
+
+/* Responsive fixes */
+@media (max-width: 600px) {
+  .recharts-pie-label-text {
+    font-size: 8px;
+  }
+  
+  .recharts-legend-item-text {
+    font-size: 10px;
+  }
+}

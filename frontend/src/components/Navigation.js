@@ -103,7 +103,7 @@ const Navigation = ({ user, setToken }) => {
               <Typography variant="h6" sx={{ fontWeight: 700, fontSize: { xs: '0.9rem', sm: '1.25rem' } }}>
                 CleanRoute-AI
               </Typography>
-              <Chip label="AI" size="small" sx={{ bgcolor: theme.palette.primary.main, color: 'white', display: { xs: 'none', sm: 'flex' } }} />
+              <Chip label="AI" size="small" sx={{ bgcolor: theme.palette.primary.main, color: '#FFFFFF', display: { xs: 'none', sm: 'flex' } }} />
             </Box>
 
             {!isMobile && (
@@ -162,6 +162,7 @@ const Navigation = ({ user, setToken }) => {
 };
 
 export default Navigation;
+
 
 
 

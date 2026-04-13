@@ -64,6 +64,11 @@ const ModernDashboard = ({ token, user, setToken }) => {
     { name: 'Missed', value: 20, color: '#EF4444' },
     { name: 'Illegal', value: 12, color: '#8B5CF6' },
     { name: 'Other', value: 8, color: '#10B981' },
+    { name: 'Overflowing', value: 35, color: '#F59E0B' },
+    { name: 'Spillage', value: 25, color: '#3B82F6' },
+    { name: 'Missed', value: 20, color: '#EF4444' },
+    { name: 'Illegal', value: 12, color: '#8B5CF6' },
+    { name: 'Other', value: 8, color: '#10B981' },
   ];
 
   const total = complaints.length;
@@ -133,7 +138,7 @@ const ModernDashboard = ({ token, user, setToken }) => {
   );
 
   return (
-    <Box sx={{ bgcolor: '#F5F5F5', minHeight: '100vh' }}>
+    <Box sx={{ bgcolor: '#F5F5F5', minHeight: '100vh', pt: '80px' }}>
       <Toaster position="top-right" />
       
       {/* Hero Section */}
@@ -161,7 +166,7 @@ const ModernDashboard = ({ token, user, setToken }) => {
         </Container>
       </Box>
 
-      <Container maxWidth="xl" sx={{ mt: -3, pb: 6 }}>
+      <Container maxWidth="xl" sx={{ mt: 0, pb: 6 }}>
         {/* Stats Grid */}
         <Grid container spacing={3} sx={{ mb: 4 }}>
           <Grid item xs={6} sm={3} md={2.4}>
@@ -185,7 +190,7 @@ const ModernDashboard = ({ token, user, setToken }) => {
         <Grid container spacing={3} sx={{ mb: 4 }}>
           <Grid item xs={12} md={8}>
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }}>
-              <Card>
+              <Card sx={{ borderRadius: 4, overflow: 'visible' }}>
                 <CardContent>
                   <Typography variant="h6" sx={{ fontWeight: 700, mb: 3 }}>
                     📈 Weekly Complaint Trends
@@ -236,7 +241,7 @@ const ModernDashboard = ({ token, user, setToken }) => {
 
         {/* Complaints Table */}
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.6 }}>
-          <Card>
+          <Card sx={{ borderRadius: 4, overflow: 'visible' }}>
             <CardContent>
               <Box display="flex" justifyContent="space-between" alignItems="center" flexWrap="wrap" gap={2} sx={{ mb: 3 }}>
                 <Typography variant="h6" sx={{ fontWeight: 700 }}>
@@ -315,3 +320,6 @@ const ModernDashboard = ({ token, user, setToken }) => {
 };
 
 export default ModernDashboard;
+
+
+
