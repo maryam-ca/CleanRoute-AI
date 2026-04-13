@@ -87,11 +87,7 @@ SIMPLE_JWT = {
 
 CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOW_CREDENTIALS = True
-CORS_ALLOWED_ORIGINS = [
-    'https://cleanroute-ai.vercel.app',
-    'https://clean-frontend.vercel.app',
-    'http://localhost:3000',
-]
+CORS_ALLOWED_ORIGINS = ['http://localhost:3000', 'https://cleanroute-ai.vercel.app','http://localhost:3000', 'http://127.0.0.1:3000']
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Email Configuration
@@ -105,7 +101,6 @@ DEFAULT_FROM_EMAIL = 'CleanRoute-AI <noreply@cleanroute-ai.com>'
 
 DATA_UPLOAD_MAX_NUMBER_FILES = 100
 DATA_UPLOAD_MAX_MEMORY_SIZE = 10485760
-
 
 
 
