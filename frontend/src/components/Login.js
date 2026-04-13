@@ -23,7 +23,6 @@ const Login = ({ setToken }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     
-    // For demo purposes, allow any non-empty credentials
     if (!username || !password) {
       setError('Please enter both username and password');
       return;
@@ -33,8 +32,10 @@ const Login = ({ setToken }) => {
     setError('');
     
     try {
-      // Try to authenticate with backend
+      console.log('Attempting login for:', username);
       const data = await api.login(username, password);
+      console.log('Login response:', data);
+      
       if (data && data.access) {
         localStorage.setItem('token', data.access);
         localStorage.setItem('user', username);
@@ -42,21 +43,12 @@ const Login = ({ setToken }) => {
         toast.success(`Welcome, ${username}!`);
         window.location.href = '/';
       } else {
-        // Fallback: allow demo login for testing
-        localStorage.setItem('token', 'demo-token');
-        localStorage.setItem('user', username);
-        setToken('demo-token');
-        toast.success(`Welcome, ${username}! (Demo Mode)`);
-        window.location.href = '/';
+        setError('Invalid credentials');
+        setLoading(false);
       }
     } catch (err) {
-      // Fallback: allow any login for testing
-      localStorage.setItem('token', 'demo-token');
-      localStorage.setItem('user', username);
-      setToken('demo-token');
-      toast.success(`Welcome, ${username}! (Demo Mode)`);
-      window.location.href = '/';
-    } finally {
+      console.error('Login error:', err);
+      setError('Login failed. Please check your credentials.');
       setLoading(false);
     }
   };
@@ -67,9 +59,9 @@ const Login = ({ setToken }) => {
       
       <Container maxWidth="sm">
         <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
-          <Paper sx={{ p: 5, borderRadius: 4, boxShadow: '0 20px 40px rgba(0,0,0,0.1)' }}>
+          <Paper sx={{ p: { xs: 3, sm: 5 }, borderRadius: 4, boxShadow: '0 20px 40px rgba(0,0,0,0.1)' }}>
             <Box textAlign="center" mb={4}>
-              <Avatar sx={{ width: 80, height: 80, margin: '0 auto 20px', bgcolor: '#4CAF50' }}>
+              <Avatar sx={{ width: 80, height: 80, margin: '0 auto 20px', bgcolor: '#2E7D32' }}>
                 <CleanIcon sx={{ fontSize: 50 }} />
               </Avatar>
               <Typography variant="h4" sx={{ fontWeight: 800, mb: 1, color: '#1B5E20' }}>
@@ -120,7 +112,7 @@ const Login = ({ setToken }) => {
                 type="submit"
                 variant="contained"
                 disabled={loading}
-                sx={{ py: 1.5, fontSize: '1rem', fontWeight: 600, bgcolor: '#4CAF50', '&:hover': { bgcolor: '#388E3C' } }}
+                sx={{ py: 1.5, fontSize: '1rem', fontWeight: 600, bgcolor: '#2E7D32', '&:hover': { bgcolor: '#1B5E20' } }}
               >
                 {loading ? 'Logging in...' : 'Login'}
               </Button>
@@ -128,7 +120,7 @@ const Login = ({ setToken }) => {
 
             <Box mt={3} textAlign="center">
               <Typography variant="caption" color="textSecondary">
-                Demo: Any username/password works
+                Demo: citizen / citizen123 | admin / admin123 | tester / tester123
               </Typography>
             </Box>
           </Paper>

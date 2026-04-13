@@ -1,99 +1,180 @@
-import React from 'react';
-import { Box, Button, Container, Chip, Typography, IconButton, Tooltip } from '@mui/material';
-import { 
-  Dashboard as DashboardIcon, 
-  Add as AddIcon, 
-  Map as MapIcon, 
+import React, { useState } from 'react';
+import {
+  AppBar, Toolbar, Typography, Button, IconButton, Menu, MenuItem,
+  Avatar, Box, Container, Chip, useTheme, Switch, FormControlLabel,
+  Drawer, List, ListItem, ListItemIcon, ListItemText, useMediaQuery
+} from '@mui/material';
+import {
+  Dashboard as DashboardIcon,
+  Add as AddIcon,
+  Map as MapIcon,
   ShowChart as ChartIcon,
-  LocationOn as LocationIcon, Description as DescriptionIcon, AdminPanelSettings as AdminPanelSettingsIcon, Analytics as AnalyticsIcon,
+  Description as DescriptionIcon,
+  AdminPanelSettings as AdminIcon,
+  Person as PersonIcon,
   Logout as LogoutIcon,
-  Settings as SettingsIcon,
-  Notifications as NotifIcon
+  DarkMode as DarkModeIcon,
+  LightMode as LightModeIcon,
+  DeleteSweep as CleanIcon,
+  Menu as MenuIcon
 } from '@mui/icons-material';
+import { useColorMode } from '../ThemeContext';
 
 const Navigation = ({ user, setToken }) => {
-  const currentPath = window.location.pathname;
+  const [anchorEl, setAnchorEl] = useState(null);
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const { mode, toggleColorMode } = useColorMode();
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+
+  const handleMenuOpen = (event) => setAnchorEl(event.currentTarget);
+  const handleMenuClose = () => setAnchorEl(null);
+
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    setToken(null);
+    handleMenuClose();
+    setMobileOpen(false);
+  };
+
+  const navigateTo = (path) => {
+    window.location.href = path;
+    setMobileOpen(false);
+  };
+
+  const isAdmin = user === 'admin';
+  const isTester = user === 'tester';
 
   const navItems = [
-    { path: '/', label: 'Dashboard', icon: <DashboardIcon />, color: '#4CAF50' },
-    { path: '/submit', label: 'New Complaint', icon: <AddIcon />, color: '#2196F3' },
-    { path: '/routes', label: 'Route Optimization', icon: <MapIcon />, color: '#FF9800' },
-    { path: '/predict', label: 'Waste Prediction', icon: <ChartIcon />, color: '#9C27B0' },
-    { path: '/map', label: 'Live Map', icon: <LocationIcon />, color: '#FF5722' },
-    { path: '/reports', label: 'Reports', icon: <DescriptionIcon />, color: '#9C27B0' },
-    { path: '/admin', label: 'Admin', icon: <AdminPanelSettingsIcon />, color: '#9C27B0' },
-    { path: '/analytics', label: 'Analytics', icon: <AnalyticsIcon />, color: '#FF5722' },
+    { path: '/', label: 'Dashboard', icon: <DashboardIcon />, show: true },
+    { path: '/submit', label: 'New Complaint', icon: <AddIcon />, show: true },
+    { path: '/routes', label: 'Route Optimizer', icon: <MapIcon />, show: true },
+    { path: '/predict', label: 'Waste Predict', icon: <ChartIcon />, show: true },
+    { path: '/reports', label: 'Reports', icon: <DescriptionIcon />, show: true },
+    { path: '/admin', label: 'Admin Panel', icon: <AdminIcon />, show: isAdmin },
+    { path: '/tester', label: 'My Tasks', icon: <PersonIcon />, show: isTester },
   ];
 
+  const drawer = (
+    <Box sx={{ width: 280, p: 2 }}>
+      <Box display="flex" alignItems="center" gap={1} sx={{ mb: 3, p: 1 }}>
+        <CleanIcon sx={{ fontSize: 32, color: theme.palette.primary.main }} />
+        <Typography variant="h6" sx={{ fontWeight: 700 }}>
+          CleanRoute-AI
+        </Typography>
+      </Box>
+      <List>
+        {navItems.filter(item => item.show).map((item) => (
+          <ListItem 
+            key={item.path} 
+            onClick={() => navigateTo(item.path)}
+            sx={{ 
+              borderRadius: 2, 
+              mb: 0.5,
+              bgcolor: window.location.pathname === item.path ? theme.palette.action.selected : 'transparent',
+              '&:hover': { bgcolor: theme.palette.action.hover }
+            }}
+          >
+            <ListItemIcon sx={{ color: window.location.pathname === item.path ? theme.palette.primary.main : 'inherit' }}>
+              {item.icon}
+            </ListItemIcon>
+            <ListItemText primary={item.label} />
+          </ListItem>
+        ))}
+        <ListItem onClick={toggleColorMode} sx={{ borderRadius: 2 }}>
+          <ListItemIcon>
+            {mode === 'dark' ? <LightModeIcon /> : <DarkModeIcon />}
+          </ListItemIcon>
+          <ListItemText primary={`${mode === 'dark' ? 'Light' : 'Dark'} Mode`} />
+        </ListItem>
+        <ListItem onClick={handleLogout} sx={{ borderRadius: 2, color: 'error.main' }}>
+          <ListItemIcon sx={{ color: 'error.main' }}>
+            <LogoutIcon />
+          </ListItemIcon>
+          <ListItemText primary="Logout" />
+        </ListItem>
+      </List>
+    </Box>
+  );
+
   return (
-    <Box sx={{ bgcolor: '#1B5E20', color: 'white', py: 2, px: 4, boxShadow: '0 4px 20px rgba(0,0,0,0.1)' }}>
-      <Container maxWidth="xl">
-        <Box display="flex" justifyContent="space-between" alignItems="center" flexWrap="wrap" gap={2}>
-          <Box display="flex" alignItems="center" gap={2}>
-            <DashboardIcon sx={{ fontSize: 32, color: '#81C784' }} />
-            <Box>
-              <Typography variant="h5" sx={{ fontWeight: 700 }}>
+    <>
+      <AppBar position="sticky" elevation={0} sx={{ borderBottom: 1, borderColor: 'divider' }}>
+        <Container maxWidth="xl">
+          <Toolbar sx={{ justifyContent: 'space-between', py: { xs: 1, sm: 0.5 }, minHeight: { xs: 56, sm: 64 } }}>
+            {/* Logo */}
+            <Box display="flex" alignItems="center" gap={1}>
+              <CleanIcon sx={{ fontSize: { xs: 24, sm: 32 }, color: theme.palette.primary.main }} />
+              <Typography variant="h6" sx={{ fontWeight: 700, letterSpacing: -0.5, fontSize: { xs: '0.9rem', sm: '1.25rem' } }}>
                 CleanRoute-AI
               </Typography>
-              <Typography variant="caption" sx={{ opacity: 0.8 }}>
-                AI-Powered Waste Management System
-              </Typography>
+              <Chip label="AI" size="small" sx={{ bgcolor: theme.palette.primary.main, color: 'white', fontSize: '0.65rem', display: { xs: 'none', sm: 'flex' } }} />
             </Box>
-            <Chip label="LIVE" size="small" sx={{ bgcolor: '#4CAF50', color: 'white', fontWeight: 600, ml: 2 }} />
-          </Box>
-          
-          <Box display="flex" alignItems="center" gap={1} flexWrap="wrap">
-            {navItems.map((item) => (
+
+            {/* Desktop Navigation */}
+            {!isMobile && (
+              <Box display="flex" alignItems="center" gap={1}>
+                {navItems.filter(item => item.show).map((item) => (
+                  <Button
+                    key={item.path}
+                    startIcon={item.icon}
+                    onClick={() => navigateTo(item.path)}
+                    sx={{
+                      color: window.location.pathname === item.path ? theme.palette.primary.main : 'text.secondary',
+                      fontWeight: window.location.pathname === item.path ? 600 : 500,
+                      '&:hover': { bgcolor: 'action.hover' },
+                    }}
+                  >
+                    {item.label}
+                  </Button>
+                ))}
+              </Box>
+            )}
+
+            {/* Right Section */}
+            <Box display="flex" alignItems="center" gap={1}>
+              {!isMobile && (
+                <IconButton onClick={toggleColorMode} size="small">
+                  {mode === 'dark' ? <LightModeIcon /> : <DarkModeIcon />}
+                </IconButton>
+              )}
+              
               <Button
-                key={item.path}
-                variant={currentPath === item.path ? 'contained' : 'text'}
-                startIcon={item.icon}
-                onClick={() => window.location.href = item.path}
-                sx={{
-                  color: 'white',
-                  bgcolor: currentPath === item.path ? item.color : 'transparent',
-                  '&:hover': { bgcolor: `${item.color}40` }
-                }}
+                startIcon={<Avatar sx={{ width: 28, height: 28, bgcolor: theme.palette.primary.main, fontSize: '0.8rem' }}>{user?.charAt(0).toUpperCase()}</Avatar>}
+                onClick={handleMenuOpen}
+                sx={{ textTransform: 'none', color: 'text.primary', display: { xs: 'none', sm: 'flex' } }}
               >
-                {item.label}
+                {user || 'User'}
               </Button>
-            ))}
-            
-            <Tooltip title="Notifications">
-              <IconButton sx={{ color: 'white', ml: 1 }}>
-                <NotifIcon />
-              </IconButton>
-            </Tooltip>
-            
-            <Tooltip title="Settings">
-              <IconButton sx={{ color: 'white' }}>
-                <SettingsIcon />
-              </IconButton>
-            </Tooltip>
-            
-            <Typography variant="body2" sx={{ mx: 1, color: '#81C784' }}>{user || 'Admin'}</Typography>
-            
-            <Button 
-              variant="outlined" 
-              size="small" 
-              startIcon={<LogoutIcon />}
-              onClick={() => {
-                localStorage.removeItem('token');
-                localStorage.removeItem('user');
-                setToken(null);
-              }}
-              sx={{ color: 'white', borderColor: 'rgba(255,255,255,0.3)', '&:hover': { borderColor: '#81C784', bgcolor: 'rgba(129,199,132,0.1)' } }}
-            >
-              Logout
-            </Button>
-          </Box>
-        </Box>
-      </Container>
-    </Box>
+              
+              {isMobile && (
+                <IconButton onClick={() => setMobileOpen(true)}>
+                  <MenuIcon />
+                </IconButton>
+              )}
+            </Box>
+          </Toolbar>
+        </Container>
+      </AppBar>
+
+      {/* User Menu */}
+      <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleMenuClose}>
+        <MenuItem disabled>
+          <Typography variant="body2">Logged in as <strong>{user}</strong></Typography>
+        </MenuItem>
+        <MenuItem onClick={handleLogout}>
+          <LogoutIcon fontSize="small" sx={{ mr: 1 }} />
+          Logout
+        </MenuItem>
+      </Menu>
+
+      {/* Mobile Drawer */}
+      <Drawer anchor="left" open={mobileOpen} onClose={() => setMobileOpen(false)}>
+        {drawer}
+      </Drawer>
+    </>
   );
 };
 
 export default Navigation;
-
-
-

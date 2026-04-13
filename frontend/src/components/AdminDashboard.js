@@ -3,16 +3,16 @@ import {
   Box, Container, Paper, Typography, Grid, Card, CardContent,
   Table, TableBody, TableCell, TableContainer, TableHead, TableRow,
   Chip, Button, Dialog, DialogTitle, DialogContent, DialogActions,
-  Select, MenuItem, FormControl, InputLabel, IconButton, CircularProgress,
-  TextField, Alert, AppBar, Toolbar
+  Select, MenuItem, FormControl, InputLabel, CircularProgress,
+  Alert, AppBar, Toolbar, IconButton, useMediaQuery, useTheme
 } from '@mui/material';
 import {
   Refresh as RefreshIcon,
   Assignment as AssignIcon,
   CheckCircle as CheckIcon,
   Logout as LogoutIcon,
-  Person as PersonIcon,
-  Dashboard as DashboardIcon
+  Dashboard as DashboardIcon,
+  AccessTime as TimeIcon
 } from '@mui/icons-material';
 import toast, { Toaster } from 'react-hot-toast';
 import api from '../services/api';
@@ -24,8 +24,9 @@ const AdminDashboard = ({ token, user, setToken }) => {
   const [loading, setLoading] = useState(true);
   const [selectedComplaint, setSelectedComplaint] = useState(null);
   const [selectedTester, setSelectedTester] = useState('');
-  const [afterImage, setAfterImage] = useState(null);
   const [actionType, setActionType] = useState('');
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
   useEffect(() => {
     fetchData();
@@ -36,10 +37,8 @@ const AdminDashboard = ({ token, user, setToken }) => {
     try {
       const complaintsData = await api.getComplaints();
       setComplaints(Array.isArray(complaintsData) ? complaintsData : []);
-      
       const statsData = await api.getDashboardStats();
       setStats(statsData);
-      
       const testersData = await api.getTesters();
       setTesters(testersData);
     } catch (error) {
@@ -57,8 +56,8 @@ const AdminDashboard = ({ token, user, setToken }) => {
     }
     
     try {
-      await api.assignToTester(selectedComplaint.id, selectedTester);
-      toast.success(`Complaint #${selectedComplaint.id} assigned to ${selectedTester}`);
+      const result = await api.assignToTester(selectedComplaint.id, selectedTester);
+      toast.success(`✅ Complaint #${selectedComplaint.id} assigned to ${selectedTester}`);
       setSelectedComplaint(null);
       setSelectedTester('');
       setActionType('');
@@ -68,104 +67,106 @@ const AdminDashboard = ({ token, user, setToken }) => {
     }
   };
 
-  const handleMarkCompleted = async () => {
-    if (!afterImage) {
-      toast.error('Please upload after-cleaning photo');
-      return;
-    }
-    
-    const formData = new FormData();
-    formData.append('after_image', afterImage);
-    
+  const handleCloseComplaint = async () => {
     try {
-      const result = await api.markCompleted(selectedComplaint.id, formData);
-      toast.success(`Complaint #${selectedComplaint.id} completed! Waste reduced by ${result.reduction}%`);
+      const result = await api.updateStatus(selectedComplaint.id, 'closed');
+      toast.success(`✅ Complaint #${selectedComplaint.id} closed!`);
       setSelectedComplaint(null);
-      setAfterImage(null);
       setActionType('');
       fetchData();
     } catch (error) {
-      toast.error('Failed to mark completed');
+      toast.error('Failed to close complaint');
     }
-  };
-
-  const handleLogout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
-    setToken(null);
-    toast.success('Logged out successfully');
   };
 
   const getStatusColor = (status) => {
     switch(status) {
-      case 'completed': return '#4CAF50';
-      case 'assigned': return '#2196F3';
-      case 'pending': return '#FF9800';
+      case 'closed': return '#4CAF50';
+      case 'completed': return '#2196F3';
+      case 'assigned': return '#FF9800';
+      case 'pending': return '#F44336';
       default: return '#9E9E9E';
     }
   };
 
   const getPriorityColor = (priority) => {
     switch(priority) {
-      case 'urgent': return '#D32F2F';
-      case 'high': return '#F57C00';
-      case 'medium': return '#FBC02D';
+      case 'urgent': return '#F44336';
+      case 'high': return '#FF9800';
+      case 'medium': return '#2196F3';
       default: return '#4CAF50';
     }
   };
 
+  const formatDate = (date) => {
+    if (!date) return 'N/A';
+    return new Date(date).toLocaleString();
+  };
+
   return (
-    <Box sx={{ bgcolor: '#F1F8E9', minHeight: '100vh' }}>
+    <Box sx={{ bgcolor: 'background.default', minHeight: '100vh' }}>
       <Toaster position="top-right" />
       
-      {/* App Bar */}
-      <AppBar position="static" sx={{ bgcolor: '#1B5E20' }}>
+      <AppBar position="sticky" sx={{ bgcolor: '#1B5E20' }}>
         <Toolbar>
           <DashboardIcon sx={{ mr: 2 }} />
           <Typography variant="h6" sx={{ flexGrow: 1, fontWeight: 700 }}>
             Admin Dashboard
           </Typography>
-          <Button color="inherit" onClick={() => window.location.href = '/'} startIcon={<DashboardIcon />}>
-            Main Dashboard
-          </Button>
-          <IconButton color="inherit" onClick={handleLogout}>
+          <IconButton color="inherit" onClick={() => { localStorage.clear(); setToken(null); }}>
             <LogoutIcon />
           </IconButton>
         </Toolbar>
       </AppBar>
 
-      <Container maxWidth="xl" sx={{ py: 4 }}>
+      <Container maxWidth="xl" sx={{ py: { xs: 2, sm: 4 } }}>
         {/* Stats Cards */}
-        <Grid container spacing={3} sx={{ mb: 4 }}>
-          <Grid item xs={12} sm={6} md={3}>
-            <Card sx={{ borderRadius: 4, bgcolor: '#2E7D32', color: 'white' }}>
+        <Grid container spacing={{ xs: 2, sm: 3 }} sx={{ mb: 4 }}>
+          <Grid item xs={6} sm={6} md={2}>
+            <Card sx={{ bgcolor: '#2E7D32', color: 'white' }}>
               <CardContent>
-                <Typography variant="caption">Total Complaints</Typography>
-                <Typography variant="h3">{stats?.total_complaints || 0}</Typography>
+                <Typography variant="caption">Total</Typography>
+                <Typography variant="h4">{stats?.total_complaints || 0}</Typography>
               </CardContent>
             </Card>
           </Grid>
-          <Grid item xs={12} sm={6} md={3}>
-            <Card sx={{ borderRadius: 4, bgcolor: '#FF9800', color: 'white' }}>
+          <Grid item xs={6} sm={6} md={2}>
+            <Card sx={{ bgcolor: '#F44336', color: 'white' }}>
               <CardContent>
                 <Typography variant="caption">Pending</Typography>
-                <Typography variant="h3">{stats?.pending_complaints || 0}</Typography>
+                <Typography variant="h4">{stats?.pending_complaints || 0}</Typography>
               </CardContent>
             </Card>
           </Grid>
-          <Grid item xs={12} sm={6} md={3}>
-            <Card sx={{ borderRadius: 4, bgcolor: '#2196F3', color: 'white' }}>
+          <Grid item xs={6} sm={6} md={2}>
+            <Card sx={{ bgcolor: '#FF9800', color: 'white' }}>
               <CardContent>
                 <Typography variant="caption">Assigned</Typography>
-                <Typography variant="h3">{stats?.assigned_complaints || 0}</Typography>
+                <Typography variant="h4">{stats?.assigned_complaints || 0}</Typography>
               </CardContent>
             </Card>
           </Grid>
-          <Grid item xs={12} sm={6} md={3}>
-            <Card sx={{ borderRadius: 4, bgcolor: '#4CAF50', color: 'white' }}>
+          <Grid item xs={6} sm={6} md={2}>
+            <Card sx={{ bgcolor: '#2196F3', color: 'white' }}>
               <CardContent>
                 <Typography variant="caption">Completed</Typography>
-                <Typography variant="h3">{stats?.completed_complaints || 0}</Typography>
+                <Typography variant="h4">{stats?.completed_complaints || 0}</Typography>
+              </CardContent>
+            </Card>
+          </Grid>
+          <Grid item xs={6} sm={6} md={2}>
+            <Card sx={{ bgcolor: '#4CAF50', color: 'white' }}>
+              <CardContent>
+                <Typography variant="caption">Closed</Typography>
+                <Typography variant="h4">{stats?.closed_complaints || 0}</Typography>
+              </CardContent>
+            </Card>
+          </Grid>
+          <Grid item xs={6} sm={6} md={2}>
+            <Card sx={{ bgcolor: '#9C27B0', color: 'white' }}>
+              <CardContent>
+                <Typography variant="caption">Rate</Typography>
+                <Typography variant="h4">{stats?.resolution_rate || 0}%</Typography>
               </CardContent>
             </Card>
           </Grid>
@@ -175,24 +176,24 @@ const AdminDashboard = ({ token, user, setToken }) => {
         <Paper sx={{ borderRadius: 4, overflow: 'hidden' }}>
           <Box sx={{ p: 3, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <Typography variant="h6">Complaints Management</Typography>
-            <Button startIcon={<RefreshIcon />} onClick={fetchData} variant="contained" sx={{ bgcolor: '#4CAF50' }}>
+            <Button startIcon={<RefreshIcon />} onClick={fetchData} variant="contained" sx={{ bgcolor: '#2E7D32' }}>
               Refresh
             </Button>
           </Box>
           
           {loading ? (
-            <Box sx={{ p: 4, textAlign: 'center' }}><CircularProgress sx={{ color: '#4CAF50' }} /></Box>
+            <Box sx={{ p: 4, textAlign: 'center' }}><CircularProgress sx={{ color: '#2E7D32' }} /></Box>
           ) : (
             <TableContainer>
-              <Table>
+              <Table size={isMobile ? "small" : "medium"}>
                 <TableHead>
-                  <TableRow sx={{ bgcolor: '#E8F5E9' }}>
+                  <TableRow sx={{ bgcolor: 'action.hover' }}>
                     <TableCell>ID</TableCell>
-                    <TableCell>Type</TableCell>
+                    {!isMobile && <TableCell>Type</TableCell>}
                     <TableCell>Priority</TableCell>
                     <TableCell>Status</TableCell>
-                    <TableCell>Location</TableCell>
-                    <TableCell>Reported By</TableCell>
+                    {!isMobile && <TableCell>Assigned To</TableCell>}
+                    {!isMobile && <TableCell>Created</TableCell>}
                     <TableCell>Actions</TableCell>
                   </TableRow>
                 </TableHead>
@@ -200,24 +201,24 @@ const AdminDashboard = ({ token, user, setToken }) => {
                   {complaints.map((complaint) => (
                     <TableRow key={complaint.id} hover>
                       <TableCell>#{complaint.id}</TableCell>
-                      <TableCell>{complaint.complaint_type}</TableCell>
+                      {!isMobile && <TableCell>{complaint.complaint_type}</TableCell>}
                       <TableCell>
                         <Chip label={complaint.priority} sx={{ bgcolor: getPriorityColor(complaint.priority), color: 'white' }} />
                       </TableCell>
                       <TableCell>
                         <Chip label={complaint.status} sx={{ bgcolor: getStatusColor(complaint.status), color: 'white' }} />
                       </TableCell>
-                      <TableCell>{complaint.latitude}, {complaint.longitude}</TableCell>
-                      <TableCell>{complaint.user_name || 'Anonymous'}</TableCell>
+                      {!isMobile && <TableCell>{complaint.assigned_to_name || 'Unassigned'}</TableCell>}
+                      {!isMobile && <TableCell>{formatDate(complaint.created_at)}</TableCell>}
                       <TableCell>
                         {complaint.status === 'pending' && (
                           <Button size="small" startIcon={<AssignIcon />} onClick={() => { setSelectedComplaint(complaint); setActionType('assign'); }}>
                             Assign
                           </Button>
                         )}
-                        {complaint.status === 'assigned' && (
-                          <Button size="small" startIcon={<CheckIcon />} onClick={() => { setSelectedComplaint(complaint); setActionType('complete'); }}>
-                            Complete
+                        {complaint.status === 'completed' && (
+                          <Button size="small" startIcon={<CheckIcon />} onClick={() => { setSelectedComplaint(complaint); setActionType('close'); }}>
+                            Close
                           </Button>
                         )}
                       </TableCell>
@@ -231,7 +232,7 @@ const AdminDashboard = ({ token, user, setToken }) => {
       </Container>
 
       {/* Assign Dialog */}
-      <Dialog open={actionType === 'assign' && selectedComplaint} onClose={() => { setSelectedComplaint(null); setActionType(''); }}>
+      <Dialog open={actionType === 'assign' && selectedComplaint} onClose={() => setActionType('')}>
         <DialogTitle>Assign Complaint #{selectedComplaint?.id}</DialogTitle>
         <DialogContent>
           <FormControl fullWidth sx={{ mt: 2 }}>
@@ -242,28 +243,24 @@ const AdminDashboard = ({ token, user, setToken }) => {
           </FormControl>
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => { setSelectedComplaint(null); setActionType(''); }}>Cancel</Button>
-          <Button onClick={handleAssign} variant="contained" sx={{ bgcolor: '#4CAF50' }}>Assign</Button>
+          <Button onClick={() => setActionType('')}>Cancel</Button>
+          <Button onClick={handleAssign} variant="contained" sx={{ bgcolor: '#2E7D32' }}>Assign</Button>
         </DialogActions>
       </Dialog>
 
-      {/* Complete Dialog */}
-      <Dialog open={actionType === 'complete' && selectedComplaint} onClose={() => { setSelectedComplaint(null); setActionType(''); }}>
-        <DialogTitle>Complete Complaint #{selectedComplaint?.id}</DialogTitle>
+      {/* Close Dialog */}
+      <Dialog open={actionType === 'close' && selectedComplaint} onClose={() => setActionType('')}>
+        <DialogTitle>Close Complaint #{selectedComplaint?.id}</DialogTitle>
         <DialogContent>
-          <Button variant="outlined" component="label" sx={{ mt: 2, py: 2, width: '100%' }}>
-            📸 Upload After-Cleaning Photo
-            <input type="file" accept="image/*" hidden onChange={(e) => setAfterImage(e.target.files[0])} />
-          </Button>
-          {afterImage && (
-            <Alert severity="success" sx={{ mt: 2 }}>
-              Photo selected: {afterImage.name}
-            </Alert>
-          )}
+          <Alert severity="info" sx={{ mt: 2 }}>
+            This complaint has been completed by the tester.
+            <br />
+            Waste reduced from {selectedComplaint?.fill_level_before}% to {selectedComplaint?.fill_level_after}%
+          </Alert>
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => { setSelectedComplaint(null); setActionType(''); }}>Cancel</Button>
-          <Button onClick={handleMarkCompleted} variant="contained" sx={{ bgcolor: '#4CAF50' }}>Mark Completed</Button>
+          <Button onClick={() => setActionType('')}>Cancel</Button>
+          <Button onClick={handleCloseComplaint} variant="contained" sx={{ bgcolor: '#2E7D32' }}>Close Complaint</Button>
         </DialogActions>
       </Dialog>
     </Box>
