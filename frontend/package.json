@@ -22,6 +22,7 @@
     "leaflet": "^1.9.4",
     "react": "^19.2.5",
     "react-chartjs-2": "^5.3.1",
+    "react-countup": "^6.5.3",
     "react-dom": "^19.2.5",
     "react-hot-toast": "^2.6.0",
     "react-leaflet": "^5.0.0",
@@ -30,6 +31,7 @@
     "react-use-websocket": "^4.13.0",
     "recharts": "^3.8.1",
     "web-vitals": "^2.1.4",
+    "workbox-webpack-plugin": "^7.4.0",
     "xlsx": "^0.18.5"
   },
   "scripts": {
@@ -57,4 +59,3 @@
     ]
   }
 }
-

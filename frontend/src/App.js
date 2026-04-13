@@ -6,7 +6,7 @@ import { Box, CircularProgress } from '@mui/material';
 import { lightTheme, darkTheme } from './theme';
 import { ColorModeProvider, useColorMode } from './ThemeContext';
 import Navigation from './components/Navigation';
-import Dashboard from './components/Dashboard';
+import Dashboard from './components/ModernDashboard';
 import ComplaintForm from './components/ComplaintForm';
 import RouteOptimizer from './components/RouteOptimizer';
 import WastePrediction from './components/WastePrediction';
@@ -68,3 +68,4 @@ function App() {
 }
 
 export default App;
+
