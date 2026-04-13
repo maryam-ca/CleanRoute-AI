@@ -72,6 +72,8 @@ class ComplaintViewSet(viewsets.ModelViewSet):
         complaint = self.get_object()
         tester_username = request.data.get('tester_username')
         
+        print(f"=== ASSIGNING Complaint #{complaint.id} to tester: {tester_username} ===")
+        
         try:
             tester = User.objects.get(username=tester_username)
             complaint.assigned_to = tester
@@ -79,18 +81,21 @@ class ComplaintViewSet(viewsets.ModelViewSet):
             complaint.assigned_at = timezone.now()
             complaint.save()
             
+            print(f"✅ Assigned to {tester.username} (ID: {tester.id})")
+            
             return Response({
                 'success': True,
                 'assigned_to': tester.username,
+                'assigned_to_id': tester.id,
                 'status': complaint.status,
                 'assigned_at': complaint.assigned_at.isoformat()
             })
         except User.DoesNotExist:
+            print(f"❌ Tester not found: {tester_username}")
             return Response({'error': 'Tester not found'}, status=404)
     
     @action(detail=True, methods=['post'])
     def complete_by_tester(self, request, pk=None):
-        """Tester marks complaint as completed with after photo"""
         complaint = self.get_object()
         after_image = request.FILES.get('after_image')
         
@@ -115,21 +120,22 @@ class ComplaintViewSet(viewsets.ModelViewSet):
         })
     
     @action(detail=True, methods=['post'])
-    def verify_and_close(self, request, pk=None):
-        """Admin verifies and closes the complaint"""
+    def update_status(self, request, pk=None):
         complaint = self.get_object()
+        new_status = request.data.get('status')
         
-        if complaint.status != 'completed':
-            return Response({'error': 'Complaint must be completed by tester first'}, status=400)
+        if new_status in ['pending', 'assigned', 'in_progress', 'completed', 'closed']:
+            complaint.status = new_status
+            if new_status == 'assigned':
+                complaint.assigned_at = timezone.now()
+            elif new_status == 'completed':
+                complaint.completed_at = timezone.now()
+            elif new_status == 'closed':
+                complaint.closed_at = timezone.now()
+            complaint.save()
+            return Response({'success': True, 'status': complaint.status})
         
-        complaint.status = 'closed'
-        complaint.save()
-        
-        return Response({
-            'success': True,
-            'status': complaint.status,
-            'closed_at': timezone.now().isoformat()
-        })
+        return Response({'error': 'Invalid status'}, status=400)
     
     @action(detail=False, methods=['get'])
     def testers(self, request):

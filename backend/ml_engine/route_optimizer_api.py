@@ -1,7 +1,7 @@
+from django.urls import path
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-import joblib
 import numpy as np
 from sklearn.cluster import KMeans
 import random
@@ -32,7 +32,7 @@ def optimize_routes(request):
             (24.8907, 67.0311, 'North Nazimabad'),
             (24.8507, 67.0011, 'Saddar'),
         ]
-    else:  # Lahore
+    else:
         centers = [
             (31.5497, 74.3436, 'Gulberg'),
             (31.5597, 74.3536, 'Model Town'),
@@ -41,7 +41,6 @@ def optimize_routes(request):
             (31.5397, 74.3336, 'Anarkali'),
         ]
     
-    # Generate complaints for each center
     complaint_id = 1
     for lat, lng, location in centers:
         for i in range(random.randint(5, 15)):
@@ -64,7 +63,6 @@ def optimize_routes(request):
         kmeans.fit(coords)
         labels = kmeans.labels_
         
-        # Group complaints by cluster
         clusters = {}
         for i, complaint in enumerate(complaints):
             cluster_id = int(labels[i])
@@ -72,7 +70,6 @@ def optimize_routes(request):
                 clusters[cluster_id] = []
             clusters[cluster_id].append(complaint)
         
-        # Create routes
         routes = []
         for cluster_id, cluster_complaints in clusters.items():
             routes.append({
@@ -90,7 +87,7 @@ def optimize_routes(request):
             'total_complaints': len(complaints),
             'total_clusters': len(routes),
             'routes': routes,
-            'complaints': complaints[:50]  # Return first 50 complaints for map display
+            'complaints': complaints[:50]
         })
     else:
         return Response({
@@ -101,3 +98,7 @@ def optimize_routes(request):
             'routes': [],
             'complaints': complaints
         })
+
+urlpatterns = [
+    path('', optimize_routes, name='optimize_routes'),
+]

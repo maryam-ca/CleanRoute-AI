@@ -4,7 +4,8 @@ import {
   Table, TableBody, TableCell, TableContainer, TableHead, TableRow,
   Chip, Button, Dialog, DialogTitle, DialogContent, DialogActions,
   Select, MenuItem, FormControl, InputLabel, CircularProgress,
-  Alert, AppBar, Toolbar, IconButton, useMediaQuery, useTheme
+  Alert, AppBar, Toolbar, IconButton, useMediaQuery, useTheme,
+  Tabs, Tab
 } from '@mui/material';
 import {
   Refresh as RefreshIcon,
@@ -12,7 +13,9 @@ import {
   CheckCircle as CheckIcon,
   Logout as LogoutIcon,
   Dashboard as DashboardIcon,
-  AccessTime as TimeIcon
+  AccessTime as TimeIcon,
+  DoneAll as DoneAllIcon,
+  Pending as PendingIcon
 } from '@mui/icons-material';
 import toast, { Toaster } from 'react-hot-toast';
 import api from '../services/api';
@@ -25,6 +28,7 @@ const AdminDashboard = ({ token, user, setToken }) => {
   const [selectedComplaint, setSelectedComplaint] = useState(null);
   const [selectedTester, setSelectedTester] = useState('');
   const [actionType, setActionType] = useState('');
+  const [tabValue, setTabValue] = useState(0);
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
@@ -69,7 +73,7 @@ const AdminDashboard = ({ token, user, setToken }) => {
 
   const handleCloseComplaint = async () => {
     try {
-      const result = await api.updateStatus(selectedComplaint.id, 'closed');
+      await api.updateStatus(selectedComplaint.id, 'closed');
       toast.success(`✅ Complaint #${selectedComplaint.id} closed!`);
       setSelectedComplaint(null);
       setActionType('');
@@ -89,6 +93,16 @@ const AdminDashboard = ({ token, user, setToken }) => {
     }
   };
 
+  const getStatusIcon = (status) => {
+    switch(status) {
+      case 'closed': return <DoneAllIcon sx={{ fontSize: 14 }} />;
+      case 'completed': return <CheckIcon sx={{ fontSize: 14 }} />;
+      case 'assigned': return <AssignIcon sx={{ fontSize: 14 }} />;
+      case 'pending': return <PendingIcon sx={{ fontSize: 14 }} />;
+      default: return null;
+    }
+  };
+
   const getPriorityColor = (priority) => {
     switch(priority) {
       case 'urgent': return '#F44336';
@@ -102,6 +116,12 @@ const AdminDashboard = ({ token, user, setToken }) => {
     if (!date) return 'N/A';
     return new Date(date).toLocaleString();
   };
+
+  // Filter complaints by status for tabs
+  const pendingComplaints = complaints.filter(c => c.status === 'pending');
+  const assignedComplaints = complaints.filter(c => c.status === 'assigned');
+  const completedComplaints = complaints.filter(c => c.status === 'completed');
+  const closedComplaints = complaints.filter(c => c.status === 'closed');
 
   return (
     <Box sx={{ bgcolor: 'background.default', minHeight: '100vh' }}>
@@ -172,10 +192,27 @@ const AdminDashboard = ({ token, user, setToken }) => {
           </Grid>
         </Grid>
 
+        {/* Tabs */}
+        <Paper sx={{ borderRadius: 4, mb: 3 }}>
+          <Tabs value={tabValue} onChange={(_, v) => setTabValue(v)} sx={{ px: 2, pt: 1 }} variant="scrollable" scrollButtons="auto">
+            <Tab label={`Pending (${pendingComplaints.length})`} />
+            <Tab label={`Assigned (${assignedComplaints.length})`} />
+            <Tab label={`Completed (${completedComplaints.length})`} />
+            <Tab label={`Closed (${closedComplaints.length})`} />
+            <Tab label={`All (${complaints.length})`} />
+          </Tabs>
+        </Paper>
+
         {/* Complaints Table */}
         <Paper sx={{ borderRadius: 4, overflow: 'hidden' }}>
           <Box sx={{ p: 3, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <Typography variant="h6">Complaints Management</Typography>
+            <Typography variant="h6">
+              {tabValue === 0 && 'Pending Complaints'}
+              {tabValue === 1 && 'Assigned Complaints'}
+              {tabValue === 2 && 'Completed Complaints (Ready for Closure)'}
+              {tabValue === 3 && 'Closed Complaints'}
+              {tabValue === 4 && 'All Complaints'}
+            </Typography>
             <Button startIcon={<RefreshIcon />} onClick={fetchData} variant="contained" sx={{ bgcolor: '#2E7D32' }}>
               Refresh
             </Button>
@@ -193,23 +230,31 @@ const AdminDashboard = ({ token, user, setToken }) => {
                     <TableCell>Priority</TableCell>
                     <TableCell>Status</TableCell>
                     {!isMobile && <TableCell>Assigned To</TableCell>}
-                    {!isMobile && <TableCell>Created</TableCell>}
+                    {!isMobile && <TableCell>Fill Level</TableCell>}
+                    <TableCell>Created</TableCell>
                     <TableCell>Actions</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {complaints.map((complaint) => (
+                  {(tabValue === 0 ? pendingComplaints : 
+                    tabValue === 1 ? assignedComplaints :
+                    tabValue === 2 ? completedComplaints :
+                    tabValue === 3 ? closedComplaints : complaints).map((complaint) => (
                     <TableRow key={complaint.id} hover>
                       <TableCell>#{complaint.id}</TableCell>
                       {!isMobile && <TableCell>{complaint.complaint_type}</TableCell>}
                       <TableCell>
-                        <Chip label={complaint.priority} sx={{ bgcolor: getPriorityColor(complaint.priority), color: 'white' }} />
+                        <Chip label={complaint.priority} sx={{ bgcolor: getPriorityColor(complaint.priority), color: 'white', size: 'small' }} />
                       </TableCell>
                       <TableCell>
-                        <Chip label={complaint.status} sx={{ bgcolor: getStatusColor(complaint.status), color: 'white' }} />
+                        <Box display="flex" alignItems="center" gap={0.5}>
+                          {getStatusIcon(complaint.status)}
+                          <Chip label={complaint.status} sx={{ bgcolor: getStatusColor(complaint.status), color: 'white' }} />
+                        </Box>
                       </TableCell>
                       {!isMobile && <TableCell>{complaint.assigned_to_name || 'Unassigned'}</TableCell>}
-                      {!isMobile && <TableCell>{formatDate(complaint.created_at)}</TableCell>}
+                      {!isMobile && <TableCell>{complaint.fill_level_before || 0}%</TableCell>}
+                      <TableCell>{formatDate(complaint.created_at)}</TableCell>
                       <TableCell>
                         {complaint.status === 'pending' && (
                           <Button size="small" startIcon={<AssignIcon />} onClick={() => { setSelectedComplaint(complaint); setActionType('assign'); }}>
@@ -255,7 +300,8 @@ const AdminDashboard = ({ token, user, setToken }) => {
           <Alert severity="info" sx={{ mt: 2 }}>
             This complaint has been completed by the tester.
             <br />
-            Waste reduced from {selectedComplaint?.fill_level_before}% to {selectedComplaint?.fill_level_after}%
+            <strong>Waste Reduction:</strong> {selectedComplaint?.fill_level_before}% → {selectedComplaint?.fill_level_after}% 
+            (Reduced by {selectedComplaint?.fill_level_before - selectedComplaint?.fill_level_after}%)
           </Alert>
         </DialogContent>
         <DialogActions>
