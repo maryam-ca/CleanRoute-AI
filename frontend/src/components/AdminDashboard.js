@@ -3,17 +3,18 @@ import {
   Box, Container, Paper, Typography, Grid, Card, CardContent,
   Table, TableBody, TableCell, TableContainer, TableHead, TableRow,
   Chip, Button, Dialog, DialogTitle, DialogContent, DialogActions,
-  Select, MenuItem, FormControl, InputLabel, CircularProgress,
-  Alert, AppBar, Toolbar, IconButton, useMediaQuery, useTheme,
-  Tabs, Tab
+  CircularProgress, Alert, Tab, Tabs, IconButton, Tooltip,
+  TextField, InputAdornment, MenuItem, Select, FormControl, InputLabel
 } from '@mui/material';
 import {
   Refresh as RefreshIcon,
   Assignment as AssignIcon,
   CheckCircle as CheckIcon,
-  Logout as LogoutIcon,
-  Dashboard as DashboardIcon,
-  AccessTime as TimeIcon,
+  Close as CloseIcon,
+  Search as SearchIcon,
+  Delete as DeleteIcon,
+  Visibility as ViewIcon,
+  Warning as WarningIcon,
   DoneAll as DoneAllIcon,
   Pending as PendingIcon
 } from '@mui/icons-material';
@@ -22,18 +23,19 @@ import api from '../services/api';
 
 const AdminDashboard = ({ token, user, setToken }) => {
   const [complaints, setComplaints] = useState([]);
-  const [testers, setTesters] = useState([]);
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [selectedComplaint, setSelectedComplaint] = useState(null);
-  const [selectedTester, setSelectedTester] = useState('');
-  const [actionType, setActionType] = useState('');
   const [tabValue, setTabValue] = useState(0);
-  const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+  const [selectedComplaint, setSelectedComplaint] = useState(null);
+  const [assignDialogOpen, setAssignDialogOpen] = useState(false);
+  const [closeDialogOpen, setCloseDialogOpen] = useState(false);
+  const [testers, setTesters] = useState([]);
+  const [selectedTester, setSelectedTester] = useState('');
+  const [searchTerm, setSearchTerm] = useState('');
 
   useEffect(() => {
     fetchData();
+    fetchTesters();
   }, []);
 
   const fetchData = async () => {
@@ -43,13 +45,20 @@ const AdminDashboard = ({ token, user, setToken }) => {
       setComplaints(Array.isArray(complaintsData) ? complaintsData : []);
       const statsData = await api.getDashboardStats();
       setStats(statsData);
-      const testersData = await api.getTesters();
-      setTesters(testersData);
     } catch (error) {
       console.error('Error fetching data:', error);
       toast.error('Failed to load data');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchTesters = async () => {
+    try {
+      const testersData = await api.getTesters();
+      setTesters(Array.isArray(testersData) ? testersData : []);
+    } catch (error) {
+      console.error('Error fetching testers:', error);
     }
   };
 
@@ -60,212 +69,210 @@ const AdminDashboard = ({ token, user, setToken }) => {
     }
     
     try {
-      const result = await api.assignToTester(selectedComplaint.id, selectedTester);
-      toast.success(`✅ Complaint #${selectedComplaint.id} assigned to ${selectedTester}`);
-      setSelectedComplaint(null);
+      await api.assignToTester(selectedComplaint.id, selectedTester);
+      toast.success(`Complaint #${selectedComplaint.id} assigned to ${selectedTester}`);
+      setAssignDialogOpen(false);
       setSelectedTester('');
-      setActionType('');
       fetchData();
     } catch (error) {
-      toast.error('Assignment failed');
+      toast.error('Failed to assign complaint');
     }
   };
 
   const handleCloseComplaint = async () => {
     try {
-      await api.updateStatus(selectedComplaint.id, 'closed');
-      toast.success(`✅ Complaint #${selectedComplaint.id} closed!`);
-      setSelectedComplaint(null);
-      setActionType('');
-      fetchData();
+      // Method 1: Using PATCH request
+      const response = await fetch(`http://127.0.0.1:8001/api/complaints/${selectedComplaint.id}/`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ status: 'closed' })
+      });
+      
+      if (response.ok) {
+        toast.success(`✅ Complaint #${selectedComplaint.id} closed successfully!`);
+        setCloseDialogOpen(false);
+        setSelectedComplaint(null);
+        fetchData();
+      } else {
+        // Method 2: Try using updateStatus API
+        try {
+          await api.updateStatus(selectedComplaint.id, 'closed');
+          toast.success(`✅ Complaint #${selectedComplaint.id} closed!`);
+          setCloseDialogOpen(false);
+          setSelectedComplaint(null);
+          fetchData();
+        } catch (err) {
+          throw new Error('Both methods failed');
+        }
+      }
     } catch (error) {
-      toast.error('Failed to close complaint');
+      console.error('Close error:', error);
+      toast.error('Failed to close complaint. Please try again.');
     }
   };
 
   const getStatusColor = (status) => {
     switch(status) {
-      case 'closed': return '#4CAF50';
-      case 'completed': return '#2196F3';
-      case 'assigned': return '#FF9800';
-      case 'pending': return '#F44336';
-      default: return '#9E9E9E';
-    }
-  };
-
-  const getStatusIcon = (status) => {
-    switch(status) {
-      case 'closed': return <DoneAllIcon sx={{ fontSize: 14 }} />;
-      case 'completed': return <CheckIcon sx={{ fontSize: 14 }} />;
-      case 'assigned': return <AssignIcon sx={{ fontSize: 14 }} />;
-      case 'pending': return <PendingIcon sx={{ fontSize: 14 }} />;
-      default: return null;
+      case 'closed': return '#6B7280';
+      case 'completed': return '#10B981';
+      case 'assigned': return '#3B82F6';
+      default: return '#F59E0B';
     }
   };
 
   const getPriorityColor = (priority) => {
     switch(priority) {
-      case 'urgent': return '#F44336';
-      case 'high': return '#FF9800';
-      case 'medium': return '#2196F3';
-      default: return '#4CAF50';
+      case 'urgent': return '#EF4444';
+      case 'high': return '#F59E0B';
+      case 'medium': return '#3B82F6';
+      default: return '#10B981';
     }
   };
 
-  const formatDate = (date) => {
-    if (!date) return 'N/A';
-    return new Date(date).toLocaleString();
-  };
-
-  // Filter complaints by status for tabs
-  const pendingComplaints = complaints.filter(c => c.status === 'pending');
-  const assignedComplaints = complaints.filter(c => c.status === 'assigned');
-  const completedComplaints = complaints.filter(c => c.status === 'completed');
-  const closedComplaints = complaints.filter(c => c.status === 'closed');
+  const filteredComplaints = complaints.filter(c => {
+    const matchesSearch = c.complaint_type?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                          c.description?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                          `#${c.id}`.includes(searchTerm);
+    
+    if (tabValue === 0) return matchesSearch && c.status !== 'closed' && c.status !== 'completed';
+    if (tabValue === 1) return matchesSearch && c.status === 'assigned';
+    if (tabValue === 2) return matchesSearch && c.status === 'completed';
+    if (tabValue === 3) return matchesSearch && c.status === 'closed';
+    return matchesSearch;
+  });
 
   return (
-    <Box sx={{ bgcolor: 'background.default', minHeight: '100vh' }}>
+    <Box sx={{ bgcolor: '#F1F8E9', minHeight: '100vh' }}>
       <Toaster position="top-right" />
       
-      <AppBar position="sticky" sx={{ bgcolor: '#1B5E20' }}>
-        <Toolbar>
-          <DashboardIcon sx={{ mr: 2 }} />
-          <Typography variant="h6" sx={{ flexGrow: 1, fontWeight: 700 }}>
-            Admin Dashboard
-          </Typography>
-          <IconButton color="inherit" onClick={() => { localStorage.clear(); setToken(null); }}>
-            <LogoutIcon />
-          </IconButton>
-        </Toolbar>
-      </AppBar>
+      <Box sx={{ bgcolor: '#1B5E20', color: 'white', py: 2, px: 4 }}>
+        <Container maxWidth="xl">
+          <Typography variant="h5" sx={{ fontWeight: 700 }}>Admin Dashboard</Typography>
+          <Typography variant="caption">Manage all complaints, assign to testers, and close completed tasks</Typography>
+        </Container>
+      </Box>
 
-      <Container maxWidth="xl" sx={{ py: { xs: 2, sm: 4 } }}>
+      <Container maxWidth="xl" sx={{ py: 4 }}>
         {/* Stats Cards */}
-        <Grid container spacing={{ xs: 2, sm: 3 }} sx={{ mb: 4 }}>
-          <Grid item xs={6} sm={6} md={2}>
-            <Card sx={{ bgcolor: '#2E7D32', color: 'white' }}>
+        <Grid container spacing={3} sx={{ mb: 4 }}>
+          <Grid item xs={6} sm={3}>
+            <Card sx={{ bgcolor: '#E8F5E9' }}>
               <CardContent>
-                <Typography variant="caption">Total</Typography>
-                <Typography variant="h4">{stats?.total_complaints || 0}</Typography>
+                <Typography variant="caption">Total Complaints</Typography>
+                <Typography variant="h4">{complaints.length}</Typography>
               </CardContent>
             </Card>
           </Grid>
-          <Grid item xs={6} sm={6} md={2}>
-            <Card sx={{ bgcolor: '#F44336', color: 'white' }}>
+          <Grid item xs={6} sm={3}>
+            <Card sx={{ bgcolor: '#FFF3E0' }}>
               <CardContent>
                 <Typography variant="caption">Pending</Typography>
-                <Typography variant="h4">{stats?.pending_complaints || 0}</Typography>
+                <Typography variant="h4">{complaints.filter(c => c.status === 'pending').length}</Typography>
               </CardContent>
             </Card>
           </Grid>
-          <Grid item xs={6} sm={6} md={2}>
-            <Card sx={{ bgcolor: '#FF9800', color: 'white' }}>
+          <Grid item xs={6} sm={3}>
+            <Card sx={{ bgcolor: '#E3F2FD' }}>
               <CardContent>
                 <Typography variant="caption">Assigned</Typography>
-                <Typography variant="h4">{stats?.assigned_complaints || 0}</Typography>
+                <Typography variant="h4">{complaints.filter(c => c.status === 'assigned').length}</Typography>
               </CardContent>
             </Card>
           </Grid>
-          <Grid item xs={6} sm={6} md={2}>
-            <Card sx={{ bgcolor: '#2196F3', color: 'white' }}>
+          <Grid item xs={6} sm={3}>
+            <Card sx={{ bgcolor: '#E8F5E9' }}>
               <CardContent>
-                <Typography variant="caption">Completed</Typography>
-                <Typography variant="h4">{stats?.completed_complaints || 0}</Typography>
-              </CardContent>
-            </Card>
-          </Grid>
-          <Grid item xs={6} sm={6} md={2}>
-            <Card sx={{ bgcolor: '#4CAF50', color: 'white' }}>
-              <CardContent>
-                <Typography variant="caption">Closed</Typography>
-                <Typography variant="h4">{stats?.closed_complaints || 0}</Typography>
-              </CardContent>
-            </Card>
-          </Grid>
-          <Grid item xs={6} sm={6} md={2}>
-            <Card sx={{ bgcolor: '#9C27B0', color: 'white' }}>
-              <CardContent>
-                <Typography variant="caption">Rate</Typography>
-                <Typography variant="h4">{stats?.resolution_rate || 0}%</Typography>
+                <Typography variant="caption">Completed/Closed</Typography>
+                <Typography variant="h4">{complaints.filter(c => c.status === 'completed' || c.status === 'closed').length}</Typography>
               </CardContent>
             </Card>
           </Grid>
         </Grid>
 
         {/* Tabs */}
-        <Paper sx={{ borderRadius: 4, mb: 3 }}>
-          <Tabs value={tabValue} onChange={(_, v) => setTabValue(v)} sx={{ px: 2, pt: 1 }} variant="scrollable" scrollButtons="auto">
-            <Tab label={`Pending (${pendingComplaints.length})`} />
-            <Tab label={`Assigned (${assignedComplaints.length})`} />
-            <Tab label={`Completed (${completedComplaints.length})`} />
-            <Tab label={`Closed (${closedComplaints.length})`} />
-            <Tab label={`All (${complaints.length})`} />
-          </Tabs>
-        </Paper>
-
-        {/* Complaints Table */}
         <Paper sx={{ borderRadius: 4, overflow: 'hidden' }}>
-          <Box sx={{ p: 3, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <Typography variant="h6">
-              {tabValue === 0 && 'Pending Complaints'}
-              {tabValue === 1 && 'Assigned Complaints'}
-              {tabValue === 2 && 'Completed Complaints (Ready for Closure)'}
-              {tabValue === 3 && 'Closed Complaints'}
-              {tabValue === 4 && 'All Complaints'}
-            </Typography>
+          <Box sx={{ borderBottom: 1, borderColor: 'divider', px: 2, pt: 2 }}>
+            <Tabs value={tabValue} onChange={(e, v) => setTabValue(v)}>
+              <Tab label={`Pending (${complaints.filter(c => c.status !== 'closed' && c.status !== 'completed').length})`} />
+              <Tab label={`Assigned (${complaints.filter(c => c.status === 'assigned').length})`} />
+              <Tab label={`Completed (${complaints.filter(c => c.status === 'completed').length})`} />
+              <Tab label={`Closed (${complaints.filter(c => c.status === 'closed').length})`} />
+            </Tabs>
+          </Box>
+          
+          <Box sx={{ p: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 2 }}>
+            <TextField
+              size="small"
+              placeholder="Search complaints..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              InputProps={{ startAdornment: <InputAdornment position="start"><SearchIcon /></InputAdornment> }}
+              sx={{ minWidth: 250 }}
+            />
             <Button startIcon={<RefreshIcon />} onClick={fetchData} variant="contained" sx={{ bgcolor: '#2E7D32' }}>
               Refresh
             </Button>
           </Box>
-          
+
           {loading ? (
             <Box sx={{ p: 4, textAlign: 'center' }}><CircularProgress sx={{ color: '#2E7D32' }} /></Box>
+          ) : filteredComplaints.length === 0 ? (
+            <Box sx={{ p: 4, textAlign: 'center' }}><Typography>No complaints found</Typography></Box>
           ) : (
             <TableContainer>
-              <Table size={isMobile ? "small" : "medium"}>
+              <Table>
                 <TableHead>
-                  <TableRow sx={{ bgcolor: 'action.hover' }}>
+                  <TableRow sx={{ bgcolor: '#E8F5E9' }}>
                     <TableCell>ID</TableCell>
-                    {!isMobile && <TableCell>Type</TableCell>}
+                    <TableCell>Type</TableCell>
                     <TableCell>Priority</TableCell>
                     <TableCell>Status</TableCell>
-                    {!isMobile && <TableCell>Assigned To</TableCell>}
-                    {!isMobile && <TableCell>Fill Level</TableCell>}
-                    <TableCell>Created</TableCell>
+                    <TableCell>Location</TableCell>
+                    <TableCell>Fill Level</TableCell>
                     <TableCell>Actions</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {(tabValue === 0 ? pendingComplaints : 
-                    tabValue === 1 ? assignedComplaints :
-                    tabValue === 2 ? completedComplaints :
-                    tabValue === 3 ? closedComplaints : complaints).map((complaint) => (
+                  {filteredComplaints.map((complaint) => (
                     <TableRow key={complaint.id} hover>
                       <TableCell>#{complaint.id}</TableCell>
-                      {!isMobile && <TableCell>{complaint.complaint_type}</TableCell>}
+                      <TableCell>{complaint.complaint_type}</TableCell>
                       <TableCell>
-                        <Chip label={complaint.priority} sx={{ bgcolor: getPriorityColor(complaint.priority), color: 'white', size: 'small' }} />
+                        <Chip label={complaint.priority} sx={{ bgcolor: getPriorityColor(complaint.priority), color: 'white', fontSize: '0.7rem' }} />
                       </TableCell>
                       <TableCell>
-                        <Box display="flex" alignItems="center" gap={0.5}>
-                          {getStatusIcon(complaint.status)}
-                          <Chip label={complaint.status} sx={{ bgcolor: getStatusColor(complaint.status), color: 'white' }} />
+                        <Chip label={complaint.status} sx={{ bgcolor: getStatusColor(complaint.status), color: 'white', fontSize: '0.7rem' }} />
+                      </TableCell>
+                      <TableCell>
+                        <Typography variant="caption" sx={{ fontFamily: 'monospace' }}>
+                          {complaint.latitude?.toFixed(4)}, {complaint.longitude?.toFixed(4)}
+                        </Typography>
+                      </TableCell>
+                      <TableCell>
+                        <Chip label={`${complaint.fill_level_before || 0}%`} size="small" />
+                        {complaint.fill_level_after && (
+                          <Typography variant="caption" display="block">→ {complaint.fill_level_after}%</Typography>
+                        )}
+                      </TableCell>
+                      <TableCell>
+                        <Box display="flex" gap={1}>
+                          {complaint.status === 'pending' && (
+                            <Button size="small" variant="contained" startIcon={<AssignIcon />} onClick={() => { setSelectedComplaint(complaint); setAssignDialogOpen(true); }} sx={{ bgcolor: '#FF9800' }}>
+                              Assign
+                            </Button>
+                          )}
+                          {complaint.status === 'completed' && (
+                            <Button size="small" variant="contained" startIcon={<CloseIcon />} onClick={() => { setSelectedComplaint(complaint); setCloseDialogOpen(true); }} sx={{ bgcolor: '#4CAF50' }}>
+                              Close
+                            </Button>
+                          )}
+                          {complaint.status === 'closed' && (
+                            <Chip label="Closed" size="small" sx={{ bgcolor: '#6B7280', color: 'white' }} />
+                          )}
                         </Box>
-                      </TableCell>
-                      {!isMobile && <TableCell>{complaint.assigned_to_name || 'Unassigned'}</TableCell>}
-                      {!isMobile && <TableCell>{complaint.fill_level_before || 0}%</TableCell>}
-                      <TableCell>{formatDate(complaint.created_at)}</TableCell>
-                      <TableCell>
-                        {complaint.status === 'pending' && (
-                          <Button size="small" startIcon={<AssignIcon />} onClick={() => { setSelectedComplaint(complaint); setActionType('assign'); }}>
-                            Assign
-                          </Button>
-                        )}
-                        {complaint.status === 'completed' && (
-                          <Button size="small" startIcon={<CheckIcon />} onClick={() => { setSelectedComplaint(complaint); setActionType('close'); }}>
-                            Close
-                          </Button>
-                        )}
                       </TableCell>
                     </TableRow>
                   ))}
@@ -277,36 +284,45 @@ const AdminDashboard = ({ token, user, setToken }) => {
       </Container>
 
       {/* Assign Dialog */}
-      <Dialog open={actionType === 'assign' && selectedComplaint} onClose={() => setActionType('')}>
+      <Dialog open={assignDialogOpen} onClose={() => setAssignDialogOpen(false)} maxWidth="sm" fullWidth>
         <DialogTitle>Assign Complaint #{selectedComplaint?.id}</DialogTitle>
         <DialogContent>
           <FormControl fullWidth sx={{ mt: 2 }}>
             <InputLabel>Select Tester</InputLabel>
-            <Select value={selectedTester} onChange={(e) => setSelectedTester(e.target.value)}>
-              {testers.map(t => <MenuItem key={t.id} value={t.username}>{t.username}</MenuItem>)}
+            <Select value={selectedTester} onChange={(e) => setSelectedTester(e.target.value)} label="Select Tester">
+              {testers.map(tester => (
+                <MenuItem key={tester.id} value={tester.username}>{tester.username}</MenuItem>
+              ))}
             </Select>
           </FormControl>
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setActionType('')}>Cancel</Button>
-          <Button onClick={handleAssign} variant="contained" sx={{ bgcolor: '#2E7D32' }}>Assign</Button>
+          <Button onClick={() => setAssignDialogOpen(false)}>Cancel</Button>
+          <Button onClick={handleAssign} variant="contained" sx={{ bgcolor: '#FF9800' }}>Assign</Button>
         </DialogActions>
       </Dialog>
 
       {/* Close Dialog */}
-      <Dialog open={actionType === 'close' && selectedComplaint} onClose={() => setActionType('')}>
+      <Dialog open={closeDialogOpen} onClose={() => setCloseDialogOpen(false)} maxWidth="sm" fullWidth>
         <DialogTitle>Close Complaint #{selectedComplaint?.id}</DialogTitle>
         <DialogContent>
           <Alert severity="info" sx={{ mt: 2 }}>
-            This complaint has been completed by the tester.
-            <br />
-            <strong>Waste Reduction:</strong> {selectedComplaint?.fill_level_before}% → {selectedComplaint?.fill_level_after}% 
-            (Reduced by {selectedComplaint?.fill_level_before - selectedComplaint?.fill_level_after}%)
+            <strong>Complaint Details:</strong><br />
+            Type: {selectedComplaint?.complaint_type}<br />
+            Priority: {selectedComplaint?.priority}<br />
+            Fill Level Before: {selectedComplaint?.fill_level_before}%<br />
+            Fill Level After: {selectedComplaint?.fill_level_after}%<br />
+            Reduction: {(selectedComplaint?.fill_level_before - selectedComplaint?.fill_level_after)}%
           </Alert>
+          <Typography sx={{ mt: 2 }}>
+            Are you sure you want to close this complaint? This action cannot be undone.
+          </Typography>
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setActionType('')}>Cancel</Button>
-          <Button onClick={handleCloseComplaint} variant="contained" sx={{ bgcolor: '#2E7D32' }}>Close Complaint</Button>
+          <Button onClick={() => setCloseDialogOpen(false)}>Cancel</Button>
+          <Button onClick={handleCloseComplaint} variant="contained" sx={{ bgcolor: '#4CAF50' }} startIcon={<CloseIcon />}>
+            Confirm Close
+          </Button>
         </DialogActions>
       </Dialog>
     </Box>
