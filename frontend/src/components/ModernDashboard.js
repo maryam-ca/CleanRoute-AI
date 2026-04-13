@@ -68,7 +68,7 @@ const ModernDashboard = ({ token, user, setToken }) => {
     { name: 'Spillage', value: 25, color: '#3B82F6' },
     { name: 'Missed', value: 20, color: '#EF4444' },
     { name: 'Illegal', value: 12, color: '#8B5CF6' },
-    { name: 'Other', value: 8, color: '#10B981' },
+    { name: 'Other', value: 8, color: '#7C3AED' },
   ];
 
   const StatCard = ({ title, value, icon, color, delay }) => (
@@ -113,13 +113,13 @@ const ModernDashboard = ({ token, user, setToken }) => {
       case 'urgent': return '#EF4444';
       case 'high': return '#F59E0B';
       case 'medium': return '#3B82F6';
-      default: return '#10B981';
+      default: return '#7C3AED';
     }
   };
 
   const getStatusIcon = (status) => {
     switch(status) {
-      case 'completed': return <CheckIcon sx={{ fontSize: 14, color: '#10B981' }} />;
+      case 'completed': return <CheckIcon sx={{ fontSize: 14, color: '#7C3AED' }} />;
       case 'assigned': return <PendingIcon sx={{ fontSize: 14, color: '#F59E0B' }} />;
       default: return <WarningIcon sx={{ fontSize: 14, color: '#EF4444' }} />;
     }
@@ -136,7 +136,7 @@ const ModernDashboard = ({ token, user, setToken }) => {
       
       {/* Hero Section */}
       <Box sx={{ 
-        background: 'linear-gradient(135deg, #10B981 0%, #059669 100%)',
+        background: 'linear-gradient(135deg, #7C3AED 0%, #5B21B6 100%)',
         color: 'white',
         pt: 6,
         pb: 8,
@@ -165,7 +165,7 @@ const ModernDashboard = ({ token, user, setToken }) => {
         {/* Stats Grid */}
         <Grid container spacing={3} sx={{ mb: 4 }}>
           <Grid item xs={12} sm={6} md={3}>
-            <StatCard title="TOTAL COMPLAINTS" value={stats?.total_complaints || 0} icon={<CleanIcon />} color="#10B981" delay={0} />
+            <StatCard title="TOTAL COMPLAINTS" value={stats?.total_complaints || 0} icon={<CleanIcon />} color="#7C3AED" delay={0} />
           </Grid>
           <Grid item xs={12} sm={6} md={3}>
             <StatCard title="PENDING" value={stats?.pending_complaints || 0} icon={<PendingIcon />} color="#F59E0B" delay={1} />
@@ -191,8 +191,8 @@ const ModernDashboard = ({ token, user, setToken }) => {
                     <AreaChart data={trendData}>
                       <defs>
                         <linearGradient id="complaintGradient" x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="5%" stopColor="#10B981" stopOpacity={0.3}/>
-                          <stop offset="95%" stopColor="#10B981" stopOpacity={0}/>
+                          <stop offset="5%" stopColor="#7C3AED" stopOpacity={0.3}/>
+                          <stop offset="95%" stopColor="#7C3AED" stopOpacity={0}/>
                         </linearGradient>
                       </defs>
                       <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" />
@@ -200,7 +200,7 @@ const ModernDashboard = ({ token, user, setToken }) => {
                       <YAxis stroke="#9CA3AF" />
                       <ReTooltip contentStyle={{ borderRadius: 12, border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }} />
                       <Legend />
-                      <Area type="monotone" dataKey="complaints" stroke="#10B981" strokeWidth={2} fill="url(#complaintGradient)" name="New Complaints" />
+                      <Area type="monotone" dataKey="complaints" stroke="#7C3AED" strokeWidth={2} fill="url(#complaintGradient)" name="New Complaints" />
                       <Area type="monotone" dataKey="resolved" stroke="#3B82F6" strokeWidth={2} fill="none" name="Resolved" />
                     </AreaChart>
                   </ResponsiveContainer>
@@ -255,7 +255,7 @@ const ModernDashboard = ({ token, user, setToken }) => {
                     startIcon={<RefreshIcon />} 
                     onClick={fetchData} 
                     disabled={loading}
-                    sx={{ background: 'linear-gradient(135deg, #10B981 0%, #059669 100%)' }}
+                    sx={{ background: 'linear-gradient(135deg, #7C3AED 0%, #5B21B6 100%)' }}
                   >
                     Refresh
                   </Button>
@@ -264,7 +264,7 @@ const ModernDashboard = ({ token, user, setToken }) => {
 
               {loading ? (
                 <Box sx={{ py: 8, textAlign: 'center' }}>
-                  <CircularProgress sx={{ color: '#10B981' }} />
+                  <CircularProgress sx={{ color: '#7C3AED' }} />
                   <Typography sx={{ mt: 2, color: 'text.secondary' }}>Loading complaints...</Typography>
                 </Box>
               ) : complaints.length === 0 ? (
@@ -295,7 +295,7 @@ const ModernDashboard = ({ token, user, setToken }) => {
                         >
                           <TableCell>#{complaint.id}</TableCell>
                           <TableCell>
-                            <Chip label={complaint.complaint_type} size="small" sx={{ bgcolor: '#E8F5E9', color: '#059669' }} />
+                            <Chip label={complaint.complaint_type} size="small" sx={{ bgcolor: '#EDE9FE', color: '#5B21B6' }} />
                           </TableCell>
                           <TableCell>
                             <Chip label={complaint.priority} size="small" sx={{ bgcolor: getPriorityColor(complaint.priority), color: 'white' }} />
@@ -331,3 +331,4 @@ const ModernDashboard = ({ token, user, setToken }) => {
 };
 
 export default ModernDashboard;
+
