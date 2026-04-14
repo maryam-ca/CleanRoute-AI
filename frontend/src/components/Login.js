@@ -120,7 +120,7 @@ const Login = ({ setToken }) => {
 
             <Box mt={3} textAlign="center">
               <Typography variant="caption" color="textSecondary">
-                Demo: citizen / citizen123 | admin / admin123 | tester / tester123
+                Demo: citizen1 / citizen123 | admin / admin123 | tester1 / tester123
               </Typography>
             </Box>
           </Paper>
