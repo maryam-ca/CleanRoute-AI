@@ -23,7 +23,7 @@ def optimize_routes(request):
             )
         elif area == 'Attock':
             complaints = complaints.filter(
-                latitude__gte=33.75, latitude__lte=33.80,
+                latitude__gte=33.80, latitude__lte=33.82,
                 longitude__gte=72.35, longitude__lte=72.42
             )
         
@@ -98,3 +98,5 @@ def optimize_routes(request):
             'error': str(e),
             'message': 'Failed to optimize routes'
         }, status=500)
+
+
