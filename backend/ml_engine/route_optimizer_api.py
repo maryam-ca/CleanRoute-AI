@@ -2,6 +2,8 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from complaints.models import Complaint
+import numpy as np
+from sklearn.cluster import KMeans
 import json
 
 @api_view(['POST'])
@@ -10,33 +12,83 @@ def optimize_routes(request):
     try:
         area = request.data.get('area', 'Islamabad')
         
-        # Simple response with sample data
-        if area == 'Islamabad':
-            routes = [
-                {'route_id': 'R001', 'total_complaints': 12, 'high_priority': 4, 'distance': '14.4 km', 'estimated_time': '60 min'},
-                {'route_id': 'R002', 'total_complaints': 10, 'high_priority': 3, 'distance': '12.0 km', 'estimated_time': '50 min'},
-                {'route_id': 'R003', 'total_complaints': 8, 'high_priority': 2, 'distance': '9.6 km', 'estimated_time': '40 min'},
-                {'route_id': 'R004', 'total_complaints': 7, 'high_priority': 1, 'distance': '8.4 km', 'estimated_time': '35 min'},
-                {'route_id': 'R005', 'total_complaints': 6, 'high_priority': 2, 'distance': '7.2 km', 'estimated_time': '30 min'},
-            ]
-        elif area == 'Attock':
-            routes = [
-                {'route_id': 'A001', 'total_complaints': 8, 'high_priority': 2, 'distance': '6.4 km', 'estimated_time': '40 min'},
-                {'route_id': 'A002', 'total_complaints': 6, 'high_priority': 1, 'distance': '4.8 km', 'estimated_time': '30 min'},
-                {'route_id': 'A003', 'total_complaints': 5, 'high_priority': 1, 'distance': '4.0 km', 'estimated_time': '25 min'},
-            ]
-        else:
-            routes = [
-                {'route_id': 'R001', 'total_complaints': 10, 'high_priority': 3, 'distance': '12.0 km', 'estimated_time': '50 min'},
-                {'route_id': 'R002', 'total_complaints': 8, 'high_priority': 2, 'distance': '9.6 km', 'estimated_time': '40 min'},
-            ]
+        # Get REAL complaints from database
+        complaints = Complaint.objects.filter(status__in=['pending', 'assigned'])
         
+        # Filter by area coordinates
+        if area == 'Islamabad':
+            complaints = complaints.filter(
+                latitude__gte=33.5, latitude__lte=33.9,
+                longitude__gte=72.8, longitude__lte=73.3
+            )
+        elif area == 'Attock':
+            complaints = complaints.filter(
+                latitude__gte=33.75, latitude__lte=33.80,
+                longitude__gte=72.35, longitude__lte=72.42
+            )
+        
+        total = complaints.count()
+        
+        if total == 0:
+            return Response({
+                'success': True,
+                'total_complaints': 0,
+                'total_clusters': 0,
+                'routes': [],
+                'complaints': [],
+                'time_saved': 25
+            })
+        
+        # Extract coordinates and complaint data
+        coords = []
+        complaint_data = []
+        for c in complaints:
+            coords.append([float(c.latitude), float(c.longitude)])
+            complaint_data.append({
+                'id': c.id,
+                'latitude': float(c.latitude),
+                'longitude': float(c.longitude),
+                'priority': c.priority,
+                'complaint_type': c.complaint_type,
+                'status': c.status,
+                'address': c.description[:50] if c.description else 'No address'
+            })
+        
+        coords = np.array(coords)
+        
+        # Determine number of clusters
+        n_clusters = min(5, total)
+        if n_clusters < 2:
+            n_clusters = 1
+        
+        # Apply K-Means clustering
+        kmeans = KMeans(n_clusters=n_clusters, random_state=42, n_init=10)
+        labels = kmeans.fit_predict(coords)
+        
+        # Build routes with real data
+        routes = []
+        for i in range(n_clusters):
+            cluster_indices = [j for j in range(total) if labels[j] == i]
+            route_complaints = len(cluster_indices)
+            high_priority = sum(1 for j in cluster_indices if complaint_data[j]['priority'] in ['high', 'urgent'])
+            
+            routes.append({
+                'cluster_id': i,
+                'route_id': f'R00{i+1}',
+                'total_complaints': route_complaints,
+                'high_priority': high_priority,
+                'distance': f'{route_complaints * 1.2:.1f} km',
+                'estimated_time': f'{route_complaints * 5} min'
+            })
+        
+        # Return real complaints for map
         return Response({
             'success': True,
             'area': area,
-            'total_complaints': sum(r['total_complaints'] for r in routes),
-            'total_clusters': len(routes),
+            'total_complaints': total,
+            'total_clusters': n_clusters,
             'routes': routes,
+            'complaints': complaint_data,
             'time_saved': 25
         })
         
