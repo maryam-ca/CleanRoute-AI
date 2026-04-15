@@ -39,13 +39,13 @@ const LiveRealTimeMap = ({ token, user }) => {
   const [tracking, setTracking] = useState(false);
   const [ws, setWs] = useState(null);
 
-  const API_BASE_URL = 'http://127.0.0.1:8001/api/';
+  const API_BASE_URL = 'https://cleanroute-ai.onrender.com/api/';
 
   useEffect(() => {
     fetchComplaints();
     
     // Connect WebSocket for real-time updates
-    const socket = new WebSocket(`ws://127.0.0.1:8001/ws/complaints/`);
+    const socket = new WebSocket(`wss://cleanroute-ai.onrender.com/ws/complaints/`);
     
     socket.onopen = () => {
       setIsConnected(true);
@@ -238,3 +238,4 @@ const LiveRealTimeMap = ({ token, user }) => {
 };
 
 export default LiveRealTimeMap;
+

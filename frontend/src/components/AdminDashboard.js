@@ -82,7 +82,7 @@ const AdminDashboard = ({ token, user, setToken }) => {
   const handleCloseComplaint = async () => {
     try {
       // Method 1: Using PATCH request
-      const response = await fetch(`http://127.0.0.1:8001/api/complaints/${selectedComplaint.id}/`, {
+      const response = await fetch(`https://cleanroute-ai.onrender.com/api/complaints/${selectedComplaint.id}/`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
@@ -330,3 +330,4 @@ const AdminDashboard = ({ token, user, setToken }) => {
 };
 
 export default AdminDashboard;
+

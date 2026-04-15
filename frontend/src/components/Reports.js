@@ -21,7 +21,7 @@ const Reports = ({ token, user, setToken }) => {
   const [loading, setLoading] = useState(true);
   const [exporting, setExporting] = useState(false);
 
-  const API_BASE_URL = 'http://127.0.0.1:8001/api/';
+  const API_BASE_URL = 'https://cleanroute-ai.onrender.com/api/';
 
   useEffect(() => {
     fetchData();
@@ -252,3 +252,4 @@ const Reports = ({ token, user, setToken }) => {
 };
 
 export default Reports;
+
