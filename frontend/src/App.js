@@ -51,7 +51,7 @@ const AppContent = () => {
             <Route path="/submit" element={<ComplaintForm token={token} user={user} setToken={setToken} />} />
             <Route path="/routes" element={<RouteOptimizer token={token} user={user} setToken={setToken} />} />
             <Route path="/complaint-map" element={<ComplaintMap token={token} user={user} setToken={setToken} />} />
-            <Route path="/anomalies" element={<AnomalyHotspotMap token={token} user={user} setToken={setToken} />} />
+            <Route path="/anomalies" element={<AnomalyMap token={token} user={user} setToken={setToken} />} />
             <Route path="/map" element={<RealTimeMap token={token} user={user} setToken={setToken} />} />
             <Route path="/predict" element={<WastePrediction token={token} user={user} setToken={setToken} />} />
             <Route path="/reports" element={<Reports token={token} user={user} setToken={setToken} />} />
@@ -74,4 +74,5 @@ function App() {
 }
 
 export default App;
+
 

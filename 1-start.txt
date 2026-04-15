@@ -933,6 +933,15 @@ CleanRoute-AI - AI/ML Complete Analysis
 3	Route Optimization	K-Means Clustering	
 4	Waste Prediction	Linear Regression	
 5	Anomaly Detection	Isolation Forest	
+
+COMPLETED ALL ABOVE 5 MODELS  
+
+
+
+
+
+
+FUTURE PLAN FOR ADDITIONAL MODELS
 6	LSTM Deep Learning	Bidirectional LSTM (3 layers)	
 7	Image Segmentation	U-Net Style	
 8	Vehicle Tracking	Kalman Filter	

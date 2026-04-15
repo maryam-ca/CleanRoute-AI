@@ -1,13 +1,9 @@
 import React, { useState } from 'react';
-import {
-  WarningIcon,
-  AppBar, Toolbar, Typography, Button, IconButton, Menu, MenuItem,
+import { AppBar, Toolbar, Typography, Button, IconButton, Menu, MenuItem,
   Avatar, Box, Container, Chip, useTheme, Drawer, List, ListItem,
   ListItemIcon, ListItemText, useMediaQuery
 } from '@mui/material';
-import {
-  WarningIcon,
-  Dashboard as DashboardIcon,
+import { Dashboard as DashboardIcon,
   Add as AddIcon,
   Map as RouteIcon,
   LocationOn as MapLocationIcon,
@@ -22,8 +18,7 @@ import {
   Assignment as TaskIcon,
   Warning as WarningIcon
 } from '@mui/icons-material';
-import {
-  WarningIcon, useColorMode } from '../ThemeContext';
+import { useColorMode } from '../ThemeContext';
 
 const Navigation = ({ user, setToken }) => {
   const [anchorEl, setAnchorEl] = useState(null);
@@ -172,4 +167,5 @@ const Navigation = ({ user, setToken }) => {
 };
 
 export default Navigation;
+
 
