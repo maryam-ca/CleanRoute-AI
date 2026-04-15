@@ -2,6 +2,8 @@
 
 ## Project Overview
 
+
+
 **Problem Statement:**  
 Inefficient waste collection routes lead to increased operational costs, environmental pollution, and poor service quality in urban areas. This project develops an AI-powered system to optimize waste collection routes, predict waste generation, and classify complaints for better resource allocation.
 
