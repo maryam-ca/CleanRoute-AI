@@ -18,8 +18,9 @@ urlpatterns = [
     path('api/', include('complaints.urls')),
     path('api/', include('users.urls')),
     path('api/', include('ml_engine.waste_prediction_api')),
-    path('api/optimize-routes/', include('ml_engine.route_optimizer_api')),
+    path('api/optimize-routes/', include('ml_engine.urls')),
 ]
 
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+

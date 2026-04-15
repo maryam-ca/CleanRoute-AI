@@ -3,7 +3,6 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from complaints.models import Complaint
 import json
-import random
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
@@ -11,7 +10,7 @@ def optimize_routes(request):
     try:
         area = request.data.get('area', 'Islamabad')
         
-        # Simple response without numpy/sklearn for now
+        # Simple response with sample data
         if area == 'Islamabad':
             routes = [
                 {'route_id': 'R001', 'total_complaints': 12, 'high_priority': 4, 'distance': '14.4 km', 'estimated_time': '60 min'},
