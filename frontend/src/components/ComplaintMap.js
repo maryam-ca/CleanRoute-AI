@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import {
   Box, Container, Paper, Typography, Button, Grid, Card, CardContent,
-  Chip, CircularProgress, FormControl, InputLabel, Select, MenuItem
+  Chip, CircularProgress, FormControl, InputLabel, Select, MenuItem, Alert
 } from '@mui/material';
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import L from 'leaflet';
@@ -16,32 +16,18 @@ L.Icon.Default.mergeOptions({
   shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
 });
 
-const getMarkerIcon = (priority) => {
-  let color = 'green';
-  if (priority === 'urgent') color = 'red';
-  else if (priority === 'high') color = 'orange';
-  else if (priority === 'medium') color = 'blue';
-  
-  return new L.Icon({
-    iconUrl: `https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-${color}.png`,
-    shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
-    iconSize: [25, 41],
-    iconAnchor: [12, 41],
-    popupAnchor: [1, -34],
-    shadowSize: [41, 41]
-  });
-};
-
 const ComplaintMap = ({ token, user }) => {
   const [area, setArea] = useState('Attock');
   const [loading, setLoading] = useState(false);
   const [complaints, setComplaints] = useState([]);
-  const [stats, setStats] = useState(null);
+  const [error, setError] = useState(null);
 
   const areas = ['Attock', 'Islamabad'];
 
-  const fetchComplaints = async () => {
+  const loadComplaints = async () => {
     setLoading(true);
+    setError(null);
+    
     const apiToken = localStorage.getItem('token');
     
     try {
@@ -55,15 +41,15 @@ const ComplaintMap = ({ token, user }) => {
       });
       
       const data = await response.json();
+      
       if (data.success) {
         setComplaints(data.complaints || []);
-        setStats({
-          total: data.total_complaints,
-          routes: data.total_clusters
-        });
-        toast.success(`Loaded ${data.total_complaints} complaints in ${area}`);
+        toast.success(`Loaded ${data.complaints?.length || 0} complaints in ${area}`);
+      } else {
+        setError('No complaints found');
       }
     } catch (err) {
+      setError(err.message);
       toast.error('Failed to load complaints');
     } finally {
       setLoading(false);
@@ -71,12 +57,19 @@ const ComplaintMap = ({ token, user }) => {
   };
 
   useEffect(() => {
-    fetchComplaints();
+    loadComplaints();
   }, []);
 
   const getMapCenter = () => {
     if (area === 'Attock') return [33.7667, 72.3667];
     return [33.6844, 73.0479];
+  };
+
+  const getMarkerColor = (priority) => {
+    if (priority === 'urgent') return 'red';
+    if (priority === 'high') return 'orange';
+    if (priority === 'medium') return 'blue';
+    return 'green';
   };
 
   return (
@@ -85,8 +78,8 @@ const ComplaintMap = ({ token, user }) => {
       
       <Box sx={{ bgcolor: '#F97316', color: 'white', py: 2, px: 4 }}>
         <Container maxWidth="xl">
-          <Typography variant="h5" sx={{ fontWeight: 700 }}>Complaint Locations Map</Typography>
-          <Typography variant="caption">Real-time complaint locations from citizens</Typography>
+          <Typography variant="h5" sx={{ fontWeight: 700 }}>🗺️ Complaint Locations Map</Typography>
+          <Typography variant="caption">Real complaint locations submitted by citizens</Typography>
         </Container>
       </Box>
 
@@ -107,12 +100,14 @@ const ComplaintMap = ({ token, user }) => {
                 <Button
                   fullWidth
                   variant="contained"
-                  onClick={fetchComplaints}
+                  onClick={loadComplaints}
                   disabled={loading}
                   sx={{ bgcolor: '#F97316' }}
                 >
                   {loading ? <CircularProgress size={24} /> : 'Load Complaints'}
                 </Button>
+                
+                {error && <Alert severity="error" sx={{ mt: 2 }}>{error}</Alert>}
               </CardContent>
             </Card>
           </Grid>
@@ -121,7 +116,7 @@ const ComplaintMap = ({ token, user }) => {
             <Card sx={{ borderRadius: 4, overflow: 'hidden' }}>
               <CardContent>
                 <Typography variant="h6" sx={{ fontWeight: 700, mb: 2 }}>
-                  🗺️ Complaint Locations ({complaints.length})
+                  📍 Complaint Locations ({complaints.length})
                 </Typography>
                 
                 {loading ? (
@@ -148,7 +143,6 @@ const ComplaintMap = ({ token, user }) => {
                         <Marker
                           key={complaint.id}
                           position={[complaint.latitude, complaint.longitude]}
-                          icon={getMarkerIcon(complaint.priority)}
                         >
                           <Popup>
                             <Box sx={{ minWidth: 200 }}>
