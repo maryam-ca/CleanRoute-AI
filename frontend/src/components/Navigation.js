@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 import {
+  MapIcon,
   AppBar, Toolbar, Typography, Button, IconButton, Menu, MenuItem,
   Avatar, Box, Container, Chip, useTheme, Drawer, List, ListItem, ListItemIcon, ListItemText, useMediaQuery
 } from '@mui/material';
 import {
+  MapIcon,
   Dashboard as DashboardIcon,
   Add as AddIcon,
   Map as MapIcon,
@@ -18,7 +20,8 @@ import {
   Menu as MenuIcon,
   Assignment as TaskIcon
 } from '@mui/icons-material';
-import { useColorMode } from '../ThemeContext';
+import {
+  MapIcon, useColorMode } from '../ThemeContext';
 
 const Navigation = ({ user, setToken }) => {
   const [anchorEl, setAnchorEl] = useState(null);
@@ -48,6 +51,7 @@ const Navigation = ({ user, setToken }) => {
   const isTester = user === 'tester1' || user === 'tester2' || user === 'tester' || user?.startsWith('tester');
 
   const navItems = [
+    { path: '/complaint-map', label: 'Complaint Map', icon: <MapIcon />, show: true },
     { path: '/', label: 'Dashboard', icon: <DashboardIcon />, show: true },
     { path: '/submit', label: 'New Complaint', icon: <AddIcon />, show: true },
     { path: '/routes', label: 'Route Optimizer', icon: <MapIcon />, show: true },
@@ -162,6 +166,7 @@ const Navigation = ({ user, setToken }) => {
 };
 
 export default Navigation;
+
 
 
 
