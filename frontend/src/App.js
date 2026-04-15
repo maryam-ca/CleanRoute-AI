@@ -15,7 +15,7 @@ import AdminDashboard from './components/AdminDashboard';
 import TesterDashboard from './components/TesterDashboard';
 import RealTimeMap from './components/RealTimeMap';
 import ComplaintMap from './components/ComplaintMap';
-import AnomalyHotspotMap from './components/AnomalyHotspotMap';
+import AnomalyMap from './components/AnomalyMap';
 import Login from './components/Login';
 
 const AppContent = () => {
@@ -74,3 +74,4 @@ function App() {
 }
 
 export default App;
+

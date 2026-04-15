@@ -9,6 +9,7 @@ from rest_framework_simplejwt.views import (
 )
 
 urlpatterns = [
+    path('api/anomalies/', include('complaints.anomaly_views')),
     path('api/analyze-image/', include('complaints.image_analysis_views')),
     path('admin/', admin.site.urls),
     # JWT Authentication endpoints
@@ -24,5 +25,6 @@ urlpatterns = [
 
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
 
 

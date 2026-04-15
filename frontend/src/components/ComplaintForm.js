@@ -15,15 +15,17 @@ const ComplaintForm = ({ token, user, setToken }) => {
   const [activeStep, setActiveStep] = useState(0);
   const [loading, setLoading] = useState(false);
   const [mlResult, setMlResult] = useState(null);
+  const [analyzing, setAnalyzing] = useState(false);
   const [formData, setFormData] = useState({
     complaint_type: 'overflowing',
     latitude: '',
     longitude: '',
     description: '',
     image: null,
-    imagePreview: null
+    imagePreview: null,
+    priority: 'medium',
+    fill_level_before: 50
   });
-  const [aiResult, setAiResult] = useState(null);
 
   const steps = ['Complaint Type', 'Location', 'Photo & Description', 'Review'];
 
@@ -51,36 +53,40 @@ const ComplaintForm = ({ token, user, setToken }) => {
   const handleImageChange = async (e) => {
     const file = e.target.files[0];
     if (file) {
-      setFormData({ ...formData, image: file, imagePreview: URL.createObjectURL(file) });
-      
-      // Call API to analyze image
-      const formDataImg = new FormData();
-      formDataImg.append("image", file);
-      
-      try {
-        const token = localStorage.getItem("token");
-        const response = await fetch("https://cleanroute-ai.onrender.com/api/analyze-image/", {
-          method: "POST",
-          headers: { "Authorization": `Bearer ${token}` },
-          body: formDataImg
-        });
-        const result = await response.json();
-        if (result.success) {
-          setMlResult(result);
-          setFormData(prev => ({ ...prev, priority: result.priority, fill_level_before: result.fill_level }));
-        }
-      } catch (error) {
-        console.error("ML Analysis error:", error);
-      }
-    }
-  };
-    const file = e.target.files[0];
-    if (file) {
       setFormData({
         ...formData,
         image: file,
         imagePreview: URL.createObjectURL(file)
       });
+      
+      // Analyze image with ML
+      setAnalyzing(true);
+      const imgFormData = new FormData();
+      imgFormData.append('image', file);
+      
+      try {
+        const token = localStorage.getItem('token');
+        const response = await fetch('https://cleanroute-ai.onrender.com/api/analyze-image/', {
+          method: 'POST',
+          headers: { 'Authorization': `Bearer ${token}` },
+          body: imgFormData
+        });
+        const result = await response.json();
+        if (result.success) {
+          setMlResult(result);
+          setFormData(prev => ({ 
+            ...prev, 
+            priority: result.priority, 
+            fill_level_before: result.fill_level 
+          }));
+          toast.success(`AI detected: ${result.fill_level}% fill level - ${result.priority.toUpperCase()} priority`);
+        }
+      } catch (error) {
+        console.error('ML Analysis error:', error);
+        toast.error('AI analysis failed');
+      } finally {
+        setAnalyzing(false);
+      }
     }
   };
 
@@ -92,6 +98,8 @@ const ComplaintForm = ({ token, user, setToken }) => {
     submitData.append('latitude', formData.latitude);
     submitData.append('longitude', formData.longitude);
     submitData.append('description', formData.description);
+    submitData.append('priority', formData.priority);
+    submitData.append('fill_level_before', formData.fill_level_before);
     if (formData.image) {
       submitData.append('image', formData.image);
     }
@@ -111,6 +119,15 @@ const ComplaintForm = ({ token, user, setToken }) => {
       toast.error('Failed to submit complaint');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const getPriorityColor = (priority) => {
+    switch(priority) {
+      case 'urgent': return '#EF4444';
+      case 'high': return '#F97316';
+      case 'medium': return '#3B82F6';
+      default: return '#22C55E';
     }
   };
 
@@ -184,40 +201,49 @@ const ComplaintForm = ({ token, user, setToken }) => {
                 Upload Photo
               </Button>
             </label>
-            {formData.mlResult && (
-    <Alert severity="info" sx={{ mt: 2, mb: 2 }}>
-      <Typography variant="subtitle2">🤖 AI Detection Results:</Typography>
-      <Box display="flex" gap={2} mt={1}>
-        <Chip 
-          label={`Fill Level: ${mlResult.fill_level || 0}%`}
-          sx={{ bgcolor: mlResult.fill_level > 80 ? "#EF4444" : mlResult.fill_level > 60 ? "#F97316" : mlResult.fill_level > 30 ? "#3B82F6" : "#22C55E", color: "white" }}
-        />
-        <Chip 
-          label={`Priority: ${(mlResult.priority || "MEDIUM").toUpperCase()}`}
-          sx={{ bgcolor: mlResult.priority === "urgent" ? "#EF4444" : mlResult.priority === "high" ? "#F97316" : mlResult.priority === "medium" ? "#3B82F6" : "#22C55E", color: "white" }}
-        />
-        <Chip 
-          label={`Confidence: ${mlResult.confidence || 0}%`}
-          sx={{ bgcolor: "#6B7280", color: "white" }}
-        />
-      </Box>
-      <Typography variant="caption" display="block" sx={{ mt: 1 }}>
-        {mlResult.recommendation || "AI has analyzed the image"}
-      </Typography>
-    </Alert>
-  )}
-  
-  {imagePreview && (
+            
+            {analyzing && (
+              <Box sx={{ mt: 2, textAlign: 'center' }}>
+                <CircularProgress size={24} />
+                <Typography variant="caption" display="block">AI analyzing image...</Typography>
+              </Box>
+            )}
+            
+            {mlResult && (
+              <Alert severity="info" sx={{ mt: 2 }}>
+                <Typography variant="subtitle2">🤖 AI Detection Results:</Typography>
+                <Box display="flex" gap={2} mt={1} flexWrap="wrap">
+                  <Chip 
+                    label={`Fill Level: ${mlResult.fill_level}%`}
+                    sx={{ bgcolor: getPriorityColor(mlResult.priority), color: 'white' }}
+                  />
+                  <Chip 
+                    label={`Priority: ${mlResult.priority.toUpperCase()}`}
+                    sx={{ bgcolor: getPriorityColor(mlResult.priority), color: 'white' }}
+                  />
+                  <Chip 
+                    label={`Confidence: ${mlResult.confidence}%`}
+                    sx={{ bgcolor: '#6B7280', color: 'white' }}
+                  />
+                </Box>
+                <Typography variant="caption" display="block" sx={{ mt: 1 }}>
+                  {mlResult.recommendation}
+                </Typography>
+              </Alert>
+            )}
+            
+            {formData.imagePreview && !analyzing && (
               <Box sx={{ mt: 2, position: 'relative' }}>
                 <img src={formData.imagePreview} alt="Preview" style={{ width: '100%', borderRadius: 8 }} />
                 <IconButton
                   sx={{ position: 'absolute', top: 8, right: 8, bgcolor: 'white' }}
-                  onClick={() => setFormData({ ...formData, image: null, imagePreview: null })}
+                  onClick={() => setFormData({ ...formData, image: null, imagePreview: null, imageFile: null })}
                 >
                   <DeleteIcon />
                 </IconButton>
               </Box>
             )}
+            
             <TextField
               fullWidth
               label="Description"
@@ -238,32 +264,11 @@ const ComplaintForm = ({ token, user, setToken }) => {
               Please review your complaint before submitting
             </Alert>
             <Typography variant="subtitle2">Type: {formData.complaint_type}</Typography>
+            <Typography variant="subtitle2">Priority: {formData.priority.toUpperCase()}</Typography>
+            <Typography variant="subtitle2">Fill Level: {formData.fill_level_before}%</Typography>
             <Typography variant="subtitle2">Location: {formData.latitude}, {formData.longitude}</Typography>
             <Typography variant="subtitle2">Description: {formData.description || 'Not provided'}</Typography>
-            {formData.mlResult && (
-    <Alert severity="info" sx={{ mt: 2, mb: 2 }}>
-      <Typography variant="subtitle2">🤖 AI Detection Results:</Typography>
-      <Box display="flex" gap={2} mt={1}>
-        <Chip 
-          label={`Fill Level: ${mlResult.fill_level || 0}%`}
-          sx={{ bgcolor: mlResult.fill_level > 80 ? "#EF4444" : mlResult.fill_level > 60 ? "#F97316" : mlResult.fill_level > 30 ? "#3B82F6" : "#22C55E", color: "white" }}
-        />
-        <Chip 
-          label={`Priority: ${(mlResult.priority || "MEDIUM").toUpperCase()}`}
-          sx={{ bgcolor: mlResult.priority === "urgent" ? "#EF4444" : mlResult.priority === "high" ? "#F97316" : mlResult.priority === "medium" ? "#3B82F6" : "#22C55E", color: "white" }}
-        />
-        <Chip 
-          label={`Confidence: ${mlResult.confidence || 0}%`}
-          sx={{ bgcolor: "#6B7280", color: "white" }}
-        />
-      </Box>
-      <Typography variant="caption" display="block" sx={{ mt: 1 }}>
-        {mlResult.recommendation || "AI has analyzed the image"}
-      </Typography>
-    </Alert>
-  )}
-  
-  {imagePreview && (
+            {formData.imagePreview && (
               <Box sx={{ mt: 1 }}>
                 <img src={formData.imagePreview} alt="Preview" style={{ width: 100, borderRadius: 8 }} />
               </Box>
@@ -325,5 +330,3 @@ const ComplaintForm = ({ token, user, setToken }) => {
 };
 
 export default ComplaintForm;
-
-
