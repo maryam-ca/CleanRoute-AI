@@ -18,7 +18,17 @@ const api = {
     }
     return data;
   },
-
+  
+  createComplaint: async (formData) => {
+    const token = getToken();
+    const response = await fetch(API_BASE_URL + 'complaints/', {
+      method: 'POST',
+      headers: token ? { 'Authorization': 'Bearer ' + token } : {},
+      body: formData
+    });
+    return response.json();
+  },
+  
   getComplaints: async () => {
     const token = getToken();
     const response = await fetch(API_BASE_URL + 'complaints/', {
@@ -26,20 +36,7 @@ const api = {
     });
     return response.json();
   },
-
-  optimizeRoutes: async (area) => {
-    const token = getToken();
-    const response = await fetch(API_BASE_URL + 'optimize-routes/', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer ' + token
-      },
-      body: JSON.stringify({ area })
-    });
-    return response.json();
-  },
-
+  
   getDashboardStats: async () => {
     const token = getToken();
     const response = await fetch(API_BASE_URL + 'complaints/dashboard_stats/', {
@@ -47,7 +44,7 @@ const api = {
     });
     return response.json();
   },
-
+  
   getTesters: async () => {
     const token = getToken();
     const response = await fetch(API_BASE_URL + 'complaints/testers/', {
@@ -55,7 +52,7 @@ const api = {
     });
     return response.json();
   },
-
+  
   assignToTester: async (complaintId, testerUsername) => {
     const token = getToken();
     const response = await fetch(API_BASE_URL + 'complaints/' + complaintId + '/assign_to_tester/', {
@@ -68,7 +65,7 @@ const api = {
     });
     return response.json();
   },
-
+  
   completeTask: async (complaintId, formData) => {
     const token = getToken();
     const response = await fetch(API_BASE_URL + 'complaints/' + complaintId + '/complete_task/', {
@@ -78,7 +75,7 @@ const api = {
     });
     return response.json();
   },
-
+  
   updateStatus: async (complaintId, status) => {
     const token = getToken();
     const response = await fetch(API_BASE_URL + 'complaints/' + complaintId + '/', {
@@ -91,7 +88,20 @@ const api = {
     });
     return response.json();
   },
-
+  
+  optimizeRoutes: async (area) => {
+    const token = getToken();
+    const response = await fetch(API_BASE_URL + 'optimize-routes/', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + token
+      },
+      body: JSON.stringify({ area })
+    });
+    return response.json();
+  },
+  
   predictWaste: async (days) => {
     const token = getToken();
     const response = await fetch(API_BASE_URL + 'predict-waste/?days=' + days, {
