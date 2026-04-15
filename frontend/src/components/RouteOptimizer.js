@@ -21,6 +21,7 @@ import {
   Close as CloseIcon
 } from '@mui/icons-material';
 import { motion } from 'framer-motion';
+import SimpleMap from './SimpleMap';
 import { MapContainer, TileLayer, Marker, Popup, Polyline, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
@@ -303,7 +304,7 @@ const RouteOptimizer = ({ token, user, setToken }) => {
           <Grid item xs={12} md={8}>
             <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.2 }}>
               <Card sx={{ borderRadius: 4, overflow: 'hidden' }}>
-                <Box sx={{ height: 500, position: 'relative' }}>
+                <Box sx={{ height: "500px", width: "100%", position: 'relative' }}>
                   <MapContainer center={mapCenter} zoom={mapZoom} style={{ height: '100%', width: '100%' }} zoomControl={false}>
                     <TileLayer attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>' url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png" />
                     <MapController center={mapCenter} zoom={mapZoom} />
@@ -350,7 +351,7 @@ const RouteOptimizer = ({ token, user, setToken }) => {
 
           <Grid item xs={12} md={4}>
             <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.3 }}>
-              <Card sx={{ borderRadius: 4, height: 500, overflow: 'auto' }}>
+              <Card sx={{ borderRadius: 4, height: "500px", width: "100%", overflow: 'auto' }}>
                 <CardContent>
                   <Typography variant="h6" sx={{ fontWeight: 700, color: '#1B5E20', mb: 2 }}>
                     <RouteIcon sx={{ mr: 1, verticalAlign: 'middle', color: '#4CAF50' }} />
@@ -497,6 +498,9 @@ const RouteOptimizer = ({ token, user, setToken }) => {
 };
 
 export default RouteOptimizer;
+
+
+
 
 
 
