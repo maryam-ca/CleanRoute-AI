@@ -8,7 +8,7 @@ import { ColorModeProvider, useColorMode } from './ThemeContext';
 import Navigation from './components/Navigation';
 import Dashboard from './components/ModernDashboard';
 import ComplaintForm from './components/ComplaintForm';
-import RouteOptimizer from './components/RouteOptimizer';
+import RouteOptimizer from './components/SimpleRouteOptimizer';
 import WastePrediction from './components/WastePrediction';
 import RealTimeMap from './components/RealTimeMap';
 import Reports from './components/Reports';
@@ -68,6 +68,7 @@ function App() {
 }
 
 export default App;
+
 
 
 
