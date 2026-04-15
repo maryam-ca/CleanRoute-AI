@@ -50,7 +50,7 @@ class ComplaintViewSet(viewsets.ModelViewSet):
         
         image_file = request.FILES.get('image')
         if image_file:
-            ai_result = analyze_waste_image(image_file, data['complaint_type'], False)
+            ai_result = analyze_waste_image(image_file, data['complaint_type'])
             data['priority'] = ai_result['priority']
             data['fill_level_before'] = ai_result['fill_level']
             print(f"AI Result: Fill={ai_result['fill_level']}%, Priority={ai_result['priority']}")
@@ -148,4 +148,5 @@ class ComplaintViewSet(viewsets.ModelViewSet):
         from users.models import UserProfile
         testers = User.objects.filter(profile__role='tester')
         return Response([{'id': t.id, 'username': t.username} for t in testers])
+
 

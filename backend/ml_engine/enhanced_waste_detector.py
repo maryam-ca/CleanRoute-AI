@@ -136,3 +136,4 @@ def analyze_waste_image(image_path, complaint_type=None):
 
 if __name__ == "__main__":
     print("Enhanced Waste Detector Ready - Calibrated Version")
+
