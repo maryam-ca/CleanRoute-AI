@@ -5,10 +5,14 @@ from complaints.models import Complaint
 import numpy as np
 from sklearn.cluster import KMeans
 import random
+from django.http import JsonResponse
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def optimize_routes(request):
+    # Create response with CORS headers
+    response_data = {}
+    
     try:
         area = request.data.get('area', 'Islamabad')
         
@@ -32,15 +36,13 @@ def optimize_routes(request):
                 longitude__gte=74.2, longitude__lte=74.5
             )
         elif area == 'Attock':
-            # Attock coordinates: Mehria Town area
             complaints = complaints.filter(
                 latitude__gte=33.75, latitude__lte=33.80,
                 longitude__gte=72.35, longitude__lte=72.42
             )
             
-            # If no complaints in Attock, generate sample data for demo
             if complaints.count() == 0:
-                # Create sample complaints for Attock Mehria Town area
+                # Generate sample data for Attock
                 attock_locations = [
                     (33.7667, 72.3667, "Mehria Town Main"),
                     (33.7680, 72.3680, "Mehria Town Sector A"),
@@ -50,11 +52,10 @@ def optimize_routes(request):
                     (33.7675, 72.3675, "Mehria Town Park"),
                     (33.7690, 72.3690, "Mehria Town Market"),
                     (33.7710, 72.3660, "Mehria Town School"),
-                    (33.7730, 72.3680, "Mehria Town Hospital Road"),
+                    (33.7730, 72.3680, "Mehria Town Hospital"),
                     (33.7640, 72.3630, "Mehria Town Extension"),
                 ]
                 
-                # Create sample complaints for response
                 sample_complaints = []
                 for i, (lat, lng, location) in enumerate(attock_locations[:8]):
                     sample_complaints.append({
@@ -66,7 +67,6 @@ def optimize_routes(request):
                         'complaint_type': random.choice(['overflowing', 'spillage', 'missed'])
                     })
                 
-                # Return sample data for Attock
                 coords = [[c['latitude'], c['longitude']] for c in sample_complaints]
                 coords = np.array(coords)
                 n_clusters = min(3, len(coords))
@@ -92,26 +92,35 @@ def optimize_routes(request):
                         'estimated_time': f'{route_complaints * 4} min'
                     })
                 
-                return Response({
+                response_data = {
                     'success': True,
                     'area': area,
                     'total_complaints': len(sample_complaints),
                     'total_clusters': n_clusters,
                     'routes': routes,
-                    'time_saved': 25,
-                    'complaints': sample_complaints
-                })
+                    'time_saved': 25
+                }
+                
+                # Create response with CORS headers
+                response = JsonResponse(response_data)
+                response["Access-Control-Allow-Origin"] = "*"
+                response["Access-Control-Allow-Methods"] = "GET, POST, PUT, DELETE, OPTIONS"
+                response["Access-Control-Allow-Headers"] = "Content-Type, Authorization"
+                return response
         
         total = complaints.count()
         
         if total == 0:
-            return Response({
+            response_data = {
                 'success': True,
                 'total_complaints': 0,
                 'total_clusters': 0,
                 'routes': [],
                 'time_saved': 25
-            })
+            }
+            response = JsonResponse(response_data)
+            response["Access-Control-Allow-Origin"] = "*"
+            return response
         
         # Extract coordinates
         coords = []
@@ -119,16 +128,13 @@ def optimize_routes(request):
             coords.append([float(c.latitude), float(c.longitude)])
         coords = np.array(coords)
         
-        # Determine number of clusters
         n_clusters = min(5, total)
         if n_clusters < 2:
             n_clusters = 1
         
-        # Apply K-Means
         kmeans = KMeans(n_clusters=n_clusters, random_state=42, n_init=10)
         labels = kmeans.fit_predict(coords)
         
-        # Build routes
         routes = []
         for i in range(n_clusters):
             cluster_indices = [j for j in range(total) if labels[j] == i]
@@ -144,18 +150,26 @@ def optimize_routes(request):
                 'estimated_time': f'{route_complaints * 5} min'
             })
         
-        return Response({
+        response_data = {
             'success': True,
             'area': area,
             'total_complaints': total,
             'total_clusters': n_clusters,
             'routes': routes,
             'time_saved': 25
-        })
+        }
         
     except Exception as e:
-        return Response({
+        response_data = {
             'success': False,
             'error': str(e),
             'message': 'Failed to optimize routes'
-        }, status=500)
+        }
+    
+    # Add CORS headers to response
+    response = JsonResponse(response_data)
+    response["Access-Control-Allow-Origin"] = "*"
+    response["Access-Control-Allow-Methods"] = "GET, POST, PUT, DELETE, OPTIONS"
+    response["Access-Control-Allow-Headers"] = "Content-Type, Authorization"
+    
+    return response
