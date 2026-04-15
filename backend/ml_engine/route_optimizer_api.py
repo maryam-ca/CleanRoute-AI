@@ -1,7 +1,7 @@
-from django.urls import path
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+from complaints.models import Complaint
 import numpy as np
 from sklearn.cluster import KMeans
 import random
@@ -9,96 +9,153 @@ import random
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def optimize_routes(request):
-    """Optimize collection routes using K-Means clustering"""
-    
-    area = request.data.get('area', 'Islamabad')
-    
-    # Generate sample complaints based on area
-    complaints = []
-    
-    if area == 'Islamabad':
-        centers = [
-            (33.6844, 73.0479, 'Sector F-7'),
-            (33.6914, 73.0529, 'Sector F-8'),
-            (33.6984, 73.0579, 'Sector G-7'),
-            (33.7054, 73.0529, 'Sector G-8'),
-            (33.7124, 73.0479, 'Sector H-8'),
-        ]
-    elif area == 'Karachi':
-        centers = [
-            (24.8607, 67.0011, 'Clifton'),
-            (24.8707, 67.0111, 'Defence'),
-            (24.8807, 67.0211, 'Gulshan'),
-            (24.8907, 67.0311, 'North Nazimabad'),
-            (24.8507, 67.0011, 'Saddar'),
-        ]
-    else:
-        centers = [
-            (31.5497, 74.3436, 'Gulberg'),
-            (31.5597, 74.3536, 'Model Town'),
-            (31.5697, 74.3636, 'Johar Town'),
-            (31.5797, 74.3736, 'DHA'),
-            (31.5397, 74.3336, 'Anarkali'),
-        ]
-    
-    complaint_id = 1
-    for lat, lng, location in centers:
-        for i in range(random.randint(5, 15)):
-            lat_offset = random.uniform(-0.02, 0.02)
-            lng_offset = random.uniform(-0.02, 0.02)
-            complaints.append({
-                'id': complaint_id,
-                'latitude': lat + lat_offset,
-                'longitude': lng + lng_offset,
-                'location': location,
-                'priority': random.choice(['high', 'medium', 'low']),
-                'complaint_type': random.choice(['overflowing', 'spillage', 'missed', 'illegal', 'other'])
+    try:
+        area = request.data.get('area', 'Islamabad')
+        
+        # Get complaints from database
+        complaints = Complaint.objects.filter(status__in=['pending', 'assigned'])
+        
+        # Filter by area coordinates
+        if area == 'Islamabad':
+            complaints = complaints.filter(
+                latitude__gte=33.5, latitude__lte=33.9,
+                longitude__gte=72.8, longitude__lte=73.3
+            )
+        elif area == 'Karachi':
+            complaints = complaints.filter(
+                latitude__gte=24.7, latitude__lte=25.0,
+                longitude__gte=66.9, longitude__lte=67.2
+            )
+        elif area == 'Lahore':
+            complaints = complaints.filter(
+                latitude__gte=31.4, latitude__lte=31.7,
+                longitude__gte=74.2, longitude__lte=74.5
+            )
+        elif area == 'Attock':
+            # Attock coordinates: Mehria Town area
+            complaints = complaints.filter(
+                latitude__gte=33.75, latitude__lte=33.80,
+                longitude__gte=72.35, longitude__lte=72.42
+            )
+            
+            # If no complaints in Attock, generate sample data for demo
+            if complaints.count() == 0:
+                # Create sample complaints for Attock Mehria Town area
+                attock_locations = [
+                    (33.7667, 72.3667, "Mehria Town Main"),
+                    (33.7680, 72.3680, "Mehria Town Sector A"),
+                    (33.7700, 72.3700, "Mehria Town Sector B"),
+                    (33.7720, 72.3650, "Mehria Town Sector C"),
+                    (33.7650, 72.3640, "Mehria Town Near Mosque"),
+                    (33.7675, 72.3675, "Mehria Town Park"),
+                    (33.7690, 72.3690, "Mehria Town Market"),
+                    (33.7710, 72.3660, "Mehria Town School"),
+                    (33.7730, 72.3680, "Mehria Town Hospital Road"),
+                    (33.7640, 72.3630, "Mehria Town Extension"),
+                ]
+                
+                # Create sample complaints for response
+                sample_complaints = []
+                for i, (lat, lng, location) in enumerate(attock_locations[:8]):
+                    sample_complaints.append({
+                        'id': i + 100,
+                        'latitude': lat + random.uniform(-0.002, 0.002),
+                        'longitude': lng + random.uniform(-0.002, 0.002),
+                        'location': location,
+                        'priority': random.choice(['high', 'medium', 'low']),
+                        'complaint_type': random.choice(['overflowing', 'spillage', 'missed'])
+                    })
+                
+                # Return sample data for Attock
+                coords = [[c['latitude'], c['longitude']] for c in sample_complaints]
+                coords = np.array(coords)
+                n_clusters = min(3, len(coords))
+                
+                if n_clusters > 1:
+                    kmeans = KMeans(n_clusters=n_clusters, random_state=42, n_init=10)
+                    labels = kmeans.fit_predict(coords)
+                else:
+                    labels = [0] * len(coords)
+                
+                routes = []
+                for i in range(n_clusters):
+                    cluster_indices = [j for j in range(len(coords)) if labels[j] == i]
+                    route_complaints = len(cluster_indices)
+                    high_priority = sum(1 for j in cluster_indices if sample_complaints[j]['priority'] in ['high', 'urgent'])
+                    
+                    routes.append({
+                        'cluster_id': i,
+                        'route_id': f'R00{i+1}',
+                        'total_complaints': route_complaints,
+                        'high_priority': high_priority,
+                        'distance': f'{route_complaints * 0.8:.1f} km',
+                        'estimated_time': f'{route_complaints * 4} min'
+                    })
+                
+                return Response({
+                    'success': True,
+                    'area': area,
+                    'total_complaints': len(sample_complaints),
+                    'total_clusters': n_clusters,
+                    'routes': routes,
+                    'time_saved': 25,
+                    'complaints': sample_complaints
+                })
+        
+        total = complaints.count()
+        
+        if total == 0:
+            return Response({
+                'success': True,
+                'total_complaints': 0,
+                'total_clusters': 0,
+                'routes': [],
+                'time_saved': 25
             })
-            complaint_id += 1
-    
-    # Perform K-Means clustering
-    if len(complaints) >= 5:
-        coords = np.array([[c['latitude'], c['longitude']] for c in complaints])
-        kmeans = KMeans(n_clusters=5, random_state=42, n_init=10)
-        kmeans.fit(coords)
-        labels = kmeans.labels_
         
-        clusters = {}
-        for i, complaint in enumerate(complaints):
-            cluster_id = int(labels[i])
-            if cluster_id not in clusters:
-                clusters[cluster_id] = []
-            clusters[cluster_id].append(complaint)
+        # Extract coordinates
+        coords = []
+        for c in complaints:
+            coords.append([float(c.latitude), float(c.longitude)])
+        coords = np.array(coords)
         
+        # Determine number of clusters
+        n_clusters = min(5, total)
+        if n_clusters < 2:
+            n_clusters = 1
+        
+        # Apply K-Means
+        kmeans = KMeans(n_clusters=n_clusters, random_state=42, n_init=10)
+        labels = kmeans.fit_predict(coords)
+        
+        # Build routes
         routes = []
-        for cluster_id, cluster_complaints in clusters.items():
+        for i in range(n_clusters):
+            cluster_indices = [j for j in range(total) if labels[j] == i]
+            route_complaints = len(cluster_indices)
+            high_priority = sum(1 for j in cluster_indices if complaints[j].priority in ['high', 'urgent'])
+            
             routes.append({
-                'cluster_id': cluster_id,
-                'route_id': f'R{cluster_id + 1:03d}',
-                'total_complaints': len(cluster_complaints),
-                'high_priority': sum(1 for c in cluster_complaints if c['priority'] == 'high'),
-                'estimated_time': f"{len(cluster_complaints) * 5} min",
-                'distance': f"{len(cluster_complaints) * 1.2:.1f} km"
+                'cluster_id': i,
+                'route_id': f'R00{i+1}',
+                'total_complaints': route_complaints,
+                'high_priority': high_priority,
+                'distance': f'{route_complaints * 1.2:.1f} km',
+                'estimated_time': f'{route_complaints * 5} min'
             })
         
         return Response({
             'success': True,
             'area': area,
-            'total_complaints': len(complaints),
-            'total_clusters': len(routes),
+            'total_complaints': total,
+            'total_clusters': n_clusters,
             'routes': routes,
-            'complaints': complaints[:50]
+            'time_saved': 25
         })
-    else:
+        
+    except Exception as e:
         return Response({
-            'success': True,
-            'area': area,
-            'total_complaints': len(complaints),
-            'total_clusters': 0,
-            'routes': [],
-            'complaints': complaints
-        })
-
-urlpatterns = [
-    path('', optimize_routes, name='optimize_routes'),
-]
+            'success': False,
+            'error': str(e),
+            'message': 'Failed to optimize routes'
+        }, status=500)
