@@ -1,0 +1,52 @@
+/* FORCE THEME OVERRIDE - Ocean Breeze Colors */
+:root {
+  --primary-color: #0EA5E9 !important;
+  --primary-dark: #0284C7 !important;
+  --secondary-color: #10B981 !important;
+  --secondary-dark: #059669 !important;
+  --background-light: #F0F9FF !important;
+}
+
+/* Force AppBar color */
+.MuiAppBar-root {
+  background: linear-gradient(135deg, #0EA5E9 0%, #0284C7 100%) !important;
+  background-color: #0EA5E9 !important;
+}
+
+/* Force Button colors */
+.MuiButton-containedPrimary {
+  background: linear-gradient(135deg, #0EA5E9 0%, #0284C7 100%) !important;
+  background-color: #0EA5E9 !important;
+}
+
+.MuiButton-containedSecondary {
+  background: linear-gradient(135deg, #10B981 0%, #059669 100%) !important;
+  background-color: #10B981 !important;
+}
+
+/* Force Card hover effects */
+.MuiCard-root:hover {
+  transform: translateY(-4px) !important;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.1) !important;
+}
+
+/* Force body background */
+body {
+  background-color: #F0F9FF !important;
+}
+
+/* Force link colors */
+a, .MuiLink-root {
+  color: #0EA5E9 !important;
+}
+
+/* Force icon colors */
+.MuiSvgIcon-root {
+  color: inherit;
+}
+
+/* Force chip colors */
+.MuiChip-root {
+  background-color: #0EA5E9 !important;
+  color: white !important;
+}

@@ -101,6 +101,12 @@ const RouteOptimizer = ({ token, user, setToken }) => {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       const data = await response.json();
+      console.log('Route optimization response:', data);
+      if (data.success === false) {
+        toast.error(data.message || 'Failed to optimize routes');
+        setLoading(false);
+        return;
+      }
       const complaintsArray = Array.isArray(data) ? data : (data.results || data.data || []);
       setComplaints(complaintsArray);
     } catch (error) {
@@ -120,6 +126,12 @@ const RouteOptimizer = ({ token, user, setToken }) => {
         body: JSON.stringify({ area })
       });
       const data = await response.json();
+      console.log('Route optimization response:', data);
+      if (data.success === false) {
+        toast.error(data.message || 'Failed to optimize routes');
+        setLoading(false);
+        return;
+      }
       setRoutes(data);
       
       const selectedArea = areas.find(a => a.name === area);
@@ -485,6 +497,7 @@ const RouteOptimizer = ({ token, user, setToken }) => {
 };
 
 export default RouteOptimizer;
+
 
 
 
