@@ -12,6 +12,7 @@ from ml_engine.waste_detection import waste_detector
 from ml_engine.enhanced_waste_detector import analyze_waste_image
 
 class ComplaintViewSet(viewsets.ModelViewSet):
+    queryset = Complaint.objects.all()
     serializer_class = ComplaintSerializer
     permission_classes = [IsAuthenticated]
     
@@ -149,6 +150,7 @@ class ComplaintViewSet(viewsets.ModelViewSet):
         from users.models import UserProfile
         testers = User.objects.filter(profile__role='tester')
         return Response([{'id': t.id, 'username': t.username} for t in testers])
+
 
 
 
