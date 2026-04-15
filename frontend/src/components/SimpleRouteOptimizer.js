@@ -12,7 +12,7 @@ const SimpleRouteOptimizer = ({ token, user }) => {
   const [routes, setRoutes] = useState(null);
   const [error, setError] = useState(null);
 
-  const areas = ['Islamabad', 'Karachi', 'Lahore'];
+  const areas = ['Islamabad', 'Karachi', 'Lahore', 'Attock'];
 
   const handleOptimize = async () => {
     setLoading(true);
@@ -173,4 +173,5 @@ const SimpleRouteOptimizer = ({ token, user }) => {
 };
 
 export default SimpleRouteOptimizer;
+
 
