@@ -1,10 +1,6 @@
-from django.urls import path, include
-from rest_framework.routers import DefaultRouter
-from .views import ComplaintViewSet
-
-router = DefaultRouter()
-router.register(r'complaints', ComplaintViewSet, basename='complaint')
+from django.urls import path
+from . import image_analysis_views
 
 urlpatterns = [
-    path('', include(router.urls)),
+    path('', image_analysis_views.analyze_image, name='analyze_image'),
 ]
