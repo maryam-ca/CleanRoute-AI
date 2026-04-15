@@ -4,28 +4,15 @@ from rest_framework.response import Response
 from complaints.models import Complaint
 import numpy as np
 from sklearn.cluster import KMeans
-import json
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def optimize_routes(request):
     try:
-        area = request.data.get('area', 'Islamabad')
+        area = request.data.get('area', 'Attock')
         
-        # Get REAL complaints from database
+        # Get ALL complaints - NO FILTER
         complaints = Complaint.objects.filter(status__in=['pending', 'assigned'])
-        
-        # Filter by area coordinates
-        if area == 'Islamabad':
-            complaints = complaints.filter(
-                latitude__gte=33.5, latitude__lte=33.9,
-                longitude__gte=72.8, longitude__lte=73.3
-            )
-        elif area == 'Attock':
-            complaints = complaints.filter(
-                latitude__gte=33.80, latitude__lte=33.82,
-                longitude__gte=72.35, longitude__lte=72.42
-            )
         
         total = complaints.count()
         
@@ -39,11 +26,10 @@ def optimize_routes(request):
                 'time_saved': 25
             })
         
-        # Extract coordinates and complaint data
-        coords = []
+        # Extract complaint data
         complaint_data = []
+        coords = []
         for c in complaints:
-            coords.append([float(c.latitude), float(c.longitude)])
             complaint_data.append({
                 'id': c.id,
                 'latitude': float(c.latitude),
@@ -51,21 +37,20 @@ def optimize_routes(request):
                 'priority': c.priority,
                 'complaint_type': c.complaint_type,
                 'status': c.status,
-                'address': c.description[:50] if c.description else 'No address'
+                'description': c.description[:100] if c.description else ''
             })
+            coords.append([float(c.latitude), float(c.longitude)])
         
         coords = np.array(coords)
         
-        # Determine number of clusters
+        # K-Means clustering
         n_clusters = min(5, total)
         if n_clusters < 2:
             n_clusters = 1
         
-        # Apply K-Means clustering
         kmeans = KMeans(n_clusters=n_clusters, random_state=42, n_init=10)
         labels = kmeans.fit_predict(coords)
         
-        # Build routes with real data
         routes = []
         for i in range(n_clusters):
             cluster_indices = [j for j in range(total) if labels[j] == i]
@@ -77,11 +62,10 @@ def optimize_routes(request):
                 'route_id': f'R00{i+1}',
                 'total_complaints': route_complaints,
                 'high_priority': high_priority,
-                'distance': f'{route_complaints * 1.2:.1f} km',
-                'estimated_time': f'{route_complaints * 5} min'
+                'distance': f'{route_complaints * 0.8:.1f} km',
+                'estimated_time': f'{route_complaints * 4} min'
             })
         
-        # Return real complaints for map
         return Response({
             'success': True,
             'area': area,
@@ -98,6 +82,3 @@ def optimize_routes(request):
             'error': str(e),
             'message': 'Failed to optimize routes'
         }, status=500)
-
-
-
