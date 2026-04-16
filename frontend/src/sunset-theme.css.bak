@@ -1,0 +1,67 @@
+/* SUNSET THEME - Warm Orange & Pink */
+:root {
+  --primary-color: #F97316 !important;
+  --primary-dark: #EA580C !important;
+  --secondary-color: #EC4899 !important;
+  --secondary-dark: #DB2777 !important;
+  --background-light: #FFF7ED !important;
+}
+
+/* Navigation Bar */
+.MuiAppBar-root {
+  background: linear-gradient(135deg, #F97316 0%, #EA580C 100%) !important;
+  background-color: #F97316 !important;
+}
+
+/* All Buttons */
+.MuiButton-containedPrimary {
+  background: linear-gradient(135deg, #F97316 0%, #EA580C 100%) !important;
+  background-color: #F97316 !important;
+}
+
+.MuiButton-containedSecondary {
+  background: linear-gradient(135deg, #EC4899 0%, #DB2777 100%) !important;
+  background-color: #EC4899 !important;
+}
+
+.MuiButton-outlinedPrimary {
+  border-color: #F97316 !important;
+  color: #F97316 !important;
+}
+
+/* Cards hover */
+.MuiCard-root:hover {
+  transform: translateY(-4px) !important;
+  box-shadow: 0 20px 40px rgba(249,115,22,0.15) !important;
+}
+
+/* Body Background */
+body {
+  background: linear-gradient(135deg, #FFF7ED 0%, #FFEDD5 100%) !important;
+}
+
+/* Links */
+a, .MuiLink-root {
+  color: #F97316 !important;
+}
+
+/* Active Tab/Selection */
+.Mui-selected {
+  color: #F97316 !important;
+}
+
+/* Icons when active */
+.MuiListItem-root.Mui-selected .MuiSvgIcon-root {
+  color: #F97316 !important;
+}
+
+/* Chip colors */
+.MuiChip-root {
+  background: linear-gradient(135deg, #F97316 0%, #EC4899 100%) !important;
+  color: white !important;
+}
+
+/* Progress bar */
+.MuiLinearProgress-bar {
+  background: linear-gradient(135deg, #F97316 0%, #EC4899 100%) !important;
+}

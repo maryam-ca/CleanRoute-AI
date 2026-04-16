@@ -1,0 +1,126 @@
+/* ====================================================
+   COMPLETE FIX - ALL TEXT VISIBLE
+   ==================================================== */
+
+:root {
+  --bg-dark: #020617;
+  --bg-card: #0F172A;
+  --primary: #0A66FF;
+  --primary-light: #00C6FF;
+  --text-white: #FFFFFF;
+  --text-light: #E5E7EB;
+  --text-muted: #9CA3AF;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background: var(--bg-dark);
+  color: var(--text-white);
+  font-family: 'Inter', 'Poppins', 'Roboto', sans-serif;
+  min-height: 100vh;
+}
+
+/* Ensure all text is visible */
+p, span, h1, h2, h3, h4, h5, h6, label, div, .MuiTypography-root {
+  color: var(--text-light) !important;
+}
+
+/* Headers should be white */
+h1, h2, h3, h4, .MuiTypography-h4, .MuiTypography-h5, .MuiTypography-h6 {
+  color: var(--text-white) !important;
+}
+
+/* Cards */
+.MuiCard-root, .MuiPaper-root {
+  background: rgba(15, 23, 42, 0.95) !important;
+  backdrop-filter: blur(12px) !important;
+  border: 1px solid rgba(10, 102, 255, 0.2) !important;
+  border-radius: 20px !important;
+}
+
+/* Buttons */
+.MuiButton-containedPrimary {
+  background: linear-gradient(135deg, #0A66FF, #00C6FF) !important;
+  border-radius: 999px !important;
+  text-transform: none !important;
+}
+
+.MuiButton-outlinedPrimary {
+  border-color: #0A66FF !important;
+  color: #0A66FF !important;
+}
+
+/* Text Fields */
+.MuiInputBase-root {
+  color: var(--text-white) !important;
+}
+
+.MuiInputLabel-root {
+  color: var(--text-muted) !important;
+}
+
+.MuiOutlinedInput-notchedOutline {
+  border-color: rgba(255,255,255,0.2) !important;
+}
+
+/* Remove any orange/pink */
+.MuiButton-contained, 
+.MuiButton-containedSecondary,
+.css-1ej5puk,
+[class*="orange"],
+[class*="F97316"],
+[class*="#F97316"] {
+  background: linear-gradient(135deg, #0A66FF, #00C6FF) !important;
+}
+
+/* Dashboard text fix */
+.MuiCardContent-root .MuiTypography-root {
+  color: var(--text-light) !important;
+}
+
+.MuiCardContent-root .MuiTypography-h3,
+.MuiCardContent-root .MuiTypography-h4,
+.MuiCardContent-root .MuiTypography-h5 {
+  color: var(--text-white) !important;
+}
+
+/* Table text */
+.MuiTableCell-root {
+  color: var(--text-light) !important;
+  border-bottom-color: rgba(255,255,255,0.1) !important;
+}
+
+.MuiTableCell-head {
+  color: var(--text-white) !important;
+  background: rgba(10,102,255,0.1) !important;
+}
+
+/* Chips */
+.MuiChip-root {
+  color: var(--text-light) !important;
+}
+
+/* Alert messages */
+.MuiAlert-root {
+  background: rgba(15,23,42,0.95) !important;
+  backdrop-filter: blur(12px) !important;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-dark);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--primary);
+  border-radius: 3px;
+}
