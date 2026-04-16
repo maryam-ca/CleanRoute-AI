@@ -58,7 +58,7 @@ const RealTimeMap = ({ token, user, setToken }) => {
   };
 
   return (
-    <Box sx={{ bgcolor: '#F1F8E9', minHeight: '100vh' }}>
+    <Box sx={{ bgcolor: 'transparent', minHeight: '100vh' }}>
       <Toaster position="top-right" />
       
       <Box sx={{ bgcolor: '#1B5E20', color: 'white', py: 2, px: 4 }}>
@@ -111,4 +111,5 @@ const RealTimeMap = ({ token, user, setToken }) => {
 };
 
 export default RealTimeMap;
+
 

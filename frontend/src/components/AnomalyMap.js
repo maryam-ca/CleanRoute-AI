@@ -74,7 +74,7 @@ const AnomalyMap = ({ token, user }) => {
   };
 
   return (
-    <Box sx={{ bgcolor: '#F8FAFC', minHeight: '100vh' }}>
+    <Box sx={{ bgcolor: 'transparent', minHeight: '100vh' }}>
       <Toaster position="top-right" />
       
       <Box sx={{ bgcolor: '#EF4444', color: 'white', py: 2, px: 4 }}>
@@ -126,7 +126,7 @@ const AnomalyMap = ({ token, user }) => {
             </Card>
           </Grid>
           <Grid item xs={6} sm={3}>
-            <Card sx={{ textAlign: 'center', py: 2, bgcolor: '#FEF2F2' }}>
+            <Card sx={{ textAlign: 'center', py: 2, bgcolor: 'transparent' }}>
               <WarningIcon sx={{ fontSize: 40, color: '#EF4444' }} />
               <Typography variant="caption">Active Monitoring</Typography>
             </Card>
@@ -228,3 +228,4 @@ const AnomalyMap = ({ token, user }) => {
 };
 
 export default AnomalyMap;
+

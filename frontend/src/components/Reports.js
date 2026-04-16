@@ -119,7 +119,7 @@ const Reports = ({ token, user, setToken }) => {
   const previewComplaints = Array.isArray(complaints) ? complaints.slice(0, 10) : [];
 
   return (
-    <Box sx={{ bgcolor: '#F1F8E9', minHeight: '100vh' }}>
+    <Box sx={{ bgcolor: 'transparent', minHeight: '100vh' }}>
       <Toaster position="top-right" />
       
       {/* Header */}
@@ -252,4 +252,5 @@ const Reports = ({ token, user, setToken }) => {
 };
 
 export default Reports;
+
 

@@ -60,9 +60,9 @@ const Navigation = ({ user, setToken }) => {
   ];
 
   const drawer = (
-    <Box sx={{ width: 280, p: 2, bgcolor: '#1E1B4B', height: '100%' }}>
+    <Box sx={{ width: 280, p: 2, bgcolor: 'transparent', height: '100%' }}>
       <Box display="flex" alignItems="center" gap={1} sx={{ mb: 3, p: 1 }}>
-        <CleanIcon sx={{ fontSize: 32, color: '#F59E0B' }} />
+        <CleanIcon sx={{ fontSize: 32, color: '#00C6FF' }} />
         <Typography variant="h6" sx={{ fontWeight: 700, color: 'white' }}>CleanRoute-AI</Typography>
       </Box>
       <List>
@@ -85,7 +85,7 @@ const Navigation = ({ user, setToken }) => {
           </ListItem>
         ))}
         <ListItem onClick={toggleColorMode} sx={{ borderRadius: 2, color: 'white' }}>
-          <ListItemIcon sx={{ color: '#F59E0B' }}>{mode === 'dark' ? <LightModeIcon /> : <DarkModeIcon />}</ListItemIcon>
+          <ListItemIcon sx={{ color: '#00C6FF' }}>{mode === 'dark' ? <LightModeIcon /> : <DarkModeIcon />}</ListItemIcon>
           <ListItemText primary={`${mode === 'dark' ? 'Light' : 'Dark'} Mode`} />
         </ListItem>
         <ListItem onClick={handleLogout} sx={{ borderRadius: 2, color: '#FF6B6B' }}>
@@ -167,6 +167,7 @@ const Navigation = ({ user, setToken }) => {
 };
 
 export default Navigation;
+
 
 
 

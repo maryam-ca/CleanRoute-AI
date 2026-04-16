@@ -89,7 +89,7 @@ const TesterDashboard = ({ token, user, setToken }) => {
   const assignedComplaints = complaints.filter(c => c.status === 'assigned');
 
   return (
-    <Box sx={{ bgcolor: '#F1F8E9', minHeight: '100vh' }}>
+    <Box sx={{ bgcolor: 'transparent', minHeight: '100vh' }}>
       <Toaster position="top-right" />
       
       <AppBar position="sticky" sx={{ bgcolor: '#1B5E20' }}>
@@ -245,4 +245,5 @@ const TesterDashboard = ({ token, user, setToken }) => {
 };
 
 export default TesterDashboard;
+
 

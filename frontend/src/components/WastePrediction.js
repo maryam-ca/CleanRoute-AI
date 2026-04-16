@@ -149,7 +149,7 @@ const WastePrediction = ({ token, user, setToken }) => {
   const predictionStartIndex = 7;
 
   return (
-    <Box sx={{ bgcolor: '#F1F8E9', minHeight: '100vh' }}>
+    <Box sx={{ bgcolor: 'transparent', minHeight: '100vh' }}>
       <Toaster position="top-right" />
       
       {/* Header */}
@@ -324,7 +324,7 @@ const WastePrediction = ({ token, user, setToken }) => {
                 <Grid container spacing={2}>
                   {predictions.map((pred, idx) => (
                     <Grid item xs={12} sm={6} md={4} lg={3} key={idx}>
-                      <Paper sx={{ p: 2, borderRadius: 3, bgcolor: '#F1F8E9', textAlign: 'center' }}>
+                      <Paper sx={{ p: 2, borderRadius: 3, bgcolor: 'transparent', textAlign: 'center' }}>
                         <Typography variant="subtitle2" sx={{ fontWeight: 700, color: '#1B5E20' }}>{pred.date}</Typography>
                         <Typography variant="h5" sx={{ fontWeight: 800, color: '#4CAF50', my: 1 }}>{pred.predicted} tons</Typography>
                         <Box display="flex" justifyContent="center" gap={2}>
@@ -358,3 +358,4 @@ const WastePrediction = ({ token, user, setToken }) => {
 };
 
 export default WastePrediction;
+
