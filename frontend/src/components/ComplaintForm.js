@@ -278,11 +278,7 @@ const ComplaintForm = ({ token, user, setToken }) => {
   };
 
   return (
-<<<<<<< HEAD
-    <Box sx={{ bgcolor: 'transparent', minHeight: '100vh' }}>
-=======
     <Box sx={{ bgcolor: 'transparent', minHeight: '100vh', pt: '110px' }}>
->>>>>>> final-updates
       <Toaster position="top-right" />
       
       <Box sx={{ mx: { xs: 2, md: 3 }, py: 3, px: 4, color: 'white', border: '1px solid rgba(148, 163, 184, 0.12)', borderRadius: 6, background: 'linear-gradient(135deg, rgba(79, 140, 255, 0.16) 0%, rgba(15, 23, 42, 0.18) 100%)' }}>
@@ -329,4 +325,5 @@ const ComplaintForm = ({ token, user, setToken }) => {
 };
 
 export default ComplaintForm;
+
 

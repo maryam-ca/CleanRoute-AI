@@ -149,11 +149,7 @@ const WastePrediction = ({ token, user, setToken }) => {
   const predictionStartIndex = 7;
 
   return (
-<<<<<<< HEAD
-    <Box sx={{ bgcolor: 'transparent', minHeight: '100vh' }}>
-=======
     <Box sx={{ bgcolor: 'transparent', minHeight: '100vh', pt: '110px' }}>
->>>>>>> final-updates
       <Toaster position="top-right" />
       
       {/* Header */}
@@ -328,15 +324,9 @@ const WastePrediction = ({ token, user, setToken }) => {
                 <Grid container spacing={2}>
                   {predictions.map((pred, idx) => (
                     <Grid item xs={12} sm={6} md={4} lg={3} key={idx}>
-<<<<<<< HEAD
-                      <Paper sx={{ p: 2, borderRadius: 3, bgcolor: 'transparent', textAlign: 'center' }}>
-                        <Typography variant="subtitle2" sx={{ fontWeight: 700, color: '#1B5E20' }}>{pred.date}</Typography>
-                        <Typography variant="h5" sx={{ fontWeight: 800, color: '#4CAF50', my: 1 }}>{pred.predicted} tons</Typography>
-=======
                       <Paper sx={{ p: 2, borderRadius: 3, textAlign: 'center' }}>
                         <Typography variant="subtitle2" sx={{ fontWeight: 700, color: '#dce8ff' }}>{pred.date}</Typography>
                         <Typography variant="h5" sx={{ fontWeight: 800, color: '#60A5FA', my: 1 }}>{pred.predicted} tons</Typography>
->>>>>>> final-updates
                         <Box display="flex" justifyContent="center" gap={2}>
                           <Typography variant="caption" color="text.secondary">↓ {pred.lower} tons</Typography>
                           <Typography variant="caption" color="text.secondary">↑ {pred.upper} tons</Typography>
