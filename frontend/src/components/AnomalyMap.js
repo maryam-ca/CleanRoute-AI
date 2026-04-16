@@ -291,3 +291,4 @@ const AnomalyMap = ({ token, user }) => {
 };
 
 export default AnomalyMap;
+

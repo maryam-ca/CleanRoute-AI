@@ -23,7 +23,7 @@ const AnomalyHotspotMap = ({ token, user }) => {
   const fetchComplaints = async () => {
     try {
       const apiToken = localStorage.getItem('token');
-      const response = await fetch('https://cleanroute-ai.onrender.com/api/complaints/', {
+      const response = await fetch('http://localhost:8000/api/complaints/', {
         headers: { 'Authorization': `Bearer ${apiToken}` }
       });
       const data = await response.json();
@@ -62,3 +62,4 @@ const AnomalyHotspotMap = ({ token, user }) => {
 };
 
 export default AnomalyHotspotMap;
+

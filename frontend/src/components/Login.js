@@ -50,7 +50,7 @@ const Login = ({ setToken }) => {
     }
 
     try {
-      const response = await fetch('https://cleanroute-ai.onrender.com/api/token/', {
+      const response = await fetch('http://localhost:8000/api/token/', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username, password }),
@@ -331,3 +331,4 @@ const Login = ({ setToken }) => {
 };
 
 export default Login;
+

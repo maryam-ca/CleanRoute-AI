@@ -23,7 +23,7 @@ const SimpleRouteOptimizer = ({ token, user }) => {
     console.log('Area:', area);
     
     try {
-      const response = await fetch('https://cleanroute-ai.onrender.com/api/optimize-routes/', {
+      const response = await fetch('http://localhost:8000/api/optimize-routes/', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -173,6 +173,7 @@ const SimpleRouteOptimizer = ({ token, user }) => {
 };
 
 export default SimpleRouteOptimizer;
+
 
 
 

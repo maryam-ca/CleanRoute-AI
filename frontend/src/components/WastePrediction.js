@@ -289,3 +289,4 @@ const WastePrediction = ({ token }) => {
 export default WastePrediction;
 
 
+

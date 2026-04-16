@@ -16,7 +16,7 @@ urlpatterns = [
     path('api/token/verify/', TokenVerifyView.as_view(), name='token_verify'),
     # API endpoints
     path('api/', include('complaints.urls')),
-    path('api/', include('users.urls')),
+    path('api/users/', include('users.urls')),
     path('api/ml/', include('ml_engine.urls')),
 ]
 

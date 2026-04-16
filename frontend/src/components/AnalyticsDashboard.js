@@ -34,7 +34,7 @@ const AnalyticsDashboard = ({ token, user }) => {
   const [timeRange, setTimeRange] = useState('week');
   const [tabValue, setTabValue] = useState(0);
 
-  const API_BASE_URL = 'https://cleanroute-ai.onrender.com/api/';
+  const API_BASE_URL = 'http://localhost:8000/api/';
 
   useEffect(() => {
     fetchData();
@@ -344,4 +344,5 @@ const AnalyticsDashboard = ({ token, user }) => {
 };
 
 export default AnalyticsDashboard;
+
 

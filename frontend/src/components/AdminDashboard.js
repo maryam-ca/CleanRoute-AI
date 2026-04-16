@@ -3,35 +3,26 @@ import {
   Box, Container, Paper, Typography, Grid, Card, CardContent,
   Table, TableBody, TableCell, TableContainer, TableHead, TableRow,
   Chip, Button, Dialog, DialogTitle, DialogContent, DialogActions,
-  CircularProgress, Alert, Tab, Tabs, IconButton, Tooltip,
-  TextField, InputAdornment, MenuItem, Select, FormControl, InputLabel
+  Select, MenuItem, FormControl, InputLabel, CircularProgress, Alert,
+  ToggleButton, ToggleButtonGroup
 } from '@mui/material';
 import {
   Refresh as RefreshIcon,
   Assignment as AssignIcon,
   CheckCircle as CheckIcon,
-  Close as CloseIcon,
-  Search as SearchIcon,
-  Delete as DeleteIcon,
-  Visibility as ViewIcon,
-  Warning as WarningIcon,
-  DoneAll as DoneAllIcon,
-  Pending as PendingIcon
+  FilterList as FilterIcon
 } from '@mui/icons-material';
 import toast, { Toaster } from 'react-hot-toast';
 import api from '../services/api';
 
 const AdminDashboard = ({ token, user, setToken }) => {
   const [complaints, setComplaints] = useState([]);
-  const [stats, setStats] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [tabValue, setTabValue] = useState(0);
-  const [selectedComplaint, setSelectedComplaint] = useState(null);
-  const [assignDialogOpen, setAssignDialogOpen] = useState(false);
-  const [closeDialogOpen, setCloseDialogOpen] = useState(false);
   const [testers, setTesters] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [selectedComplaint, setSelectedComplaint] = useState(null);
   const [selectedTester, setSelectedTester] = useState('');
-  const [searchTerm, setSearchTerm] = useState('');
+  const [assigning, setAssigning] = useState(false);
+  const [filterStatus, setFilterStatus] = useState('all'); // 'all', 'pending', 'assigned', 'completed'
 
   useEffect(() => {
     fetchData();
@@ -43,11 +34,9 @@ const AdminDashboard = ({ token, user, setToken }) => {
     try {
       const complaintsData = await api.getComplaints();
       setComplaints(Array.isArray(complaintsData) ? complaintsData : []);
-      const statsData = await api.getDashboardStats();
-      setStats(statsData);
     } catch (error) {
       console.error('Error fetching data:', error);
-      toast.error('Failed to load data');
+      toast.error('Failed to load complaints');
     } finally {
       setLoading(false);
     }
@@ -55,10 +44,25 @@ const AdminDashboard = ({ token, user, setToken }) => {
 
   const fetchTesters = async () => {
     try {
-      const testersData = await api.getTesters();
-      setTesters(Array.isArray(testersData) ? testersData : []);
+      const token = localStorage.getItem('token');
+      const response = await fetch('http://localhost:8000/api/users/testers/', {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      if (response.ok) {
+        const data = await response.json();
+        setTesters(Array.isArray(data) ? data : []);
+      } else {
+        setTesters([
+          { id: 1, username: 'tester1', email: 'tester1@example.com' },
+          { id: 2, username: 'tester2', email: 'tester2@example.com' }
+        ]);
+      }
     } catch (error) {
       console.error('Error fetching testers:', error);
+      setTesters([
+        { id: 1, username: 'tester1', email: 'tester1@example.com' },
+        { id: 2, username: 'tester2', email: 'tester2@example.com' }
+      ]);
     }
   };
 
@@ -68,171 +72,186 @@ const AdminDashboard = ({ token, user, setToken }) => {
       return;
     }
     
+    setAssigning(true);
     try {
-      await api.assignToTester(selectedComplaint.id, selectedTester);
+      const result = await api.assignComplaint(selectedComplaint.id, selectedTester);
       toast.success(`Complaint #${selectedComplaint.id} assigned to ${selectedTester}`);
-      setAssignDialogOpen(false);
+      setSelectedComplaint(null);
       setSelectedTester('');
       fetchData();
     } catch (error) {
-      toast.error('Failed to assign complaint');
+      console.error('Assign error:', error);
+      toast.error(error.message || 'Failed to assign complaint');
+    } finally {
+      setAssigning(false);
     }
   };
 
-  const handleCloseComplaint = async () => {
-    try {
-      // Method 1: Using PATCH request
-      const response = await fetch(`https://cleanroute-ai.onrender.com/api/complaints/${selectedComplaint.id}/`, {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify({ status: 'closed' })
-      });
-      
-      if (response.ok) {
-        toast.success(`✅ Complaint #${selectedComplaint.id} closed successfully!`);
-        setCloseDialogOpen(false);
-        setSelectedComplaint(null);
-        fetchData();
-      } else {
-        // Method 2: Try using updateStatus API
-        try {
-          await api.updateStatus(selectedComplaint.id, 'closed');
-          toast.success(`✅ Complaint #${selectedComplaint.id} closed!`);
-          setCloseDialogOpen(false);
-          setSelectedComplaint(null);
-          fetchData();
-        } catch (err) {
-          throw new Error('Both methods failed');
-        }
-      }
-    } catch (error) {
-      console.error('Close error:', error);
-      toast.error('Failed to close complaint. Please try again.');
-    }
+  const handleFilterClick = (status) => {
+    setFilterStatus(status);
   };
 
-  const getStatusColor = (status) => {
-    switch(status) {
-      case 'closed': return '#6B7280';
-      case 'completed': return '#10B981';
-      case 'assigned': return '#3B82F6';
-      default: return '#F59E0B';
-    }
-  };
+  // Filter complaints based on selected status
+  const filteredComplaints = complaints.filter(c => {
+    if (filterStatus === 'all') return true;
+    return c.status === filterStatus;
+  });
+
+  const total = complaints.length;
+  const pending = complaints.filter(c => c.status === 'pending').length;
+  const assigned = complaints.filter(c => c.status === 'assigned').length;
+  const completed = complaints.filter(c => c.status === 'completed').length;
 
   const getPriorityColor = (priority) => {
     switch(priority) {
       case 'urgent': return '#EF4444';
       case 'high': return '#F59E0B';
-      case 'medium': return '#3B82F6';
-      default: return '#10B981';
+      case 'medium': return '#0A66FF';
+      default: return '#22C55E';
     }
   };
 
-  const filteredComplaints = complaints.filter(c => {
-    const matchesSearch = c.complaint_type?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                          c.description?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                          `#${c.id}`.includes(searchTerm);
-    
-    if (tabValue === 0) return matchesSearch && c.status !== 'closed' && c.status !== 'completed';
-    if (tabValue === 1) return matchesSearch && c.status === 'assigned';
-    if (tabValue === 2) return matchesSearch && c.status === 'completed';
-    if (tabValue === 3) return matchesSearch && c.status === 'closed';
-    return matchesSearch;
-  });
+  const getStatusColor = (status) => {
+    switch(status) {
+      case 'pending': return '#F59E0B';
+      case 'assigned': return '#0A66FF';
+      case 'completed': return '#22C55E';
+      default: return '#9CA3AF';
+    }
+  };
 
   return (
-    <Box sx={{ bgcolor: 'transparent', minHeight: '100vh', pt: '110px' }}>
+    <Box sx={{ minHeight: '100vh', pt: '110px', pb: 4 }}>
       <Toaster position="top-right" />
       
-      <Box sx={{ mx: { xs: 2, md: 3 }, py: 3, px: 4, color: 'white', border: '1px solid rgba(148, 163, 184, 0.12)', borderRadius: 6, background: 'linear-gradient(135deg, rgba(79, 140, 255, 0.16) 0%, rgba(15, 23, 42, 0.18) 100%)' }}>
+      {/* Header */}
+      <Box sx={{ mx: { xs: 2, md: 3 }, py: 3, px: 4, border: '1px solid rgba(10,102,255,0.3)', borderRadius: 6, background: 'linear-gradient(135deg, rgba(10,102,255,0.15) 0%, rgba(15,23,42,0.3) 100%)' }}>
         <Container maxWidth="xl">
-          <Typography variant="h5" sx={{ fontWeight: 700 }}>Admin Dashboard</Typography>
-          <Typography variant="caption" sx={{ color: '#cdd8ee' }}>Manage complaints, assign testers, and close completed tasks</Typography>
+          <Typography variant="h5" sx={{ fontWeight: 800, color: '#FFFFFF' }}>Admin Dashboard</Typography>
+          <Typography variant="body2" sx={{ color: '#9CA3AF' }}>Manage complaints, assign testers, and track progress</Typography>
         </Container>
       </Box>
 
       <Container maxWidth="xl" sx={{ py: 4 }}>
-        {/* Stats Cards */}
+        {/* Stats Cards - Clickable */}
         <Grid container spacing={3} sx={{ mb: 4 }}>
           <Grid item xs={6} sm={3}>
-            <Card sx={{ bgcolor: 'rgba(96, 165, 250, 0.14)' }}>
+            <Card 
+              onClick={() => handleFilterClick('all')}
+              sx={{ 
+                bgcolor: filterStatus === 'all' ? 'rgba(10,102,255,0.2)' : 'rgba(255,255,255,0.05)',
+                border: filterStatus === 'all' ? '2px solid #0A66FF' : '1px solid rgba(10,102,255,0.2)',
+                cursor: 'pointer',
+                transition: 'all 0.3s ease',
+                '&:hover': { transform: 'translateY(-4px)', bgcolor: 'rgba(10,102,255,0.15)' }
+              }}
+            >
               <CardContent>
-                <Typography variant="caption">Total Complaints</Typography>
-                <Typography variant="h4">{complaints.length}</Typography>
+                <Typography variant="caption" sx={{ color: '#9CA3AF' }}>Total Complaints</Typography>
+                <Typography variant="h4" sx={{ color: '#FFFFFF', fontWeight: 800 }}>{total}</Typography>
               </CardContent>
             </Card>
           </Grid>
           <Grid item xs={6} sm={3}>
-            <Card sx={{ bgcolor: 'rgba(245, 158, 11, 0.14)' }}>
+            <Card 
+              onClick={() => handleFilterClick('pending')}
+              sx={{ 
+                bgcolor: filterStatus === 'pending' ? 'rgba(245,158,11,0.2)' : 'rgba(255,255,255,0.05)',
+                border: filterStatus === 'pending' ? '2px solid #F59E0B' : '1px solid rgba(10,102,255,0.2)',
+                cursor: 'pointer',
+                transition: 'all 0.3s ease',
+                '&:hover': { transform: 'translateY(-4px)', bgcolor: 'rgba(245,158,11,0.1)' }
+              }}
+            >
               <CardContent>
-                <Typography variant="caption">Pending</Typography>
-                <Typography variant="h4">{complaints.filter(c => c.status === 'pending').length}</Typography>
+                <Typography variant="caption" sx={{ color: '#9CA3AF' }}>Pending</Typography>
+                <Typography variant="h4" sx={{ color: '#F59E0B', fontWeight: 800 }}>{pending}</Typography>
               </CardContent>
             </Card>
           </Grid>
           <Grid item xs={6} sm={3}>
-            <Card sx={{ bgcolor: 'rgba(59, 130, 246, 0.14)' }}>
+            <Card 
+              onClick={() => handleFilterClick('assigned')}
+              sx={{ 
+                bgcolor: filterStatus === 'assigned' ? 'rgba(10,102,255,0.2)' : 'rgba(255,255,255,0.05)',
+                border: filterStatus === 'assigned' ? '2px solid #0A66FF' : '1px solid rgba(10,102,255,0.2)',
+                cursor: 'pointer',
+                transition: 'all 0.3s ease',
+                '&:hover': { transform: 'translateY(-4px)', bgcolor: 'rgba(10,102,255,0.1)' }
+              }}
+            >
               <CardContent>
-                <Typography variant="caption">Assigned</Typography>
-                <Typography variant="h4">{complaints.filter(c => c.status === 'assigned').length}</Typography>
+                <Typography variant="caption" sx={{ color: '#9CA3AF' }}>Assigned</Typography>
+                <Typography variant="h4" sx={{ color: '#0A66FF', fontWeight: 800 }}>{assigned}</Typography>
               </CardContent>
             </Card>
           </Grid>
           <Grid item xs={6} sm={3}>
-            <Card sx={{ bgcolor: 'rgba(34, 197, 94, 0.14)' }}>
+            <Card 
+              onClick={() => handleFilterClick('completed')}
+              sx={{ 
+                bgcolor: filterStatus === 'completed' ? 'rgba(34,197,94,0.2)' : 'rgba(255,255,255,0.05)',
+                border: filterStatus === 'completed' ? '2px solid #22C55E' : '1px solid rgba(10,102,255,0.2)',
+                cursor: 'pointer',
+                transition: 'all 0.3s ease',
+                '&:hover': { transform: 'translateY(-4px)', bgcolor: 'rgba(34,197,94,0.1)' }
+              }}
+            >
               <CardContent>
-                <Typography variant="caption">Completed/Closed</Typography>
-                <Typography variant="h4">{complaints.filter(c => c.status === 'completed' || c.status === 'closed').length}</Typography>
+                <Typography variant="caption" sx={{ color: '#9CA3AF' }}>Completed</Typography>
+                <Typography variant="h4" sx={{ color: '#22C55E', fontWeight: 800 }}>{completed}</Typography>
               </CardContent>
             </Card>
           </Grid>
         </Grid>
 
-        {/* Tabs */}
-        <Paper sx={{ borderRadius: 4, overflow: 'hidden' }}>
-          <Box sx={{ borderBottom: 1, borderColor: 'divider', px: 2, pt: 2 }}>
-            <Tabs value={tabValue} onChange={(e, v) => setTabValue(v)}>
-              <Tab label={`Pending (${complaints.filter(c => c.status !== 'closed' && c.status !== 'completed').length})`} />
-              <Tab label={`Assigned (${complaints.filter(c => c.status === 'assigned').length})`} />
-              <Tab label={`Completed (${complaints.filter(c => c.status === 'completed').length})`} />
-              <Tab label={`Closed (${complaints.filter(c => c.status === 'closed').length})`} />
-            </Tabs>
+        {/* Filter Indicator */}
+        <Box sx={{ mb: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 1 }}>
+          <Box display="flex" alignItems="center" gap={1}>
+            <FilterIcon sx={{ color: '#00C6FF', fontSize: 20 }} />
+            <Typography variant="body2" sx={{ color: '#9CA3AF' }}>
+              {filterStatus === 'all' ? 'Showing all complaints' : `Showing ${filterStatus} complaints only`}
+            </Typography>
+            {filterStatus !== 'all' && (
+              <Chip 
+                label="Clear Filter" 
+                size="small" 
+                onClick={() => handleFilterClick('all')}
+                sx={{ cursor: 'pointer', bgcolor: 'rgba(10,102,255,0.2)', color: '#00C6FF' }}
+              />
+            )}
+          </Box>
+          <Button startIcon={<RefreshIcon />} onClick={fetchData} variant="contained" size="small">
+            Refresh
+          </Button>
+        </Box>
+
+        {/* Complaints Table */}
+        <Paper sx={{ borderRadius: 4, overflow: 'hidden', background: 'rgba(15,23,42,0.85)', border: '1px solid rgba(10,102,255,0.2)' }}>
+          <Box sx={{ p: 3 }}>
+            <Typography variant="h6" sx={{ color: '#FFFFFF' }}>
+              {filterStatus === 'all' ? 'All Complaints' : `${filterStatus.charAt(0).toUpperCase() + filterStatus.slice(1)} Complaints`}
+            </Typography>
           </Box>
           
-          <Box sx={{ p: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 2 }}>
-            <TextField
-              size="small"
-              placeholder="Search complaints..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              InputProps={{ startAdornment: <InputAdornment position="start"><SearchIcon /></InputAdornment> }}
-              sx={{ minWidth: 250 }}
-            />
-            <Button startIcon={<RefreshIcon />} onClick={fetchData} variant="contained">
-              Refresh
-            </Button>
-          </Box>
-
           {loading ? (
-            <Box sx={{ p: 4, textAlign: 'center' }}><CircularProgress sx={{ color: '#2E7D32' }} /></Box>
+            <Box sx={{ p: 4, textAlign: 'center' }}><CircularProgress sx={{ color: '#0A66FF' }} /></Box>
           ) : filteredComplaints.length === 0 ? (
-            <Box sx={{ p: 4, textAlign: 'center' }}><Typography>No complaints found</Typography></Box>
+            <Box sx={{ p: 4, textAlign: 'center' }}>
+              <Typography sx={{ color: '#9CA3AF' }}>No {filterStatus !== 'all' ? filterStatus : ''} complaints found</Typography>
+            </Box>
           ) : (
             <TableContainer>
               <Table>
                 <TableHead>
-                  <TableRow sx={{ bgcolor: 'rgba(255,255,255,0.04)' }}>
-                    <TableCell>ID</TableCell>
-                    <TableCell>Type</TableCell>
-                    <TableCell>Priority</TableCell>
-                    <TableCell>Status</TableCell>
-                    <TableCell>Location</TableCell>
-                    <TableCell>Fill Level</TableCell>
-                    <TableCell>Actions</TableCell>
+                  <TableRow sx={{ bgcolor: 'rgba(10,102,255,0.1)' }}>
+                    <TableCell sx={{ color: '#FFFFFF' }}>ID</TableCell>
+                    <TableCell sx={{ color: '#FFFFFF' }}>Type</TableCell>
+                    <TableCell sx={{ color: '#FFFFFF' }}>Priority</TableCell>
+                    <TableCell sx={{ color: '#FFFFFF' }}>Location</TableCell>
+                    <TableCell sx={{ color: '#FFFFFF' }}>Fill Level</TableCell>
+                    <TableCell sx={{ color: '#FFFFFF' }}>Status</TableCell>
+                    <TableCell sx={{ color: '#FFFFFF' }} align="center">Action</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
@@ -241,38 +260,40 @@ const AdminDashboard = ({ token, user, setToken }) => {
                       <TableCell>#{complaint.id}</TableCell>
                       <TableCell>{complaint.complaint_type}</TableCell>
                       <TableCell>
-                        <Chip label={complaint.priority} sx={{ bgcolor: getPriorityColor(complaint.priority), color: 'white', fontSize: '0.7rem' }} />
+                        <Chip 
+                          label={complaint.priority} 
+                          sx={{ bgcolor: getPriorityColor(complaint.priority), color: 'white' }} 
+                        />
                       </TableCell>
                       <TableCell>
-                        <Chip label={complaint.status} sx={{ bgcolor: getStatusColor(complaint.status), color: 'white', fontSize: '0.7rem' }} />
-                      </TableCell>
-                      <TableCell>
-                        <Typography variant="caption" sx={{ fontFamily: 'monospace' }}>
-                          {complaint.latitude?.toFixed(4)}, {complaint.longitude?.toFixed(4)}
-                        </Typography>
+                        {complaint.latitude?.toFixed(4)}, {complaint.longitude?.toFixed(4)}
                       </TableCell>
                       <TableCell>
                         <Chip label={`${complaint.fill_level_before || 0}%`} size="small" />
-                        {complaint.fill_level_after && (
-                          <Typography variant="caption" display="block">→ {complaint.fill_level_after}%</Typography>
-                        )}
                       </TableCell>
                       <TableCell>
-                        <Box display="flex" gap={1}>
-                          {complaint.status === 'pending' && (
-                            <Button size="small" variant="contained" startIcon={<AssignIcon />} onClick={() => { setSelectedComplaint(complaint); setAssignDialogOpen(true); }}>
-                              Assign
-                            </Button>
-                          )}
-                          {complaint.status === 'completed' && (
-                            <Button size="small" variant="contained" startIcon={<CloseIcon />} onClick={() => { setSelectedComplaint(complaint); setCloseDialogOpen(true); }}>
-                              Close
-                            </Button>
-                          )}
-                          {complaint.status === 'closed' && (
-                            <Chip label="Closed" size="small" sx={{ bgcolor: '#6B7280', color: 'white' }} />
-                          )}
-                        </Box>
+                        <Chip 
+                          label={complaint.status} 
+                          sx={{ bgcolor: getStatusColor(complaint.status), color: 'white' }} 
+                        />
+                      </TableCell>
+                      <TableCell align="center">
+                        {complaint.status === 'pending' && (
+                          <Button 
+                            variant="contained"
+                            startIcon={<AssignIcon />} 
+                            onClick={() => setSelectedComplaint(complaint)} 
+                            size="small"
+                          >
+                            Assign
+                          </Button>
+                        )}
+                        {complaint.status === 'assigned' && (
+                          <Chip label="Assigned" size="small" sx={{ bgcolor: '#0A66FF', color: 'white' }} />
+                        )}
+                        {complaint.status === 'completed' && (
+                          <Chip label="Completed" size="small" sx={{ bgcolor: '#22C55E', color: 'white' }} />
+                        )}
                       </TableCell>
                     </TableRow>
                   ))}
@@ -284,44 +305,46 @@ const AdminDashboard = ({ token, user, setToken }) => {
       </Container>
 
       {/* Assign Dialog */}
-      <Dialog open={assignDialogOpen} onClose={() => setAssignDialogOpen(false)} maxWidth="sm" fullWidth>
-        <DialogTitle>Assign Complaint #{selectedComplaint?.id}</DialogTitle>
+      <Dialog open={!!selectedComplaint} onClose={() => { setSelectedComplaint(null); setSelectedTester(''); }} maxWidth="sm" fullWidth>
+        <DialogTitle sx={{ bgcolor: 'rgba(10,102,255,0.15)', color: '#FFFFFF' }}>
+          Assign Complaint #{selectedComplaint?.id}
+        </DialogTitle>
         <DialogContent>
-          <FormControl fullWidth sx={{ mt: 2 }}>
-            <InputLabel>Select Tester</InputLabel>
-            <Select value={selectedTester} onChange={(e) => setSelectedTester(e.target.value)} label="Select Tester">
-              {testers.map(tester => (
-                <MenuItem key={tester.id} value={tester.username}>{tester.username}</MenuItem>
-              ))}
-            </Select>
-          </FormControl>
+          <Box sx={{ mt: 2 }}>
+            <Alert severity="info" sx={{ mb: 2, borderRadius: 2 }}>
+              <strong>Complaint Details:</strong><br />
+              Type: {selectedComplaint?.complaint_type}<br />
+              Priority: {selectedComplaint?.priority}<br />
+              Fill Level: {selectedComplaint?.fill_level_before}%
+            </Alert>
+            
+            <FormControl fullWidth>
+              <InputLabel sx={{ color: '#9CA3AF' }}>Select Tester</InputLabel>
+              <Select
+                value={selectedTester}
+                onChange={(e) => setSelectedTester(e.target.value)}
+                label="Select Tester"
+                sx={{ color: '#FFFFFF' }}
+              >
+                {testers.map((tester) => (
+                  <MenuItem key={tester.id || tester.username} value={tester.username}>
+                    {tester.username}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          </Box>
         </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setAssignDialogOpen(false)}>Cancel</Button>
-          <Button onClick={handleAssign} variant="contained">Assign</Button>
-        </DialogActions>
-      </Dialog>
-
-      {/* Close Dialog */}
-      <Dialog open={closeDialogOpen} onClose={() => setCloseDialogOpen(false)} maxWidth="sm" fullWidth>
-        <DialogTitle>Close Complaint #{selectedComplaint?.id}</DialogTitle>
-        <DialogContent>
-          <Alert severity="info" sx={{ mt: 2 }}>
-            <strong>Complaint Details:</strong><br />
-            Type: {selectedComplaint?.complaint_type}<br />
-            Priority: {selectedComplaint?.priority}<br />
-            Fill Level Before: {selectedComplaint?.fill_level_before}%<br />
-            Fill Level After: {selectedComplaint?.fill_level_after}%<br />
-            Reduction: {(selectedComplaint?.fill_level_before - selectedComplaint?.fill_level_after)}%
-          </Alert>
-          <Typography sx={{ mt: 2 }}>
-            Are you sure you want to close this complaint? This action cannot be undone.
-          </Typography>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setCloseDialogOpen(false)}>Cancel</Button>
-          <Button onClick={handleCloseComplaint} variant="contained" startIcon={<CloseIcon />}>
-            Confirm Close
+        <DialogActions sx={{ p: 3 }}>
+          <Button onClick={() => { setSelectedComplaint(null); setSelectedTester(''); }} variant="outlined">
+            Cancel
+          </Button>
+          <Button 
+            onClick={handleAssign} 
+            variant="contained" 
+            disabled={!selectedTester || assigning}
+          >
+            {assigning ? 'Assigning...' : 'Assign to Tester'}
           </Button>
         </DialogActions>
       </Dialog>
@@ -330,6 +353,3 @@ const AdminDashboard = ({ token, user, setToken }) => {
 };
 
 export default AdminDashboard;
-
-
-

@@ -14,7 +14,9 @@ import {
   DeleteSweep as CleanIcon,
   Menu as MenuIcon,
   Person as PersonIcon,
-  Settings as SettingsIcon
+  Settings as SettingsIcon,
+  TaskAlt as TaskIcon,
+  AutoGraph as PredictIcon
 } from '@mui/icons-material';
 
 const Navigation = ({ user, setToken }) => {
@@ -39,18 +41,41 @@ const Navigation = ({ user, setToken }) => {
   const isAdmin = user === 'admin';
   const isTester = user?.startsWith('tester');
 
-  const navItems = [
-    { path: '/', label: 'Dashboard', icon: <DashboardIcon />, show: true },
-    { path: '/submit', label: 'Complaints', icon: <AddIcon />, show: !isTester },
-    { path: '/complaint-map', label: 'Map', icon: <MapIcon />, show: true },
-    { path: '/routes', label: 'Routes', icon: <RouteIcon />, show: true },
-    { path: '/reports', label: 'Reports', icon: <DescriptionIcon />, show: true },
-    { path: '/admin', label: 'Admin', icon: <AdminIcon />, show: isAdmin },
-  ];
+  // Navigation items based on user role
+  const getNavItems = () => {
+    if (isAdmin) {
+      return [
+        { path: '/', label: 'Dashboard', icon: <DashboardIcon />, show: true },
+        { path: '/complaint-map', label: 'Map', icon: <MapIcon />, show: true },
+        { path: '/routes', label: 'Routes', icon: <RouteIcon />, show: true },
+        { path: '/predict', label: 'Predict', icon: <PredictIcon />, show: true },
+        { path: '/reports', label: 'Reports', icon: <DescriptionIcon />, show: true },
+        { path: '/admin', label: 'Admin', icon: <AdminIcon />, show: true },
+      ];
+    } else if (isTester) {
+      return [
+        { path: '/', label: 'Dashboard', icon: <DashboardIcon />, show: true },
+        { path: '/tester', label: 'My Tasks', icon: <TaskIcon />, show: true },
+        { path: '/complaint-map', label: 'Map', icon: <MapIcon />, show: true },
+        { path: '/routes', label: 'Routes', icon: <RouteIcon />, show: true },
+        { path: '/predict', label: 'Predict', icon: <PredictIcon />, show: true },
+        { path: '/reports', label: 'Reports', icon: <DescriptionIcon />, show: true },
+      ];
+    } else {
+      return [
+        { path: '/', label: 'Dashboard', icon: <DashboardIcon />, show: true },
+        { path: '/submit', label: 'New Complaint', icon: <AddIcon />, show: true },
+        { path: '/complaint-map', label: 'Map', icon: <MapIcon />, show: true },
+        { path: '/routes', label: 'Routes', icon: <RouteIcon />, show: true },
+        { path: '/predict', label: 'Predict', icon: <PredictIcon />, show: true },
+        { path: '/reports', label: 'Reports', icon: <DescriptionIcon />, show: true },
+      ];
+    }
+  };
 
+  const navItems = getNavItems();
   const isActive = (path) => window.location.pathname === path;
 
-  // Menu open handler
   const handleMenuOpen = (event) => {
     setAnchorEl(event.currentTarget);
   };
@@ -135,19 +160,13 @@ const Navigation = ({ user, setToken }) => {
         </Container>
       </AppBar>
 
-      {/* User Dropdown Menu - Directly below the avatar */}
+      {/* User Dropdown Menu */}
       <Menu
         anchorEl={anchorEl}
         open={Boolean(anchorEl)}
         onClose={handleMenuClose}
-        anchorOrigin={{
-          vertical: 'bottom',
-          horizontal: 'right',
-        }}
-        transformOrigin={{
-          vertical: 'top',
-          horizontal: 'right',
-        }}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+        transformOrigin={{ vertical: 'top', horizontal: 'right' }}
         PaperProps={{
           sx: {
             background: 'rgba(2, 6, 23, 0.98)',
@@ -156,11 +175,9 @@ const Navigation = ({ user, setToken }) => {
             borderRadius: '12px',
             mt: 1,
             minWidth: 200,
-            boxShadow: '0 10px 30px rgba(0,0,0,0.5)',
           }
         }}
       >
-        {/* User Info Header */}
         <Box sx={{ px: 2, py: 1.5, borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
           <Typography variant="subtitle2" sx={{ color: '#FFFFFF', fontWeight: 700 }}>
             {user || 'User'}
@@ -170,7 +187,6 @@ const Navigation = ({ user, setToken }) => {
           </Typography>
         </Box>
 
-        {/* Menu Items */}
         <MenuItem onClick={() => { navigateTo('/profile'); handleMenuClose(); }} sx={{ color: '#E5E7EB' }}>
           <PersonIcon fontSize="small" sx={{ mr: 1.5 }} />
           Profile
@@ -182,7 +198,6 @@ const Navigation = ({ user, setToken }) => {
         
         <Divider sx={{ my: 1, borderColor: 'rgba(255,255,255,0.1)' }} />
         
-        {/* Logout Button - Bottom of menu */}
         <MenuItem onClick={handleLogout} sx={{ color: '#EF4444', '&:hover': { bgcolor: 'rgba(239,68,68,0.1)' } }}>
           <LogoutIcon fontSize="small" sx={{ mr: 1.5, color: '#EF4444' }} />
           <Typography sx={{ color: '#EF4444', fontWeight: 500 }}>Logout</Typography>
@@ -206,7 +221,9 @@ const Navigation = ({ user, setToken }) => {
       >
         <Box sx={{ p: 2, borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
           <Typography variant="subtitle2" sx={{ color: '#FFFFFF', fontWeight: 700 }}>{user || 'User'}</Typography>
-          <Typography variant="caption" sx={{ color: '#9CA3AF' }}>Menu</Typography>
+          <Typography variant="caption" sx={{ color: '#9CA3AF' }}>
+            {isAdmin ? 'Administrator' : isTester ? 'Field Tester' : 'Citizen'}
+          </Typography>
         </Box>
         {navItems.filter(item => item.show).map((item) => (
           <MenuItem key={item.path} onClick={() => navigateTo(item.path)} selected={isActive(item.path)}>
