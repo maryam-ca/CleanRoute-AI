@@ -1,7 +1,12 @@
 import numpy as np
+import pandas as pd
 from PIL import Image
 import joblib
 import os
+from pathlib import Path
+
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
+ML_MODELS_DIR = PROJECT_ROOT / 'ml_models'
 
 class WasteDetectionAI:
     """AI model to detect waste level from images using trained ML models"""
@@ -15,21 +20,24 @@ class WasteDetectionAI:
     def load_models(self):
         """Load trained ML models"""
         try:
-            if os.path.exists('../ml_models/fill_level_model.pkl'):
-                self.fill_model = joblib.load('../ml_models/fill_level_model.pkl')
-                print("✅ Fill level model loaded")
+            fill_model_path = ML_MODELS_DIR / 'fill_level_model.pkl'
+            if fill_model_path.exists():
+                self.fill_model = joblib.load(fill_model_path)
+                print("Fill level model loaded")
             else:
-                print("⚠️ Fill level model not found, using fallback")
+                print("Fill level model not found, using fallback")
         except Exception as e:
             print(f"Error loading fill model: {e}")
         
         try:
-            if os.path.exists('../ml_models/priority_model.pkl'):
-                self.priority_model = joblib.load('../ml_models/priority_model.pkl')
-                self.label_encoder = joblib.load('../ml_models/priority_label_encoder.pkl')
-                print("✅ Priority model loaded")
+            priority_model_path = ML_MODELS_DIR / 'priority_model.pkl'
+            encoder_path = ML_MODELS_DIR / 'priority_label_encoder.pkl'
+            if priority_model_path.exists() and encoder_path.exists():
+                self.priority_model = joblib.load(priority_model_path)
+                self.label_encoder = joblib.load(encoder_path)
+                print("Priority model loaded")
             else:
-                print("⚠️ Priority model not found, using fallback")
+                print("Priority model not found, using fallback")
         except Exception as e:
             print(f"Error loading priority model: {e}")
     
@@ -76,12 +84,12 @@ class WasteDetectionAI:
         if features is None:
             return self.fallback_prediction(complaint_type, is_near_sensitive)
         
-        feature_array = np.array([[
-            features['brightness'],
-            features['edge_density'],
-            features['color_variance'],
-            features['texture']
-        ]])
+        feature_array = pd.DataFrame([{
+            'brightness': features['brightness'],
+            'edge_density': features['edge_density'],
+            'color_variance': features['color_variance'],
+            'texture': features['texture']
+        }])
         
         # Predict fill level
         if self.fill_model:

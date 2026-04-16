@@ -31,7 +31,7 @@ const AppContent = () => {
   if (loading) {
     return (
       <Box display="flex" justifyContent="center" alignItems="center" minHeight="100vh">
-        <CircularProgress sx={{ color: '#F97316' }} />
+        <CircularProgress sx={{ color: '#4f8cff' }} />
       </Box>
     );
   }

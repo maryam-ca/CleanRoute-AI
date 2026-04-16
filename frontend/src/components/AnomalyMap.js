@@ -12,6 +12,7 @@ import {
   Refresh as RefreshIcon,
   LocationOn as LocationIcon
 } from '@mui/icons-material';
+import api from '../services/api';
 
 // Fix marker icons
 delete L.Icon.Default.prototype._getIconUrl;
@@ -41,14 +42,10 @@ const AnomalyMap = ({ token, user }) => {
 
   const fetchAnomalies = async () => {
     setLoading(true);
-    const apiToken = localStorage.getItem('token');
-    
+
     try {
-      const response = await fetch('https://cleanroute-ai.onrender.com/api/anomalies/', {
-        headers: { 'Authorization': `Bearer ${apiToken}` }
-      });
-      const data = await response.json();
-      
+      const data = await api.getAnomalies();
+
       if (data.success) {
         setAnomalies(data.anomalies || []);
         setHotspots(data.hotspots || []);
@@ -57,10 +54,12 @@ const AnomalyMap = ({ token, user }) => {
           total_hotspots: data.total_hotspots || 0
         });
         toast.info(`Found ${data.total_anomalies} anomalies`);
+      } else {
+        toast.error(data.error || 'Failed to load anomaly data');
       }
     } catch (error) {
       console.error('Error fetching anomalies:', error);
-      toast.error('Failed to load anomaly data');
+      toast.error(error.message || 'Failed to load anomaly data');
     } finally {
       setLoading(false);
     }

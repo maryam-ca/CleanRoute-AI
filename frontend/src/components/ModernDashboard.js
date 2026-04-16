@@ -59,16 +59,16 @@ const ModernDashboard = ({ token, user, setToken }) => {
   ];
 
   const pieData = [
-    { name: 'Overflowing', value: 35, color: '#F59E0B' },
+    { name: 'Overflowing', value: 35, color: '#60A5FA' },
     { name: 'Spillage', value: 25, color: '#3B82F6' },
-    { name: 'Missed', value: 20, color: '#EF4444' },
-    { name: 'Illegal', value: 12, color: '#8B5CF6' },
-    { name: 'Other', value: 8, color: '#10B981' },
-    { name: 'Overflowing', value: 35, color: '#F59E0B' },
+    { name: 'Missed', value: 20, color: '#93C5FD' },
+    { name: 'Illegal', value: 12, color: '#2563EB' },
+    { name: 'Other', value: 8, color: '#BFDBFE' },
+    { name: 'Overflowing', value: 35, color: '#60A5FA' },
     { name: 'Spillage', value: 25, color: '#3B82F6' },
-    { name: 'Missed', value: 20, color: '#EF4444' },
-    { name: 'Illegal', value: 12, color: '#8B5CF6' },
-    { name: 'Other', value: 8, color: '#10B981' },
+    { name: 'Missed', value: 20, color: '#93C5FD' },
+    { name: 'Illegal', value: 12, color: '#2563EB' },
+    { name: 'Other', value: 8, color: '#BFDBFE' },
   ];
 
   const total = complaints.length;
@@ -87,8 +87,8 @@ const ModernDashboard = ({ token, user, setToken }) => {
       <Card sx={{ 
         overflow: 'hidden',
         position: 'relative',
-        background: `linear-gradient(135deg, ${color}15 0%, ${color}05 100%)`,
-        border: `1px solid ${color}30`,
+        background: `linear-gradient(135deg, ${color}16 0%, rgba(15, 23, 42, 0.16) 100%)`,
+        border: `1px solid ${color}22`,
       }}>
         <CardContent>
           <Box display="flex" justifyContent="space-between" alignItems="center">
@@ -116,19 +116,19 @@ const ModernDashboard = ({ token, user, setToken }) => {
 
   const getPriorityColor = (priority) => {
     switch(priority) {
-      case 'urgent': return '#EF4444';
-      case 'high': return '#F59E0B';
+      case 'urgent': return '#93C5FD';
+      case 'high': return '#60A5FA';
       case 'medium': return '#3B82F6';
-      default: return '#10B981';
+      default: return '#BFDBFE';
     }
   };
 
   const getStatusIcon = (status) => {
     switch(status) {
-      case 'completed': return <CheckIcon sx={{ fontSize: 14, color: '#10B981' }} />;
-      case 'assigned': return <PendingIcon sx={{ fontSize: 14, color: '#F59E0B' }} />;
+      case 'completed': return <CheckIcon sx={{ fontSize: 14, color: '#93C5FD' }} />;
+      case 'assigned': return <PendingIcon sx={{ fontSize: 14, color: '#60A5FA' }} />;
       case 'closed': return <DoneAllIcon sx={{ fontSize: 14, color: '#6B7280' }} />;
-      default: return <WarningIcon sx={{ fontSize: 14, color: '#EF4444' }} />;
+      default: return <WarningIcon sx={{ fontSize: 14, color: '#7DB0FF' }} />;
     }
   };
 
@@ -138,15 +138,18 @@ const ModernDashboard = ({ token, user, setToken }) => {
   );
 
   return (
-    <Box sx={{ bgcolor: '#F5F5F5', minHeight: '100vh', pt: '80px' }}>
+    <Box sx={{ bgcolor: 'transparent', minHeight: '100vh', pt: '110px' }}>
       <Toaster position="top-right" />
       
       {/* Hero Section */}
       <Box sx={{ 
-        background: 'linear-gradient(135deg, #2E7D32 0%, #1B5E20 100%)',
+        background: 'linear-gradient(135deg, rgba(79, 140, 255, 0.16) 0%, rgba(15, 23, 42, 0.18) 100%)',
         color: 'white',
-        pt: 4,
+        pt: 5,
         pb: 6,
+        mx: { xs: 2, md: 3 },
+        border: '1px solid rgba(148, 163, 184, 0.12)',
+        borderRadius: 6,
         position: 'relative',
         overflow: 'hidden'
       }}>
@@ -168,18 +171,18 @@ const ModernDashboard = ({ token, user, setToken }) => {
 
       <Container maxWidth="xl" sx={{ mt: 0, pb: 6 }}>
         {/* Stats Grid */}
-        <Grid container spacing={3} sx={{ mb: 4 }}>
+        <Grid container spacing={3} sx={{ mb: 5, mt: -3 }}>
           <Grid item xs={6} sm={3} md={2.4}>
-            <StatCard title="TOTAL" value={total} icon={<CleanIcon />} color="#2E7D32" delay={0} />
+            <StatCard title="TOTAL" value={total} icon={<CleanIcon />} color="#60A5FA" delay={0} />
           </Grid>
           <Grid item xs={6} sm={3} md={2.4}>
-            <StatCard title="PENDING" value={pending} icon={<PendingIcon />} color="#F59E0B" delay={1} />
+            <StatCard title="PENDING" value={pending} icon={<PendingIcon />} color="#93C5FD" delay={1} />
           </Grid>
           <Grid item xs={6} sm={3} md={2.4}>
             <StatCard title="ASSIGNED" value={assigned} icon={<TaskIcon />} color="#3B82F6" delay={2} />
           </Grid>
           <Grid item xs={6} sm={3} md={2.4}>
-            <StatCard title="COMPLETED" value={completed} icon={<CheckIcon />} color="#4CAF50" delay={3} />
+            <StatCard title="COMPLETED" value={completed} icon={<CheckIcon />} color="#7DB0FF" delay={3} />
           </Grid>
           <Grid item xs={6} sm={3} md={2.4}>
             <StatCard title="CLOSED" value={closed} icon={<DoneAllIcon />} color="#6B7280" delay={4} />
@@ -199,8 +202,8 @@ const ModernDashboard = ({ token, user, setToken }) => {
                     <AreaChart data={trendData}>
                       <defs>
                         <linearGradient id="complaintGradient" x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="5%" stopColor="#2E7D32" stopOpacity={0.3}/>
-                          <stop offset="95%" stopColor="#2E7D32" stopOpacity={0}/>
+                          <stop offset="5%" stopColor="#3B82F6" stopOpacity={0.3}/>
+                          <stop offset="95%" stopColor="#3B82F6" stopOpacity={0}/>
                         </linearGradient>
                       </defs>
                       <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" />
@@ -208,8 +211,8 @@ const ModernDashboard = ({ token, user, setToken }) => {
                       <YAxis stroke="#9CA3AF" />
                       <ReTooltip contentStyle={{ borderRadius: 12, border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }} />
                       <Legend />
-                      <Area type="monotone" dataKey="complaints" stroke="#2E7D32" strokeWidth={2} fill="url(#complaintGradient)" name="New Complaints" />
-                      <Area type="monotone" dataKey="resolved" stroke="#00897B" strokeWidth={2} fill="none" name="Resolved" />
+                      <Area type="monotone" dataKey="complaints" stroke="#60A5FA" strokeWidth={2} fill="url(#complaintGradient)" name="New Complaints" />
+                      <Area type="monotone" dataKey="resolved" stroke="#BFDBFE" strokeWidth={2} fill="none" name="Resolved" />
                     </AreaChart>
                   </ResponsiveContainer>
                 </CardContent>
@@ -256,21 +259,21 @@ const ModernDashboard = ({ token, user, setToken }) => {
                     InputProps={{ startAdornment: <InputAdornment position="start"><SearchIcon /></InputAdornment> }}
                     sx={{ minWidth: 250 }}
                   />
-                  <Button startIcon={<RefreshIcon />} onClick={fetchData} variant="contained" sx={{ bgcolor: '#2E7D32' }}>
+                  <Button startIcon={<RefreshIcon />} onClick={fetchData} variant="contained">
                     Refresh
                   </Button>
                 </Box>
               </Box>
 
               {loading ? (
-                <Box sx={{ py: 8, textAlign: 'center' }}><CircularProgress sx={{ color: '#2E7D32' }} /></Box>
+                <Box sx={{ py: 8, textAlign: 'center' }}><CircularProgress sx={{ color: '#4f8cff' }} /></Box>
               ) : complaints.length === 0 ? (
                 <Box sx={{ py: 8, textAlign: 'center' }}><Typography>No complaints found</Typography></Box>
               ) : (
                 <TableContainer>
                   <Table>
                     <TableHead>
-                      <TableRow sx={{ bgcolor: '#E8F5E9' }}>
+                      <TableRow sx={{ bgcolor: 'rgba(255,255,255,0.03)' }}>
                         <TableCell>ID</TableCell>
                         <TableCell>Type</TableCell>
                         <TableCell>Priority</TableCell>
@@ -284,7 +287,7 @@ const ModernDashboard = ({ token, user, setToken }) => {
                         <TableRow key={complaint.id} hover>
                           <TableCell>#{complaint.id}</TableCell>
                           <TableCell>
-                            <Chip label={complaint.complaint_type} size="small" sx={{ bgcolor: '#E8F5E9', color: '#2E7D32' }} />
+                            <Chip label={complaint.complaint_type} size="small" sx={{ bgcolor: 'rgba(96, 165, 250, 0.12)', color: '#dce8ff' }} />
                           </TableCell>
                           <TableCell>
                             <Chip label={complaint.priority} size="small" sx={{ bgcolor: getPriorityColor(complaint.priority), color: 'white' }} />

@@ -75,6 +75,7 @@ class ComplaintViewSet(viewsets.ModelViewSet):
             'latitude': request.data.get('latitude'),
             'longitude': request.data.get('longitude'),
             'description': request.data.get('description', ''),
+            'fill_level_before': request.data.get('fill_level_before') or 0,
             'user': request.user.id
         }
         

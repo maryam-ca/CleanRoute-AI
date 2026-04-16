@@ -7,6 +7,7 @@ import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import toast, { Toaster } from 'react-hot-toast';
+import api from '../services/api';
 
 // Fix marker icons
 delete L.Icon.Default.prototype._getIconUrl;
@@ -16,9 +17,8 @@ L.Icon.Default.mergeOptions({
   shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
 });
 
-// Custom marker colors based on priority
 const getMarkerIcon = (priority) => {
-  const color = priority === 'urgent' ? 'red' : priority === 'high' ? 'orange' : priority === 'medium' ? 'blue' : 'green';
+  const color = priority === 'urgent' ? 'blue' : priority === 'high' ? 'blue' : priority === 'medium' ? 'blue' : 'violet';
   return new L.Icon({
     iconUrl: `https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-${color}.png`,
     shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
@@ -42,21 +42,9 @@ const RouteOptimizer = ({ token, user }) => {
     setLoading(true);
     setError(null);
     
-    const apiToken = localStorage.getItem('token');
-    
     try {
-      const response = await fetch('https://cleanroute-ai.onrender.com/api/optimize-routes/', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${apiToken}`
-        },
-        body: JSON.stringify({ area })
-      });
-      
-      const data = await response.json();
-      
-      if (response.ok && data.success) {
+      const data = await api.optimizeRoutes(area);
+      if (data.success) {
         setRoutes(data);
         setComplaints(data.complaints || []);
         toast.success(`Found ${data.total_complaints} complaints in ${area}!`);
@@ -78,10 +66,10 @@ const RouteOptimizer = ({ token, user }) => {
   };
 
   return (
-    <Box sx={{ bgcolor: '#F8FAFC', minHeight: '100vh' }}>
+    <Box sx={{ bgcolor: 'transparent', minHeight: '100vh', pt: '110px' }}>
       <Toaster position="top-right" />
       
-      <Box sx={{ bgcolor: '#F97316', color: 'white', py: 2, px: 4 }}>
+      <Box sx={{ mx: { xs: 2, md: 3 }, py: 3, px: 4, color: 'white', border: '1px solid rgba(148, 163, 184, 0.12)', borderRadius: 6, background: 'linear-gradient(135deg, rgba(79, 140, 255, 0.16) 0%, rgba(15, 23, 42, 0.18) 100%)' }}>
         <Container maxWidth="xl">
           <Typography variant="h5" sx={{ fontWeight: 700 }}>Route Optimization</Typography>
           <Typography variant="caption">AI-Powered Collection Route Planning</Typography>
@@ -108,7 +96,7 @@ const RouteOptimizer = ({ token, user }) => {
                   variant="contained"
                   onClick={handleOptimize}
                   disabled={loading}
-                  sx={{ bgcolor: '#F97316', py: 1.5 }}
+                  sx={{ py: 1.5 }}
                 >
                   {loading ? <CircularProgress size={24} color="inherit" /> : 'Optimize Routes'}
                 </Button>
@@ -122,19 +110,19 @@ const RouteOptimizer = ({ token, user }) => {
           <Grid item xs={12} md={8}>
             <Grid container spacing={2}>
               <Grid item xs={4}>
-                <Paper sx={{ p: 2, textAlign: 'center', bgcolor: '#E8F5E9' }}>
+                <Paper sx={{ p: 2.5, textAlign: 'center' }}>
                   <Typography variant="h4">{routes?.total_complaints || 0}</Typography>
                   <Typography variant="caption">Total Complaints</Typography>
                 </Paper>
               </Grid>
               <Grid item xs={4}>
-                <Paper sx={{ p: 2, textAlign: 'center', bgcolor: '#FFF3E0' }}>
+                <Paper sx={{ p: 2.5, textAlign: 'center' }}>
                   <Typography variant="h4">{routes?.total_clusters || 0}</Typography>
                   <Typography variant="caption">Optimal Routes</Typography>
                 </Paper>
               </Grid>
               <Grid item xs={4}>
-                <Paper sx={{ p: 2, textAlign: 'center', bgcolor: '#E3F2FD' }}>
+                <Paper sx={{ p: 2.5, textAlign: 'center' }}>
                   <Typography variant="h4">25%</Typography>
                   <Typography variant="caption">Time Saved</Typography>
                 </Paper>
@@ -153,12 +141,12 @@ const RouteOptimizer = ({ token, user }) => {
                   <Grid container spacing={2}>
                     {routes.routes.map((route, idx) => (
                       <Grid item xs={12} sm={6} md={4} key={idx}>
-                        <Card variant="outlined" sx={{ bgcolor: '#F5F5F5' }}>
+                        <Card variant="outlined" sx={{ bgcolor: 'rgba(255,255,255,0.02)' }}>
                           <CardContent>
                             <Typography variant="h6" sx={{ fontWeight: 700 }}>{route.route_id}</Typography>
                             <Typography variant="body2">{route.total_complaints} collection points</Typography>
                             {route.high_priority > 0 && (
-                              <Chip label={`${route.high_priority} urgent`} size="small" sx={{ mt: 1, bgcolor: '#FFEBEE', color: '#D32F2F' }} />
+                              <Chip label={`${route.high_priority} urgent`} size="small" sx={{ mt: 1, bgcolor: 'rgba(96, 165, 250, 0.14)', color: '#dce8ff' }} />
                             )}
                             <Typography variant="body2" sx={{ mt: 1 }}>{route.distance} • {route.estimated_time}</Typography>
                           </CardContent>
@@ -200,7 +188,7 @@ const RouteOptimizer = ({ token, user }) => {
                         >
                           <Popup>
                             <Box sx={{ p: 1, minWidth: 250 }}>
-                              <Typography variant="subtitle2" sx={{ fontWeight: 700, color: '#F97316' }}>
+                              <Typography variant="subtitle2" sx={{ fontWeight: 700, color: '#7DB0FF' }}>
                                 Complaint #{complaint.id}
                               </Typography>
                               <Typography variant="body2">📍 Type: {complaint.complaint_type}</Typography>

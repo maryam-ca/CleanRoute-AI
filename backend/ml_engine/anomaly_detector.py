@@ -10,6 +10,10 @@ from sklearn.preprocessing import StandardScaler
 from datetime import datetime, timedelta
 import os
 from math import radians, sin, cos, sqrt, atan2
+from pathlib import Path
+
+MODEL_DIR = Path(__file__).resolve().parent / 'models'
+MODEL_PATH = MODEL_DIR / 'anomaly_detector.pkl'
 
 class AnomalyDetector:
     def __init__(self):
@@ -20,8 +24,12 @@ class AnomalyDetector:
     def extract_features(self, complaints):
         """Extract features from complaints for anomaly detection"""
         features = []
+        valid_complaints = []
         
         for complaint in complaints:
+            if complaint.latitude is None or complaint.longitude is None:
+                continue
+
             # Time-based features
             hour = complaint.created_at.hour
             day_of_week = complaint.created_at.weekday()
@@ -47,16 +55,18 @@ class AnomalyDetector:
                 lat, lng,
                 priority_score, type_score, fill_level
             ])
+            valid_complaints.append(complaint)
         
-        return np.array(features)
+        return np.array(features), valid_complaints
     
     def train(self, complaints):
         """Train the Isolation Forest model"""
-        if len(complaints) < 10:
-            print(f"⚠️ Need at least 10 complaints to train (have {len(complaints)})")
+        X, valid_complaints = self.extract_features(complaints)
+
+        if len(valid_complaints) < 10:
+            print(f"Need at least 10 complaints to train (have {len(valid_complaints)})")
             return False
-        
-        X = self.extract_features(complaints)
+
         X_scaled = self.scaler.fit_transform(X)
         
         self.model = IsolationForest(
@@ -67,38 +77,41 @@ class AnomalyDetector:
         self.model.fit(X_scaled)
         
         # Save model
-        os.makedirs('models', exist_ok=True)
-        with open('models/anomaly_detector.pkl', 'wb') as f:
+        MODEL_DIR.mkdir(exist_ok=True)
+        with MODEL_PATH.open('wb') as f:
             pickle.dump({
                 'model': self.model,
                 'scaler': self.scaler
             }, f)
         
-        print(f"✅ Anomaly Detection Model trained on {len(complaints)} complaints")
+        print(f"Anomaly Detection Model trained on {len(valid_complaints)} complaints")
         return True
     
     def detect_anomalies(self, complaints):
         """Detect anomalies in complaints"""
         if self.model is None:
             try:
-                with open('models/anomaly_detector.pkl', 'rb') as f:
+                with MODEL_PATH.open('rb') as f:
                     saved = pickle.load(f)
                     self.model = saved['model']
                     self.scaler = saved['scaler']
             except:
-                return []
+                if not self.train(complaints):
+                    return []
         
         if len(complaints) == 0:
             return []
         
-        X = self.extract_features(complaints)
+        X, valid_complaints = self.extract_features(complaints)
+        if len(valid_complaints) == 0:
+            return []
         X_scaled = self.scaler.transform(X)
         
         predictions = self.model.predict(X_scaled)
         scores = self.model.score_samples(X_scaled)
         
         anomalies = []
-        for i, (complaint, pred, score) in enumerate(zip(complaints, predictions, scores)):
+        for i, (complaint, pred, score) in enumerate(zip(valid_complaints, predictions, scores)):
             if pred == -1:  # Anomaly detected
                 anomalies.append({
                     'complaint_id': complaint.id,

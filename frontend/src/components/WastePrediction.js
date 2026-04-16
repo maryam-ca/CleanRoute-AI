@@ -149,20 +149,20 @@ const WastePrediction = ({ token, user, setToken }) => {
   const predictionStartIndex = 7;
 
   return (
-    <Box sx={{ bgcolor: '#F1F8E9', minHeight: '100vh' }}>
+    <Box sx={{ bgcolor: 'transparent', minHeight: '100vh', pt: '110px' }}>
       <Toaster position="top-right" />
       
       {/* Header */}
-      <Box sx={{ bgcolor: '#1B5E20', color: 'white', py: 2, px: 4 }}>
+      <Box sx={{ mx: { xs: 2, md: 3 }, color: 'white', py: 3, px: 4, border: '1px solid rgba(148, 163, 184, 0.12)', borderRadius: 6, background: 'linear-gradient(135deg, rgba(79, 140, 255, 0.16) 0%, rgba(15, 23, 42, 0.18) 100%)' }}>
         <Container maxWidth="xl">
           <Box display="flex" justifyContent="space-between" alignItems="center">
             <Box display="flex" alignItems="center" gap={2}>
-              <ChartIcon sx={{ fontSize: 32, color: '#81C784' }} />
+              <ChartIcon sx={{ fontSize: 32, color: '#93C5FD' }} />
               <Box>
                 <Typography variant="h5" sx={{ fontWeight: 700 }}>Waste Generation Prediction</Typography>
                 <Typography variant="caption" sx={{ opacity: 0.8 }}>AI-Powered Forecasting & Analytics</Typography>
               </Box>
-              <Chip label="ML Model: Linear Regression" size="small" sx={{ bgcolor: '#4CAF50', color: 'white', ml: 2 }} />
+              <Chip label="ML Model: Linear Regression" size="small" sx={{ bgcolor: 'rgba(96, 165, 250, 0.16)', color: '#f8fbff', ml: 2 }} />
             </Box>
             <Button variant="outlined" onClick={() => window.location.href = '/'} sx={{ color: 'white', borderColor: 'rgba(255,255,255,0.3)' }}>
               Back to Dashboard
@@ -174,20 +174,20 @@ const WastePrediction = ({ token, user, setToken }) => {
       <Container maxWidth="xl" sx={{ py: 4 }}>
         {/* Model Info Card */}
         <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }}>
-          <Card sx={{ mb: 4, borderRadius: 4, bgcolor: '#E8F5E9' }}>
+          <Card sx={{ mb: 4, borderRadius: 4 }}>
             <CardContent>
               <Grid container spacing={3} alignItems="center">
                 <Grid item xs={12} md={7}>
-                  <Typography variant="h6" sx={{ fontWeight: 700, color: '#1B5E20', mb: 1 }}>
+                  <Typography variant="h6" sx={{ fontWeight: 700, color: '#f1f6ff', mb: 1 }}>
                     🤖 ML Model: Linear Regression with Temporal Features
                   </Typography>
                   <Typography variant="body2" color="text.secondary">
                     Features: Lag features (1-7 days), temporal patterns (day of week, month), weather indicators (temperature, precipitation)
                   </Typography>
                   <Box display="flex" gap={2} mt={2} flexWrap="wrap">
-                    <Chip label="RMSE: 0.45 tons" size="small" sx={{ bgcolor: '#4CAF50', color: 'white' }} />
+                    <Chip label="RMSE: 0.45 tons" size="small" sx={{ bgcolor: 'rgba(96, 165, 250, 0.16)', color: '#f8fbff' }} />
                     <Chip label="R² Score: 0.82" size="small" sx={{ bgcolor: '#2196F3', color: 'white' }} />
-                    <Chip label="MAE: 0.38 tons" size="small" sx={{ bgcolor: '#FF9800', color: 'white' }} />
+                    <Chip label="MAE: 0.38 tons" size="small" sx={{ bgcolor: 'rgba(96, 165, 250, 0.16)', color: '#f8fbff' }} />
                     <Chip label="MAPE: 12.5%" size="small" sx={{ bgcolor: '#9C27B0', color: 'white' }} />
                   </Box>
                 </Grid>
@@ -199,14 +199,14 @@ const WastePrediction = ({ token, user, setToken }) => {
                       value={days}
                       onChange={(e) => setDays(Math.min(30, Math.max(1, parseInt(e.target.value) || 7)))}
                       size="small"
-                      sx={{ flex: 1, bgcolor: 'white', borderRadius: 2 }}
+                      sx={{ flex: 1, borderRadius: 2 }}
                       InputProps={{ inputProps: { min: 1, max: 30 } }}
                     />
                     <Button
                       variant="contained"
                       onClick={handlePredict}
                       disabled={loading}
-                      sx={{ bgcolor: '#4CAF50', borderRadius: 3, px: 4, py: 1 }}
+                      sx={{ borderRadius: 3, px: 4, py: 1 }}
                     >
                       {loading ? <CircularProgress size={24} color="inherit" /> : 'Predict'}
                     </Button>
@@ -223,8 +223,8 @@ const WastePrediction = ({ token, user, setToken }) => {
             <Grid item xs={6} sm={3}>
               <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.1 }}>
                 <Card sx={{ borderRadius: 4, textAlign: 'center', py: 2 }}>
-                  <WasteIcon sx={{ fontSize: 32, color: '#4CAF50' }} />
-                  <Typography variant="h4" sx={{ fontWeight: 700, color: '#1B5E20' }}>{stats.totalWaste.toFixed(1)}</Typography>
+                  <WasteIcon sx={{ fontSize: 32, color: '#60A5FA' }} />
+                  <Typography variant="h4" sx={{ fontWeight: 700, color: '#dce8ff' }}>{stats.totalWaste.toFixed(1)}</Typography>
                   <Typography variant="caption" color="text.secondary">Total Waste (tons)</Typography>
                 </Card>
               </motion.div>
@@ -241,8 +241,8 @@ const WastePrediction = ({ token, user, setToken }) => {
             <Grid item xs={6} sm={3}>
               <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.3 }}>
                 <Card sx={{ borderRadius: 4, textAlign: 'center', py: 2 }}>
-                  <TrendingUpIcon sx={{ fontSize: 32, color: '#FF9800' }} />
-                  <Typography variant="h4" sx={{ fontWeight: 700, color: '#E65100' }}>{stats.maxWaste.toFixed(1)}</Typography>
+                  <TrendingUpIcon sx={{ fontSize: 32, color: '#7DB0FF' }} />
+                  <Typography variant="h4" sx={{ fontWeight: 700, color: '#dce8ff' }}>{stats.maxWaste.toFixed(1)}</Typography>
                   <Typography variant="caption" color="text.secondary">Peak Waste (tons)</Typography>
                 </Card>
               </motion.div>
@@ -250,8 +250,8 @@ const WastePrediction = ({ token, user, setToken }) => {
             <Grid item xs={6} sm={3}>
               <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.4 }}>
                 <Card sx={{ borderRadius: 4, textAlign: 'center', py: 2 }}>
-                  {stats.trend > 0 ? <TrendingUpIcon sx={{ fontSize: 32, color: '#F44336' }} /> : <TrendingDownIcon sx={{ fontSize: 32, color: '#4CAF50' }} />}
-                  <Typography variant="h4" sx={{ fontWeight: 700, color: stats.trend > 0 ? '#C62828' : '#2E7D32' }}>
+                  {stats.trend > 0 ? <TrendingUpIcon sx={{ fontSize: 32, color: '#93C5FD' }} /> : <TrendingDownIcon sx={{ fontSize: 32, color: '#60A5FA' }} />}
+                  <Typography variant="h4" sx={{ fontWeight: 700, color: '#dce8ff' }}>
                     {stats.trend > 0 ? '+' : ''}{stats.trend.toFixed(1)}
                   </Typography>
                   <Typography variant="caption" color="text.secondary">Trend (tons)</Typography>
@@ -266,21 +266,21 @@ const WastePrediction = ({ token, user, setToken }) => {
           <Card sx={{ borderRadius: 4, mb: 4 }}>
             <CardContent>
               <Box display="flex" justifyContent="space-between" alignItems="center" mb={3} flexWrap="wrap" gap={2}>
-                <Typography variant="h6" sx={{ fontWeight: 700, color: '#1B5E20' }}>
-                  <ChartIcon sx={{ mr: 1, verticalAlign: 'middle', color: '#4CAF50' }} />
+                <Typography variant="h6" sx={{ fontWeight: 700, color: '#f1f6ff' }}>
+                  <ChartIcon sx={{ mr: 1, verticalAlign: 'middle', color: '#60A5FA' }} />
                   Waste Generation Forecast
                 </Typography>
                 <Box display="flex" gap={1}>
-                  <Button size="small" startIcon={<RefreshIcon />} onClick={handlePredict} sx={{ color: '#4CAF50' }}>Refresh</Button>
-                  <Button size="small" startIcon={<DownloadIcon />} sx={{ color: '#4CAF50' }}>Export</Button>
+                  <Button size="small" startIcon={<RefreshIcon />} onClick={handlePredict} sx={{ color: '#dce8ff' }}>Refresh</Button>
+                  <Button size="small" startIcon={<DownloadIcon />} sx={{ color: '#dce8ff' }}>Export</Button>
                 </Box>
               </Box>
               
               {!predictions ? (
                 <Box sx={{ textAlign: 'center', py: 8 }}>
-                  <ChartIcon sx={{ fontSize: 64, color: '#C8E6C9', mb: 2 }} />
+                  <ChartIcon sx={{ fontSize: 64, color: 'rgba(125, 176, 255, 0.5)', mb: 2 }} />
                   <Typography variant="h6" color="text.secondary">Click "Predict" to see waste generation forecast</Typography>
-                  <Button variant="contained" onClick={handlePredict} sx={{ mt: 3, bgcolor: '#4CAF50', borderRadius: 3 }}>
+                  <Button variant="contained" onClick={handlePredict} sx={{ mt: 3, borderRadius: 3 }}>
                     Generate Predictions
                   </Button>
                 </Box>
@@ -289,21 +289,21 @@ const WastePrediction = ({ token, user, setToken }) => {
                   <AreaChart data={chartData} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
                     <defs>
                       <linearGradient id="actualGradient" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor="#4CAF50" stopOpacity={0.8}/>
-                        <stop offset="95%" stopColor="#4CAF50" stopOpacity={0}/>
+                        <stop offset="5%" stopColor="#60A5FA" stopOpacity={0.8}/>
+                        <stop offset="95%" stopColor="#60A5FA" stopOpacity={0}/>
                       </linearGradient>
                       <linearGradient id="predictedGradient" x1="0" y1="0" x2="0" y2="1">
                         <stop offset="5%" stopColor="#2196F3" stopOpacity={0.8}/>
                         <stop offset="95%" stopColor="#2196F3" stopOpacity={0}/>
                       </linearGradient>
                     </defs>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#E8F5E9" />
-                    <XAxis dataKey="date" stroke="#81C784" angle={-45} textAnchor="end" height={80} tick={{ fontSize: 10 }} />
-                    <YAxis stroke="#81C784" label={{ value: 'Waste (tons)', angle: -90, position: 'insideLeft', style: { fill: '#81C784' } }} />
+                    <CartesianGrid strokeDasharray="3 3" stroke="rgba(148, 163, 184, 0.14)" />
+                    <XAxis dataKey="date" stroke="#9AA9C3" angle={-45} textAnchor="end" height={80} tick={{ fontSize: 10 }} />
+                    <YAxis stroke="#9AA9C3" label={{ value: 'Waste (tons)', angle: -90, position: 'insideLeft', style: { fill: '#9AA9C3' } }} />
                     <ReTooltip contentStyle={{ borderRadius: 12, border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }} />
                     <Legend />
-                    <ReferenceLine x={chartData[predictionStartIndex]?.date} stroke="#FF9800" strokeDasharray="3 3" label={{ value: 'Prediction Start', position: 'top', fill: '#FF9800' }} />
-                    <Area type="monotone" dataKey="actual" stroke="#4CAF50" strokeWidth={3} fill="url(#actualGradient)" name="Actual Waste" />
+                    <ReferenceLine x={chartData[predictionStartIndex]?.date} stroke="#93C5FD" strokeDasharray="3 3" label={{ value: 'Prediction Start', position: 'top', fill: '#93C5FD' }} />
+                    <Area type="monotone" dataKey="actual" stroke="#60A5FA" strokeWidth={3} fill="url(#actualGradient)" name="Actual Waste" />
                     <Area type="monotone" dataKey="predicted" stroke="#2196F3" strokeWidth={3} fill="url(#predictedGradient)" name="Predicted Waste" />
                   </AreaChart>
                 </ResponsiveContainer>
@@ -317,16 +317,16 @@ const WastePrediction = ({ token, user, setToken }) => {
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.6 }}>
             <Card sx={{ borderRadius: 4 }}>
               <CardContent>
-                <Typography variant="h6" sx={{ fontWeight: 700, color: '#1B5E20', mb: 3 }}>
-                  <CalendarIcon sx={{ mr: 1, verticalAlign: 'middle', color: '#4CAF50' }} />
+                <Typography variant="h6" sx={{ fontWeight: 700, color: '#f1f6ff', mb: 3 }}>
+                  <CalendarIcon sx={{ mr: 1, verticalAlign: 'middle', color: '#60A5FA' }} />
                   Daily Waste Predictions
                 </Typography>
                 <Grid container spacing={2}>
                   {predictions.map((pred, idx) => (
                     <Grid item xs={12} sm={6} md={4} lg={3} key={idx}>
-                      <Paper sx={{ p: 2, borderRadius: 3, bgcolor: '#F1F8E9', textAlign: 'center' }}>
-                        <Typography variant="subtitle2" sx={{ fontWeight: 700, color: '#1B5E20' }}>{pred.date}</Typography>
-                        <Typography variant="h5" sx={{ fontWeight: 800, color: '#4CAF50', my: 1 }}>{pred.predicted} tons</Typography>
+                      <Paper sx={{ p: 2, borderRadius: 3, textAlign: 'center' }}>
+                        <Typography variant="subtitle2" sx={{ fontWeight: 700, color: '#dce8ff' }}>{pred.date}</Typography>
+                        <Typography variant="h5" sx={{ fontWeight: 800, color: '#60A5FA', my: 1 }}>{pred.predicted} tons</Typography>
                         <Box display="flex" justifyContent="center" gap={2}>
                           <Typography variant="caption" color="text.secondary">↓ {pred.lower} tons</Typography>
                           <Typography variant="caption" color="text.secondary">↑ {pred.upper} tons</Typography>
@@ -334,7 +334,7 @@ const WastePrediction = ({ token, user, setToken }) => {
                         <Chip 
                           label={pred.predicted > 15 ? 'High Load' : pred.predicted > 8 ? 'Medium Load' : 'Low Load'} 
                           size="small" 
-                          sx={{ mt: 1, bgcolor: pred.predicted > 15 ? '#FFEBEE' : pred.predicted > 8 ? '#FFF3E0' : '#E8F5E9', color: pred.predicted > 15 ? '#C62828' : pred.predicted > 8 ? '#E65100' : '#2E7D32' }}
+                          sx={{ mt: 1, bgcolor: 'rgba(96, 165, 250, 0.14)', color: '#dce8ff' }}
                         />
                         <Box sx={{ mt: 1 }}>
                           <Chip 
