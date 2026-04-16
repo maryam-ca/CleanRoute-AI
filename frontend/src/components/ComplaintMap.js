@@ -129,7 +129,7 @@ const ComplaintMap = ({ token }) => {
             <MapContainer
               center={mapCenter}
               zoom={14}
-              style={{ height: '550px', width: '100%' }}
+              style={{ height: '550px', width: '100%', zIndex: 1 }}
               scrollWheelZoom={true}
             >
               <TileLayer
@@ -200,3 +200,5 @@ const ComplaintMap = ({ token }) => {
 };
 
 export default ComplaintMap;
+
+
