@@ -8,7 +8,7 @@ import {
   Dashboard as DashboardIcon,
   Add as AddIcon,
   Map as RouteIcon,
-  Description as DescriptionIcon,
+  Description as DescriptionIcon,\n  Map as MapIcon,
   AdminPanelSettings as AdminIcon,
   Logout as LogoutIcon,
   DarkMode as DarkModeIcon,
@@ -42,7 +42,7 @@ const Navigation = ({ user, setToken }) => {
     { path: '/', label: 'Dashboard', icon: <DashboardIcon /> },
     { path: '/submit', label: 'Complaints', icon: <AddIcon /> },
     { path: '/routes', label: 'Routes', icon: <RouteIcon /> },
-    { path: '/reports', label: 'Reports', icon: <DescriptionIcon /> },
+    { path: '/complaint-map', label: 'Map', icon: <MapIcon />, icon: <DescriptionIcon /> },
   ];
 
   if (isAdmin) {
@@ -215,3 +215,4 @@ const Navigation = ({ user, setToken }) => {
 };
 
 export default Navigation;
+
