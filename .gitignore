@@ -171,3 +171,10 @@ test-results/
 *.psd
 *.ai
 *.tmp.pdf
+frontend/node_modules/
+node_modules/
+venv/
+venv_fixed/
+backend/__pycache__/
+frontend/build/
+frontend/.vercel/
