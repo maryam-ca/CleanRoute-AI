@@ -43,10 +43,10 @@ const Login = ({ setToken }) => {
   };
 
   return (
-    <Box sx={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'linear-gradient(135deg, #795548 0%, #5D4037 100%)', p: 2 }}>
+    <Box sx={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'linear-gradient(135deg, #0F172A 0%, #020617 100%)', p: 2 }}>
       <Container maxWidth="sm">
         <Card sx={{ borderRadius: 4, overflow: 'hidden' }}>
-          <Box sx={{ bgcolor: '#795548', color: 'white', p: 3, textAlign: 'center' }}>
+          <Box sx={{ bgcolor: '#0A66FF', color: 'white', p: 3, textAlign: 'center' }}>
             <CleaningServices sx={{ fontSize: 48 }} />
             <Typography variant="h4" sx={{ fontWeight: 800 }}>CleanRoute-AI</Typography>
             <Typography variant="subtitle2">AI-Powered Waste Management System</Typography>
@@ -76,7 +76,7 @@ const Login = ({ setToken }) => {
                 type="submit" 
                 variant="contained" 
                 disabled={loading} 
-                sx={{ mt: 3, py: 1.5, bgcolor: '#795548', '&:hover': { bgcolor: '#EA580C' } }}
+                sx={{ mt: 3, py: 1.5, bgcolor: '#0A66FF', '&:hover': { bgcolor: '#EA580C' } }}
               >
                 {loading ? <CircularProgress size={24} color="inherit" /> : 'LOGIN'}
               </Button>
@@ -106,4 +106,5 @@ const Login = ({ setToken }) => {
 };
 
 export default Login;
+
 

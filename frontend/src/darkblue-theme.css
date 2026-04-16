@@ -1,0 +1,98 @@
+/* Dark Blue Glassmorphism Theme */
+:root {
+  --primary-blue: #0A66FF;
+  --neon-blue: #00C6FF;
+  --dark-bg: #0F172A;
+  --darker-bg: #020617;
+  --glass-white: rgba(255,255,255,0.08);
+  --glass-light: rgba(255,255,255,0.12);
+  --text-white: #FFFFFF;
+  --text-gray: #E5E7EB;
+  --text-muted: #9CA3AF;
+  --success-green: #22C55E;
+  --border-color: #1F2937;
+}
+
+body {
+  background: linear-gradient(135deg, #0F172A 0%, #020617 100%);
+  color: var(--text-white);
+  font-family: 'Inter', 'Poppins', 'Roboto', sans-serif;
+  min-height: 100vh;
+}
+
+/* Glassmorphism Card Effect */
+.glass-card {
+  background: linear-gradient(135deg, rgba(255,255,255,0.08), rgba(255,255,255,0.02));
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(30,144,255,0.15);
+  border-radius: 24px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+  transition: all 0.3s ease;
+}
+
+.glass-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 30px rgba(0,102,255,0.3);
+  border: 1px solid rgba(30,144,255,0.3);
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--dark-bg);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--primary-blue);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--neon-blue);
+}
+
+/* Glow Effects */
+.glow-text {
+  text-shadow: 0 0 10px rgba(0,198,255,0.5);
+}
+
+.glow-box {
+  box-shadow: 0 0 20px rgba(0,102,255,0.25);
+}
+
+/* Button Hover Effects */
+.btn-primary {
+  background: linear-gradient(135deg, #0A66FF, #00C6FF);
+  border: none;
+  border-radius: 20px;
+  padding: 10px 24px;
+  color: white;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 25px rgba(0,102,255,0.4);
+}
+
+/* Chart Customization */
+.recharts-cartesian-grid line {
+  stroke: rgba(255,255,255,0.1);
+}
+
+.recharts-text {
+  fill: var(--text-gray);
+}
+
+.recharts-tooltip-wrapper {
+  background: rgba(15,23,42,0.9);
+  backdrop-filter: blur(8px);
+  border-radius: 12px;
+  border: 1px solid rgba(30,144,255,0.3);
+}

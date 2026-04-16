@@ -98,7 +98,7 @@ const Navigation = ({ user, setToken }) => {
 
   return (
     <>
-      <AppBar position="fixed" elevation={3} sx={{ bgcolor: '#795548', borderBottom: '3px solid #D7CCC8' }}>
+      <AppBar position="fixed" elevation={3} sx={{ bgcolor: 'rgba(15,23,42,0.8)', borderBottom: '1px solid rgba(30,144,255,0.3)' }}>
         <Container maxWidth="xl">
           <Toolbar sx={{ justifyContent: 'space-between', px: { xs: 1, sm: 2 } }}>
             <Box display="flex" alignItems="center" gap={1}>
@@ -167,6 +167,7 @@ const Navigation = ({ user, setToken }) => {
 };
 
 export default Navigation;
+
 
 
 
