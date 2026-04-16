@@ -3,13 +3,11 @@ import {
   Box, Container, Paper, Typography, Grid, Card, CardContent,
   Table, TableBody, TableCell, TableContainer, TableHead, TableRow,
   Chip, Button, Dialog, DialogTitle, DialogContent, DialogActions,
-  CircularProgress, Alert, AppBar, Toolbar, IconButton, useMediaQuery, useTheme
+  CircularProgress, Alert, useMediaQuery, useTheme
 } from '@mui/material';
 import {
   Refresh as RefreshIcon,
   CheckCircle as CheckIcon,
-  Logout as LogoutIcon,
-  Dashboard as DashboardIcon,
   LocationOn as LocationIcon,
   CloudUpload as UploadIcon
 } from '@mui/icons-material';
@@ -70,13 +68,6 @@ const TesterDashboard = ({ token, user, setToken }) => {
     }
   };
 
-  const handleLogout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
-    setToken(null);
-    toast.success('Logged out successfully');
-  };
-
   const getPriorityColor = (priority) => {
     switch(priority) {
       case 'urgent': return '#F44336';
@@ -89,26 +80,21 @@ const TesterDashboard = ({ token, user, setToken }) => {
   const assignedComplaints = complaints.filter(c => c.status === 'assigned');
 
   return (
-    <Box sx={{ bgcolor: 'transparent', minHeight: '100vh' }}>
+    <Box sx={{ bgcolor: 'transparent', minHeight: '100vh', pt: '110px' }}>
       <Toaster position="top-right" />
-      
-      <AppBar position="sticky" sx={{ bgcolor: '#1B5E20' }}>
-        <Toolbar>
-          <DashboardIcon sx={{ mr: 2 }} />
-          <Typography variant="h6" sx={{ flexGrow: 1, fontWeight: 700 }}>
-            Tester Dashboard - My Assigned Tasks
-          </Typography>
-          <IconButton color="inherit" onClick={handleLogout}>
-            <LogoutIcon />
-          </IconButton>
-        </Toolbar>
-      </AppBar>
+
+      <Box sx={{ mx: { xs: 2, md: 3 }, py: 3, px: 4, color: 'white', border: '1px solid rgba(148, 163, 184, 0.12)', borderRadius: 6, background: 'linear-gradient(135deg, rgba(79, 140, 255, 0.16) 0%, rgba(15, 23, 42, 0.18) 100%)' }}>
+        <Container maxWidth="xl">
+          <Typography variant="h5" sx={{ fontWeight: 700 }}>Tester Panel</Typography>
+          <Typography variant="caption" sx={{ color: '#cdd8ee' }}>View and complete the tasks assigned to you</Typography>
+        </Container>
+      </Box>
 
       <Container maxWidth="xl" sx={{ py: { xs: 2, sm: 4 } }}>
         {/* Stats Cards */}
         <Grid container spacing={{ xs: 2, sm: 3 }} sx={{ mb: 4 }}>
           <Grid item xs={6} sm={6} md={4}>
-            <Card sx={{ bgcolor: '#2E7D32', color: 'white' }}>
+            <Card sx={{ bgcolor: 'rgba(34, 197, 94, 0.18)', color: 'white' }}>
               <CardContent>
                 <Typography variant="caption">Assigned to Me</Typography>
                 <Typography variant="h3">{assignedComplaints.length}</Typography>
@@ -116,7 +102,7 @@ const TesterDashboard = ({ token, user, setToken }) => {
             </Card>
           </Grid>
           <Grid item xs={6} sm={6} md={4}>
-            <Card sx={{ bgcolor: '#FF9800', color: 'white' }}>
+            <Card sx={{ bgcolor: 'rgba(245, 158, 11, 0.18)', color: 'white' }}>
               <CardContent>
                 <Typography variant="caption">In Progress</Typography>
                 <Typography variant="h3">{complaints.filter(c => c.status === 'assigned').length}</Typography>
@@ -124,7 +110,7 @@ const TesterDashboard = ({ token, user, setToken }) => {
             </Card>
           </Grid>
           <Grid item xs={6} sm={6} md={4}>
-            <Card sx={{ bgcolor: '#4CAF50', color: 'white' }}>
+            <Card sx={{ bgcolor: 'rgba(96, 165, 250, 0.18)', color: 'white' }}>
               <CardContent>
                 <Typography variant="caption">Completed</Typography>
                 <Typography variant="h3">{complaints.filter(c => c.status === 'completed').length}</Typography>
@@ -136,8 +122,8 @@ const TesterDashboard = ({ token, user, setToken }) => {
         {/* Tasks Table */}
         <Paper sx={{ borderRadius: 4, overflow: 'hidden' }}>
           <Box sx={{ p: 3, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <Typography variant="h6">Tasks Assigned to Me</Typography>
-            <Button startIcon={<RefreshIcon />} onClick={fetchData} variant="contained" sx={{ bgcolor: '#2E7D32' }}>
+            <Typography variant="h6" sx={{ color: '#f8fbff' }}>Tasks Assigned to Me</Typography>
+            <Button startIcon={<RefreshIcon />} onClick={fetchData} variant="contained">
               Refresh
             </Button>
           </Box>
@@ -152,7 +138,7 @@ const TesterDashboard = ({ token, user, setToken }) => {
             <TableContainer>
               <Table size={isMobile ? "small" : "medium"}>
                 <TableHead>
-                  <TableRow sx={{ bgcolor: '#E8F5E9' }}>
+                  <TableRow sx={{ bgcolor: 'rgba(255,255,255,0.04)' }}>
                     <TableCell>ID</TableCell>
                     <TableCell>Type</TableCell>
                     <TableCell>Priority</TableCell>
@@ -183,7 +169,7 @@ const TesterDashboard = ({ token, user, setToken }) => {
                           variant="contained"
                           startIcon={<CheckIcon />} 
                           onClick={() => setSelectedComplaint(complaint)} 
-                          sx={{ bgcolor: '#2E7D32', '&:hover': { bgcolor: '#1B5E20' } }}
+                          sx={{ minWidth: 140 }}
                         >
                           Complete Task
                         </Button>
@@ -199,7 +185,7 @@ const TesterDashboard = ({ token, user, setToken }) => {
 
       {/* Complete Task Dialog */}
       <Dialog open={!!selectedComplaint} onClose={() => { setSelectedComplaint(null); setAfterImage(null); }} maxWidth="sm" fullWidth>
-        <DialogTitle sx={{ bgcolor: '#1B5E20', color: 'white' }}>
+        <DialogTitle sx={{ bgcolor: 'rgba(79, 140, 255, 0.16)', color: 'white' }}>
           Complete Task - Complaint #{selectedComplaint?.id}
         </DialogTitle>
         <DialogContent>
@@ -213,7 +199,7 @@ const TesterDashboard = ({ token, user, setToken }) => {
               variant="outlined" 
               component="label" 
               startIcon={<UploadIcon />}
-              sx={{ py: 2, width: '100%', borderColor: '#2E7D32', color: '#2E7D32' }}
+              sx={{ py: 2, width: '100%' }}
             >
               Upload After-Cleaning Photo (Required)
               <input type="file" accept="image/*" hidden onChange={(e) => setAfterImage(e.target.files[0])} />
@@ -234,7 +220,6 @@ const TesterDashboard = ({ token, user, setToken }) => {
             onClick={handleCompleteTask} 
             variant="contained" 
             disabled={!afterImage || submitting}
-            sx={{ bgcolor: '#2E7D32', '&:hover': { bgcolor: '#1B5E20' } }}
           >
             {submitting ? 'Processing...' : 'Confirm Completion'}
           </Button>

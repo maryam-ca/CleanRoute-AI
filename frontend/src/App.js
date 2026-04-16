@@ -23,6 +23,9 @@ const AppContent = () => {
   const [token, setToken] = useState(localStorage.getItem('token'));
   const [user, setUser] = useState(localStorage.getItem('user'));
   const [loading, setLoading] = useState(true);
+  const normalizedUser = (user || '').toLowerCase();
+  const isAdmin = normalizedUser === 'admin';
+  const isTester = normalizedUser.startsWith('tester');
 
   useEffect(() => {
     setLoading(false);
@@ -47,16 +50,36 @@ const AppContent = () => {
         <Navigation user={user} setToken={setToken} />
         <Box sx={{ pt: '70px' }}>
           <Routes>
-            <Route path="/" element={<Dashboard token={token} user={user} setToken={setToken} />} />
+            <Route
+              path="/"
+              element={
+                isAdmin ? (
+                  <AdminDashboard token={token} user={user} setToken={setToken} />
+                ) : isTester ? (
+                  <TesterDashboard token={token} user={user} setToken={setToken} />
+                ) : (
+                  <Dashboard token={token} user={user} setToken={setToken} />
+                )
+              }
+            />
             <Route path="/submit" element={<ComplaintForm token={token} user={user} setToken={setToken} />} />
             <Route path="/routes" element={<RouteOptimizer token={token} user={user} setToken={setToken} />} />
             <Route path="/complaint-map" element={<ComplaintMap token={token} user={user} setToken={setToken} />} />
-            <Route path="/anomalies" element={<AnomalyMap token={token} user={user} setToken={setToken} />} />
+            <Route
+              path="/anomalies"
+              element={isAdmin ? <AnomalyMap token={token} user={user} setToken={setToken} /> : <Navigate to="/" />}
+            />
             <Route path="/map" element={<RealTimeMap token={token} user={user} setToken={setToken} />} />
             <Route path="/predict" element={<WastePrediction token={token} user={user} setToken={setToken} />} />
             <Route path="/reports" element={<Reports token={token} user={user} setToken={setToken} />} />
-            <Route path="/admin" element={<AdminDashboard token={token} user={user} setToken={setToken} />} />
-            <Route path="/tester" element={<TesterDashboard token={token} user={user} setToken={setToken} />} />
+            <Route
+              path="/admin"
+              element={isAdmin ? <AdminDashboard token={token} user={user} setToken={setToken} /> : <Navigate to="/" />}
+            />
+            <Route
+              path="/tester"
+              element={isTester ? <TesterDashboard token={token} user={user} setToken={setToken} /> : <Navigate to="/" />}
+            />
             <Route path="*" element={<Navigate to="/" />} />
           </Routes>
         </Box>

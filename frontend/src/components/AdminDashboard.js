@@ -145,13 +145,13 @@ const AdminDashboard = ({ token, user, setToken }) => {
   });
 
   return (
-    <Box sx={{ bgcolor: 'transparent', minHeight: '100vh' }}>
+    <Box sx={{ bgcolor: 'transparent', minHeight: '100vh', pt: '110px' }}>
       <Toaster position="top-right" />
       
-      <Box sx={{ bgcolor: '#1B5E20', color: 'white', py: 2, px: 4 }}>
+      <Box sx={{ mx: { xs: 2, md: 3 }, py: 3, px: 4, color: 'white', border: '1px solid rgba(148, 163, 184, 0.12)', borderRadius: 6, background: 'linear-gradient(135deg, rgba(79, 140, 255, 0.16) 0%, rgba(15, 23, 42, 0.18) 100%)' }}>
         <Container maxWidth="xl">
           <Typography variant="h5" sx={{ fontWeight: 700 }}>Admin Dashboard</Typography>
-          <Typography variant="caption">Manage all complaints, assign to testers, and close completed tasks</Typography>
+          <Typography variant="caption" sx={{ color: '#cdd8ee' }}>Manage complaints, assign testers, and close completed tasks</Typography>
         </Container>
       </Box>
 
@@ -159,7 +159,7 @@ const AdminDashboard = ({ token, user, setToken }) => {
         {/* Stats Cards */}
         <Grid container spacing={3} sx={{ mb: 4 }}>
           <Grid item xs={6} sm={3}>
-            <Card sx={{ bgcolor: '#E8F5E9' }}>
+            <Card sx={{ bgcolor: 'rgba(96, 165, 250, 0.14)' }}>
               <CardContent>
                 <Typography variant="caption">Total Complaints</Typography>
                 <Typography variant="h4">{complaints.length}</Typography>
@@ -167,7 +167,7 @@ const AdminDashboard = ({ token, user, setToken }) => {
             </Card>
           </Grid>
           <Grid item xs={6} sm={3}>
-            <Card sx={{ bgcolor: '#FFF3E0' }}>
+            <Card sx={{ bgcolor: 'rgba(245, 158, 11, 0.14)' }}>
               <CardContent>
                 <Typography variant="caption">Pending</Typography>
                 <Typography variant="h4">{complaints.filter(c => c.status === 'pending').length}</Typography>
@@ -175,7 +175,7 @@ const AdminDashboard = ({ token, user, setToken }) => {
             </Card>
           </Grid>
           <Grid item xs={6} sm={3}>
-            <Card sx={{ bgcolor: '#E3F2FD' }}>
+            <Card sx={{ bgcolor: 'rgba(59, 130, 246, 0.14)' }}>
               <CardContent>
                 <Typography variant="caption">Assigned</Typography>
                 <Typography variant="h4">{complaints.filter(c => c.status === 'assigned').length}</Typography>
@@ -183,7 +183,7 @@ const AdminDashboard = ({ token, user, setToken }) => {
             </Card>
           </Grid>
           <Grid item xs={6} sm={3}>
-            <Card sx={{ bgcolor: '#E8F5E9' }}>
+            <Card sx={{ bgcolor: 'rgba(34, 197, 94, 0.14)' }}>
               <CardContent>
                 <Typography variant="caption">Completed/Closed</Typography>
                 <Typography variant="h4">{complaints.filter(c => c.status === 'completed' || c.status === 'closed').length}</Typography>
@@ -212,7 +212,7 @@ const AdminDashboard = ({ token, user, setToken }) => {
               InputProps={{ startAdornment: <InputAdornment position="start"><SearchIcon /></InputAdornment> }}
               sx={{ minWidth: 250 }}
             />
-            <Button startIcon={<RefreshIcon />} onClick={fetchData} variant="contained" sx={{ bgcolor: '#2E7D32' }}>
+            <Button startIcon={<RefreshIcon />} onClick={fetchData} variant="contained">
               Refresh
             </Button>
           </Box>
@@ -225,7 +225,7 @@ const AdminDashboard = ({ token, user, setToken }) => {
             <TableContainer>
               <Table>
                 <TableHead>
-                  <TableRow sx={{ bgcolor: '#E8F5E9' }}>
+                  <TableRow sx={{ bgcolor: 'rgba(255,255,255,0.04)' }}>
                     <TableCell>ID</TableCell>
                     <TableCell>Type</TableCell>
                     <TableCell>Priority</TableCell>
@@ -260,12 +260,12 @@ const AdminDashboard = ({ token, user, setToken }) => {
                       <TableCell>
                         <Box display="flex" gap={1}>
                           {complaint.status === 'pending' && (
-                            <Button size="small" variant="contained" startIcon={<AssignIcon />} onClick={() => { setSelectedComplaint(complaint); setAssignDialogOpen(true); }} sx={{ bgcolor: '#FF9800' }}>
+                            <Button size="small" variant="contained" startIcon={<AssignIcon />} onClick={() => { setSelectedComplaint(complaint); setAssignDialogOpen(true); }}>
                               Assign
                             </Button>
                           )}
                           {complaint.status === 'completed' && (
-                            <Button size="small" variant="contained" startIcon={<CloseIcon />} onClick={() => { setSelectedComplaint(complaint); setCloseDialogOpen(true); }} sx={{ bgcolor: '#4CAF50' }}>
+                            <Button size="small" variant="contained" startIcon={<CloseIcon />} onClick={() => { setSelectedComplaint(complaint); setCloseDialogOpen(true); }}>
                               Close
                             </Button>
                           )}
@@ -298,7 +298,7 @@ const AdminDashboard = ({ token, user, setToken }) => {
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setAssignDialogOpen(false)}>Cancel</Button>
-          <Button onClick={handleAssign} variant="contained" sx={{ bgcolor: '#FF9800' }}>Assign</Button>
+          <Button onClick={handleAssign} variant="contained">Assign</Button>
         </DialogActions>
       </Dialog>
 
@@ -320,7 +320,7 @@ const AdminDashboard = ({ token, user, setToken }) => {
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setCloseDialogOpen(false)}>Cancel</Button>
-          <Button onClick={handleCloseComplaint} variant="contained" sx={{ bgcolor: '#4CAF50' }} startIcon={<CloseIcon />}>
+          <Button onClick={handleCloseComplaint} variant="contained" startIcon={<CloseIcon />}>
             Confirm Close
           </Button>
         </DialogActions>

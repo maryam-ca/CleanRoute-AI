@@ -72,29 +72,36 @@ const ModernDashboard = ({ user }) => {
       <Box
         sx={{
           mx: { xs: 2, md: 3 },
-          py: 3,
-          px: 4,
+          py: { xs: 3, md: 4.5 },
+          px: { xs: 2.25, sm: 3, md: 4.5 },
           color: 'white',
           border: '1px solid rgba(148, 163, 184, 0.12)',
           borderRadius: 6,
-          background: 'linear-gradient(135deg, rgba(79, 140, 255, 0.16) 0%, rgba(15, 23, 42, 0.18) 100%)'
+          background: `
+            radial-gradient(circle at top right, rgba(100, 213, 255, 0.18), transparent 28%),
+            linear-gradient(135deg, rgba(79, 140, 255, 0.16) 0%, rgba(15, 23, 42, 0.18) 100%)
+          `,
+          overflow: 'hidden',
+          position: 'relative'
         }}
       >
         <Container maxWidth="xl">
-          <Box display="flex" justifyContent="space-between" alignItems="center" flexWrap="wrap" gap={2}>
+          <Box display="flex" justifyContent="space-between" alignItems={{ xs: 'flex-start', md: 'center' }} flexWrap="wrap" gap={2}>
             <Box>
-              <Typography variant="h4" sx={{ fontWeight: 800, color: '#f8fbff' }}>
-                Dashboard
+              <Chip label="Operations Overview" size="small" sx={{ mb: 1.5, bgcolor: 'rgba(94, 162, 255, 0.16)', color: '#dce8ff', fontWeight: 700 }} />
+              <Typography variant="h4" sx={{ fontWeight: 800, color: '#f8fbff', fontSize: { xs: '1.8rem', sm: '2.4rem' } }}>
+                Cleaner streets,
+                <Box component="span" sx={{ display: 'block', color: '#9bd8ff' }}>smarter response.</Box>
               </Typography>
-              <Typography variant="body2" sx={{ color: '#cdd8ee', mt: 0.5 }}>
-                Welcome back, {user || 'User'}
+              <Typography variant="body2" sx={{ color: '#cdd8ee', mt: 1, maxWidth: 560, fontSize: { xs: '0.94rem', sm: '1rem' } }}>
+                Welcome back, {user || 'User'}. Track live complaint activity, watch assignment flow, and take action faster from one place.
               </Typography>
             </Box>
-            <Box display="flex" gap={2}>
-              <Button variant="outlined" startIcon={<RefreshIcon />} onClick={fetchData} disabled={loading}>
+            <Box display="flex" gap={1.25} flexWrap="wrap" width={{ xs: '100%', md: 'auto' }}>
+              <Button variant="outlined" startIcon={<RefreshIcon />} onClick={fetchData} disabled={loading} sx={{ flex: { xs: 1, sm: 'unset' } }}>
                 {loading ? 'Loading...' : 'Refresh'}
               </Button>
-              <Button variant="contained" startIcon={<AddIcon />} onClick={() => { window.location.href = '/submit'; }}>
+              <Button variant="contained" startIcon={<AddIcon />} onClick={() => { window.location.href = '/submit'; }} sx={{ flex: { xs: 1, sm: 'unset' } }}>
                 New Complaint
               </Button>
             </Box>
@@ -121,16 +128,21 @@ const ModernDashboard = ({ user }) => {
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
           <Paper
             sx={{
-              p: 3,
+              p: { xs: 2.25, sm: 3 },
               borderRadius: 5,
               background: 'rgba(15, 23, 42, 0.95)',
               border: '1px solid rgba(148, 163, 184, 0.12)'
             }}
           >
-            <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
-              <Typography variant="h6" sx={{ fontWeight: 700, color: '#f8fbff' }}>
-                Recent Complaints
-              </Typography>
+            <Box display="flex" justifyContent="space-between" alignItems={{ xs: 'flex-start', sm: 'center' }} mb={2.5} gap={1.5} flexWrap="wrap">
+              <Box>
+                <Typography variant="h6" sx={{ fontWeight: 700, color: '#f8fbff' }}>
+                  Recent Complaints
+                </Typography>
+                <Typography variant="body2" sx={{ color: '#8ea2c0', mt: 0.5 }}>
+                  Latest issues reported across the network
+                </Typography>
+              </Box>
               <Button size="small" onClick={() => { window.location.href = '/admin'; }}>
                 View All
               </Button>
@@ -165,8 +177,11 @@ const ModernDashboard = ({ user }) => {
                       }}
                     >
                       <Box>
-                        <Typography variant="body1" sx={{ fontWeight: 500, color: '#FFFFFF' }}>
+                        <Typography variant="body1" sx={{ fontWeight: 700, color: '#FFFFFF', textTransform: 'capitalize' }}>
                           #{complaint.id} - {complaint.complaint_type?.replace('_', ' ') || 'Complaint'}
+                        </Typography>
+                        <Typography variant="caption" sx={{ color: '#8ea2c0', display: 'block', mt: 0.5, maxWidth: 520 }}>
+                          {complaint.description || 'No description provided yet.'}
                         </Typography>
                         <Box display="flex" gap={1} mt={0.75} flexWrap="wrap">
                           <Chip
@@ -181,9 +196,14 @@ const ModernDashboard = ({ user }) => {
                           />
                         </Box>
                       </Box>
-                      <Typography variant="caption" sx={{ color: '#9CA3AF' }}>
-                        {complaint.created_at ? new Date(complaint.created_at).toLocaleDateString() : 'Unknown date'}
-                      </Typography>
+                      <Box sx={{ textAlign: { xs: 'left', sm: 'right' } }}>
+                        <Typography variant="caption" sx={{ color: '#9CA3AF', display: 'block' }}>
+                          {complaint.created_at ? new Date(complaint.created_at).toLocaleDateString() : 'Unknown date'}
+                        </Typography>
+                        <Typography variant="caption" sx={{ color: '#6f87a8' }}>
+                          {complaint.latitude && complaint.longitude ? `${Number(complaint.latitude).toFixed(3)}, ${Number(complaint.longitude).toFixed(3)}` : 'Location pending'}
+                        </Typography>
+                      </Box>
                     </Box>
                   );
                 })}

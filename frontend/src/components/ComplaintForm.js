@@ -27,6 +27,13 @@ const ComplaintForm = ({ token, user, setToken }) => {
   });
 
   const steps = ['Complaint Type', 'Location', 'Photo & Description', 'Review'];
+  const complaintTypeMeta = {
+    overflowing: { title: 'Overflowing Bin', hint: 'Waste is exceeding bin capacity.' },
+    spillage: { title: 'Spillage', hint: 'Trash is scattered around the collection point.' },
+    missed: { title: 'Missed Pickup', hint: 'Collection was skipped on schedule.' },
+    illegal: { title: 'Illegal Dumping', hint: 'Waste has been dumped in an unauthorized area.' },
+    other: { title: 'Other Issue', hint: 'Report anything that does not fit the main categories.' }
+  };
 
   const handleNext = () => setActiveStep((prev) => prev + 1);
   const handleBack = () => setActiveStep((prev) => prev - 1);
@@ -133,17 +140,24 @@ const ComplaintForm = ({ token, user, setToken }) => {
         return (
           <Grid container spacing={2}>
             {['overflowing', 'spillage', 'missed', 'illegal', 'other'].map((type) => (
-              <Grid item xs={6} sm={4} key={type}>
+              <Grid item xs={12} sm={6} key={type}>
                 <Card
                   sx={{
                     cursor: 'pointer',
                     border: formData.complaint_type === type ? '1px solid rgba(125, 176, 255, 0.4)' : '1px solid rgba(148, 163, 184, 0.14)',
-                    bgcolor: formData.complaint_type === type ? 'rgba(79, 140, 255, 0.12)' : 'transparent'
+                    bgcolor: formData.complaint_type === type ? 'rgba(79, 140, 255, 0.12)' : 'transparent',
+                    minHeight: '100%',
+                    boxShadow: formData.complaint_type === type ? '0 20px 36px rgba(47, 123, 246, 0.14)' : 'none'
                   }}
                   onClick={() => setFormData({ ...formData, complaint_type: type })}
                 >
-                  <CardContent sx={{ textAlign: 'center' }}>
-                    <Typography variant="caption" textTransform="capitalize">{type}</Typography>
+                  <CardContent sx={{ p: 2.5 }}>
+                    <Typography variant="subtitle2" sx={{ fontWeight: 700, color: '#f8fbff' }}>
+                      {complaintTypeMeta[type].title}
+                    </Typography>
+                    <Typography variant="body2" sx={{ mt: 0.75, color: '#8ea2c0' }}>
+                      {complaintTypeMeta[type].hint}
+                    </Typography>
                   </CardContent>
                 </Card>
               </Grid>
@@ -154,6 +168,9 @@ const ComplaintForm = ({ token, user, setToken }) => {
       case 1:
         return (
           <Box>
+            <Typography variant="body2" sx={{ mb: 2, color: '#94a9c8' }}>
+              Add the exact location so the cleanup crew can reach the site without delay.
+            </Typography>
             <TextField
               fullWidth
               label="Latitude"
@@ -175,7 +192,7 @@ const ComplaintForm = ({ token, user, setToken }) => {
               variant="outlined"
               startIcon={<MyLocation />}
               onClick={handleLocation}
-              sx={{ mt: 2 }}
+              sx={{ mt: 2.5 }}
             >
               Use Current Location
             </Button>
@@ -185,6 +202,9 @@ const ComplaintForm = ({ token, user, setToken }) => {
       case 2:
         return (
           <Box>
+            <Typography variant="body2" sx={{ mb: 2, color: '#94a9c8' }}>
+              Add a clear photo and short note. The AI will estimate severity automatically.
+            </Typography>
             <input
               type="file"
               accept="image/*"
@@ -193,7 +213,7 @@ const ComplaintForm = ({ token, user, setToken }) => {
               id="image-upload"
             />
             <label htmlFor="image-upload">
-              <Button variant="outlined" component="span" startIcon={<UploadIcon />} fullWidth>
+              <Button variant="outlined" component="span" startIcon={<UploadIcon />} fullWidth sx={{ py: 1.5 }}>
                 Upload Photo
               </Button>
             </label>
@@ -255,15 +275,30 @@ const ComplaintForm = ({ token, user, setToken }) => {
       
       case 3:
         return (
-          <Box>
+          <Box sx={{ display: 'grid', gap: 1.5 }}>
             <Alert severity="info" sx={{ mb: 2 }}>
               Please review your complaint before submitting
             </Alert>
-            <Typography variant="subtitle2">Type: {formData.complaint_type}</Typography>
-            <Typography variant="subtitle2">Priority: {formData.priority.toUpperCase()}</Typography>
-            <Typography variant="subtitle2">Fill Level: {formData.fill_level_before}%</Typography>
-            <Typography variant="subtitle2">Location: {formData.latitude}, {formData.longitude}</Typography>
-            <Typography variant="subtitle2">Description: {formData.description || 'Not provided'}</Typography>
+            <Paper sx={{ p: 2.25, borderRadius: 4 }}>
+              <Typography variant="caption">Type</Typography>
+              <Typography variant="subtitle2">{complaintTypeMeta[formData.complaint_type]?.title || formData.complaint_type}</Typography>
+            </Paper>
+            <Paper sx={{ p: 2.25, borderRadius: 4 }}>
+              <Typography variant="caption">Priority</Typography>
+              <Typography variant="subtitle2">{formData.priority.toUpperCase()}</Typography>
+            </Paper>
+            <Paper sx={{ p: 2.25, borderRadius: 4 }}>
+              <Typography variant="caption">Fill Level</Typography>
+              <Typography variant="subtitle2">{formData.fill_level_before}%</Typography>
+            </Paper>
+            <Paper sx={{ p: 2.25, borderRadius: 4 }}>
+              <Typography variant="caption">Location</Typography>
+              <Typography variant="subtitle2">{formData.latitude}, {formData.longitude}</Typography>
+            </Paper>
+            <Paper sx={{ p: 2.25, borderRadius: 4 }}>
+              <Typography variant="caption">Description</Typography>
+              <Typography variant="subtitle2">{formData.description || 'Not provided'}</Typography>
+            </Paper>
             {formData.imagePreview && (
               <Box sx={{ mt: 1 }}>
                 <img src={formData.imagePreview} alt="Preview" style={{ width: 100, borderRadius: 8 }} />
@@ -281,15 +316,16 @@ const ComplaintForm = ({ token, user, setToken }) => {
     <Box sx={{ bgcolor: 'transparent', minHeight: '100vh', pt: '110px' }}>
       <Toaster position="top-right" />
       
-      <Box sx={{ mx: { xs: 2, md: 3 }, py: 3, px: 4, color: 'white', border: '1px solid rgba(148, 163, 184, 0.12)', borderRadius: 6, background: 'linear-gradient(135deg, rgba(79, 140, 255, 0.16) 0%, rgba(15, 23, 42, 0.18) 100%)' }}>
+      <Box sx={{ mx: { xs: 2, md: 3 }, py: { xs: 3, md: 4 }, px: { xs: 2.25, md: 4 }, color: 'white', border: '1px solid rgba(148, 163, 184, 0.12)', borderRadius: 6, background: 'radial-gradient(circle at top right, rgba(100, 213, 255, 0.16), transparent 28%), linear-gradient(135deg, rgba(79, 140, 255, 0.16) 0%, rgba(15, 23, 42, 0.18) 100%)' }}>
         <Container maxWidth="xl">
-          <Typography variant="h5" sx={{ fontWeight: 700 }}>New Complaint</Typography>
-          <Typography variant="caption">Report a waste issue to authorities</Typography>
+          <Chip label="Citizen Reporting" size="small" sx={{ mb: 1.25, bgcolor: 'rgba(94, 162, 255, 0.16)', color: '#dce8ff', fontWeight: 700 }} />
+          <Typography variant="h5" sx={{ fontWeight: 800, fontSize: { xs: '1.6rem', sm: '2rem' } }}>Create a new complaint</Typography>
+          <Typography variant="body2" sx={{ mt: 0.75, maxWidth: 560 }}>Share the issue, confirm the exact location, and let the system prioritize the cleanup automatically.</Typography>
         </Container>
       </Box>
 
       <Container maxWidth="md" sx={{ py: 5 }}>
-        <Paper sx={{ p: { xs: 3, md: 4 }, borderRadius: 6 }}>
+        <Paper sx={{ p: { xs: 2.25, md: 4 }, borderRadius: 6 }}>
           <Stepper activeStep={activeStep} sx={{ mb: 4 }}>
             {steps.map((label) => (
               <Step key={label}>
@@ -300,8 +336,8 @@ const ComplaintForm = ({ token, user, setToken }) => {
           
           {getStepContent(activeStep)}
           
-          <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 4 }}>
-            <Button disabled={activeStep === 0} onClick={handleBack}>
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', gap: 1.5, flexWrap: 'wrap', mt: 4 }}>
+            <Button disabled={activeStep === 0} onClick={handleBack} sx={{ minWidth: { xs: 'calc(50% - 6px)', sm: 120 } }}>
               Back
             </Button>
             {activeStep === steps.length - 1 ? (
@@ -309,11 +345,12 @@ const ComplaintForm = ({ token, user, setToken }) => {
                 variant="contained"
                 onClick={handleSubmit}
                 disabled={loading || !formData.latitude || !formData.longitude}
+                sx={{ minWidth: { xs: 'calc(50% - 6px)', sm: 180 } }}
               >
                 {loading ? <CircularProgress size={24} /> : 'Submit Complaint'}
               </Button>
             ) : (
-              <Button variant="contained" onClick={handleNext}>
+              <Button variant="contained" onClick={handleNext} sx={{ minWidth: { xs: 'calc(50% - 6px)', sm: 120 } }}>
                 Next
               </Button>
             )}
