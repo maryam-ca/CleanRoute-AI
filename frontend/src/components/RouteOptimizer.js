@@ -78,7 +78,7 @@ const RouteOptimizer = ({ token, user }) => {
   };
 
   return (
-    <Box sx={{ bgcolor: '#F8FAFC', minHeight: '100vh' }}>
+    <Box sx={{ bgcolor: 'transparent', minHeight: '100vh' }}>
       <Toaster position="top-right" />
       
       <Box sx={{ bgcolor: '#F97316', color: 'white', py: 2, px: 4 }}>
@@ -235,3 +235,4 @@ const RouteOptimizer = ({ token, user }) => {
 };
 
 export default RouteOptimizer;
+
