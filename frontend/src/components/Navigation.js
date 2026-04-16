@@ -18,12 +18,13 @@ import {
 } from '@mui/icons-material';
 import { useColorMode } from '../ThemeContext';
 
-const NAV_BG = 'rgba(2, 6, 23, 0.85)';
-const NAV_BORDER = 'none';
-const ACTIVE_BG = 'rgba(10, 102, 255, 0.15)';
-const ACTIVE_BORDER = '2px solid #0A66FF';
+// Fixed Dark Blue Theme - High Contrast
+const NAV_BG = 'rgba(2, 6, 23, 0.95)';
+const ACTIVE_BG = 'rgba(10, 102, 255, 0.2)';
 const TEXT_COLOR = '#FFFFFF';
+const TEXT_SECONDARY = '#E5E7EB';
 const ACCENT_COLOR = '#00C6FF';
+const BORDER_COLOR = 'rgba(255, 255, 255, 0.1)';
 
 const Navigation = ({ user, setToken }) => {
   const [anchorEl, setAnchorEl] = useState(null);
@@ -45,7 +46,7 @@ const Navigation = ({ user, setToken }) => {
 
   const isAdmin = user === 'admin';
 
-  // ONLY 5 MAIN ITEMS - Clean and simple
+  // Clean navigation - 5 main items max
   const navItems = [
     { path: '/', label: 'Dashboard', icon: <DashboardIcon /> },
     { path: '/submit', label: 'Complaints', icon: <AddIcon /> },
@@ -53,7 +54,6 @@ const Navigation = ({ user, setToken }) => {
     { path: '/reports', label: 'Reports', icon: <DescriptionIcon /> },
   ];
 
-  // Add Admin only if user is admin
   if (isAdmin) {
     navItems.push({ path: '/admin', label: 'Admin', icon: <AdminIcon /> });
   }
@@ -63,6 +63,7 @@ const Navigation = ({ user, setToken }) => {
       <Box display="flex" alignItems="center" gap={1} sx={{ mb: 3, p: 1 }}>
         <CleanIcon sx={{ fontSize: 32, color: ACCENT_COLOR }} />
         <Typography variant="h6" sx={{ fontWeight: 700, color: TEXT_COLOR }}>CleanRoute-AI</Typography>
+        <Chip label="AI" size="small" sx={{ bgcolor: ACCENT_COLOR, color: '#020617', fontWeight: 700, ml: 1 }} />
       </Box>
       <List>
         {navItems.map((item) => (
@@ -73,23 +74,26 @@ const Navigation = ({ user, setToken }) => {
               borderRadius: 2, 
               mb: 1,
               bgcolor: window.location.pathname === item.path ? ACTIVE_BG : 'transparent',
-              borderLeft: window.location.pathname === item.path ? ACTIVE_BORDER : 'none',
-              '&:hover': { bgcolor: 'rgba(10,102,255,0.1)' }
+              borderLeft: window.location.pathname === item.path ? `3px solid ${ACCENT_COLOR}` : 'none',
+              '&:hover': { bgcolor: 'rgba(10,102,255,0.15)' }
             }}
           >
-            <ListItemIcon sx={{ color: window.location.pathname === item.path ? ACCENT_COLOR : '#9CA3AF' }}>
+            <ListItemIcon sx={{ color: window.location.pathname === item.path ? ACCENT_COLOR : TEXT_SECONDARY }}>
               {item.icon}
             </ListItemIcon>
-            <ListItemText primary={item.label} />
+            <ListItemText 
+              primary={item.label}
+              primaryTypographyProps={{ sx: { color: window.location.pathname === item.path ? ACCENT_COLOR : TEXT_SECONDARY, fontWeight: 500 } }}
+            />
           </ListItem>
         ))}
         <ListItem onClick={toggleColorMode} sx={{ borderRadius: 2 }}>
-          <ListItemIcon sx={{ color: '#9CA3AF' }}>{mode === 'dark' ? <LightModeIcon /> : <DarkModeIcon />}</ListItemIcon>
-          <ListItemText primary={`${mode === 'dark' ? 'Light' : 'Dark'} Mode`} />
+          <ListItemIcon sx={{ color: TEXT_SECONDARY }}>{mode === 'dark' ? <LightModeIcon /> : <DarkModeIcon />}</ListItemIcon>
+          <ListItemText primary={`${mode === 'dark' ? 'Light' : 'Dark'} Mode`} primaryTypographyProps={{ sx: { color: TEXT_SECONDARY } }} />
         </ListItem>
         <ListItem onClick={handleLogout} sx={{ borderRadius: 2 }}>
           <ListItemIcon sx={{ color: '#EF4444' }}><LogoutIcon /></ListItemIcon>
-          <ListItemText primary="Logout" />
+          <ListItemText primary="Logout" primaryTypographyProps={{ sx: { color: '#EF4444' } }} />
         </ListItem>
       </List>
     </Box>
@@ -97,14 +101,24 @@ const Navigation = ({ user, setToken }) => {
 
   return (
     <>
-      <AppBar position="fixed" elevation={0} sx={{ bgcolor: NAV_BG, backdropFilter: 'blur(12px)', borderBottom: NAV_BORDER }}>
+      <AppBar 
+        position="fixed" 
+        elevation={0} 
+        sx={{ 
+          bgcolor: NAV_BG, 
+          backdropFilter: 'blur(12px)', 
+          borderBottom: `1px solid ${BORDER_COLOR}`,
+          boxShadow: '0 4px 20px rgba(0,0,0,0.3)'
+        }}
+      >
         <Container maxWidth="xl">
-          <Toolbar sx={{ justifyContent: 'space-between', px: { xs: 1, sm: 2 }, minHeight: '60px' }}>
+          <Toolbar sx={{ justifyContent: 'space-between', px: { xs: 1, sm: 2 }, minHeight: '64px' }}>
             <Box display="flex" alignItems="center" gap={1}>
               <CleanIcon sx={{ fontSize: 28, color: ACCENT_COLOR }} />
-              <Typography variant="h6" sx={{ fontWeight: 700, color: TEXT_COLOR, fontSize: '1rem' }}>
+              <Typography variant="h6" sx={{ fontWeight: 700, color: TEXT_COLOR, fontSize: '1.1rem' }}>
                 CleanRoute-AI
               </Typography>
+              <Chip label="AI" size="small" sx={{ bgcolor: ACCENT_COLOR, color: '#020617', fontWeight: 700, display: { xs: 'none', sm: 'flex' } }} />
             </Box>
 
             {!isMobile && (
@@ -115,13 +129,13 @@ const Navigation = ({ user, setToken }) => {
                     startIcon={item.icon}
                     onClick={() => navigateTo(item.path)}
                     sx={{
-                      color: window.location.pathname === item.path ? ACCENT_COLOR : TEXT_COLOR,
+                      color: window.location.pathname === item.path ? ACCENT_COLOR : TEXT_SECONDARY,
                       fontWeight: 500,
                       borderRadius: '8px',
                       px: 2,
-                      py: 0.75,
+                      py: 1,
                       bgcolor: window.location.pathname === item.path ? ACTIVE_BG : 'transparent',
-                      '&:hover': { bgcolor: 'rgba(10,102,255,0.1)' }
+                      '&:hover': { bgcolor: 'rgba(10,102,255,0.15)' }
                     }}
                   >
                     {item.label}
@@ -131,7 +145,7 @@ const Navigation = ({ user, setToken }) => {
             )}
 
             <Box display="flex" alignItems="center" gap={1}>
-              <IconButton onClick={toggleColorMode} size="small" sx={{ color: '#9CA3AF' }}>
+              <IconButton onClick={toggleColorMode} size="small" sx={{ color: TEXT_SECONDARY }}>
                 {mode === 'dark' ? <LightModeIcon /> : <DarkModeIcon />}
               </IconButton>
               
@@ -153,9 +167,26 @@ const Navigation = ({ user, setToken }) => {
         </Container>
       </AppBar>
 
-      <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={() => setAnchorEl(null)}>
-        <MenuItem disabled><Typography variant="body2">Logged in as <strong>{user}</strong></Typography></MenuItem>
-        <MenuItem onClick={handleLogout}><LogoutIcon fontSize="small" sx={{ mr: 1 }} />Logout</MenuItem>
+      <Menu 
+        anchorEl={anchorEl} 
+        open={Boolean(anchorEl)} 
+        onClose={() => setAnchorEl(null)}
+        PaperProps={{
+          sx: {
+            background: 'rgba(2, 6, 23, 0.95)',
+            backdropFilter: 'blur(12px)',
+            border: '1px solid rgba(255,255,255,0.1)',
+            borderRadius: '12px',
+          }
+        }}
+      >
+        <MenuItem disabled>
+          <Typography variant="body2" sx={{ color: '#E5E7EB' }}>Logged in as <strong>{user}</strong></Typography>
+        </MenuItem>
+        <MenuItem onClick={handleLogout}>
+          <LogoutIcon fontSize="small" sx={{ mr: 1, color: '#EF4444' }} />
+          <Typography sx={{ color: '#EF4444' }}>Logout</Typography>
+        </MenuItem>
       </Menu>
 
       <Drawer anchor="left" open={mobileOpen} onClose={() => setMobileOpen(false)}>

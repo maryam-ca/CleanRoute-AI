@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Container, Grid, Typography, Button, Paper, IconButton } from '@mui/material';
+import { Box, Container, Grid, Typography, Button, Paper, IconButton, Chip } from '@mui/material';
 import { Refresh as RefreshIcon, Add as AddIcon } from '@mui/icons-material';
 import { motion } from 'framer-motion';
 import toast, { Toaster } from 'react-hot-toast';
@@ -8,7 +8,6 @@ import api from '../services/api';
 
 const ModernDashboard = ({ token, user, setToken }) => {
   const [complaints, setComplaints] = useState([]);
-  const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -20,8 +19,6 @@ const ModernDashboard = ({ token, user, setToken }) => {
     try {
       const complaintsData = await api.getComplaints();
       setComplaints(Array.isArray(complaintsData) ? complaintsData : []);
-      const statsData = await api.getDashboardStats();
-      setStats(statsData);
     } catch (error) {
       console.error('Error fetching data:', error);
       toast.error('Failed to load data');
@@ -42,15 +39,33 @@ const ModernDashboard = ({ token, user, setToken }) => {
     { title: 'Completed', value: completed, color: '#22C55E', icon: '✅', trend: 15 },
   ];
 
+  const getStatusColor = (status) => {
+    switch(status) {
+      case 'pending': return { bg: 'rgba(245,158,11,0.15)', text: '#F59E0B' };
+      case 'assigned': return { bg: 'rgba(10,102,255,0.15)', text: '#0A66FF' };
+      case 'completed': return { bg: 'rgba(34,197,94,0.15)', text: '#22C55E' };
+      default: return { bg: 'rgba(156,163,175,0.15)', text: '#9CA3AF' };
+    }
+  };
+
+  const getPriorityColor = (priority) => {
+    switch(priority) {
+      case 'urgent': return { bg: 'rgba(239,68,68,0.15)', text: '#EF4444' };
+      case 'high': return { bg: 'rgba(245,158,11,0.15)', text: '#F59E0B' };
+      case 'medium': return { bg: 'rgba(10,102,255,0.15)', text: '#0A66FF' };
+      default: return { bg: 'rgba(34,197,94,0.15)', text: '#22C55E' };
+    }
+  };
+
   return (
-    <Box sx={{ minHeight: '100vh', pt: '70px', pb: 4 }}>
+    <Box sx={{ minHeight: '100vh', pt: '80px', pb: 4 }}>
       <Toaster position="top-right" />
       
       <Container maxWidth="xl">
         {/* Header */}
-        <Box display="flex" justifyContent="space-between" alignItems="center" mb={4}>
+        <Box display="flex" justifyContent="space-between" alignItems="center" mb={4} flexWrap="wrap" gap={2}>
           <Box>
-            <Typography variant="h4" sx={{ fontWeight: 700, color: '#FFFFFF' }}>
+            <Typography variant="h4" sx={{ fontWeight: 700, color: '#FFFFFF', letterSpacing: '-0.02em' }}>
               Dashboard
             </Typography>
             <Typography variant="body2" sx={{ color: '#9CA3AF', mt: 0.5 }}>
@@ -62,14 +77,20 @@ const ModernDashboard = ({ token, user, setToken }) => {
               variant="outlined"
               startIcon={<RefreshIcon />}
               onClick={fetchData}
+              disabled={loading}
               sx={{
                 borderColor: '#2F80ED',
                 color: '#2F80ED',
                 borderRadius: '999px',
-                '&:hover': { borderColor: '#00C6FF', backgroundColor: 'rgba(10,102,255,0.1)' }
+                px: 3,
+                '&:hover': { 
+                  borderColor: '#00C6FF', 
+                  backgroundColor: 'rgba(10,102,255,0.1)',
+                  color: '#00C6FF'
+                }
               }}
             >
-              Refresh
+              {loading ? 'Loading...' : 'Refresh'}
             </Button>
             <Button
               variant="contained"
@@ -78,8 +99,12 @@ const ModernDashboard = ({ token, user, setToken }) => {
               sx={{
                 background: 'linear-gradient(135deg, #0A66FF, #00C6FF)',
                 borderRadius: '999px',
+                px: 3,
                 boxShadow: '0 0 20px rgba(0,198,255,0.3)',
-                '&:hover': { boxShadow: '0 0 30px rgba(0,198,255,0.5)' }
+                '&:hover': { 
+                  boxShadow: '0 0 30px rgba(0,198,255,0.5)',
+                  transform: 'translateY(-2px)'
+                }
               }}
             >
               New Complaint
@@ -95,7 +120,7 @@ const ModernDashboard = ({ token, user, setToken }) => {
                 title={card.title}
                 value={card.value}
                 color={card.color}
-                icon={<Typography variant="h5">{card.icon}</Typography>}
+                icon={card.icon}
                 loading={loading}
                 trend={card.trend}
               />
@@ -105,48 +130,95 @@ const ModernDashboard = ({ token, user, setToken }) => {
 
         {/* Recent Complaints */}
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}>
-          <Paper sx={{ p: 3, borderRadius: '20px', background: 'rgba(255,255,255,0.05)', backdropFilter: 'blur(12px)', border: '1px solid rgba(255,255,255,0.08)' }}>
-            <Typography variant="h6" sx={{ fontWeight: 600, color: '#FFFFFF', mb: 2 }}>
-              Recent Complaints
-            </Typography>
+          <Paper sx={{ 
+            p: 3, 
+            borderRadius: '20px', 
+            background: 'rgba(15, 23, 42, 0.95)', 
+            backdropFilter: 'blur(12px)', 
+            border: '1px solid rgba(255,255,255,0.1)'
+          }}>
+            <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
+              <Typography variant="h6" sx={{ fontWeight: 600, color: '#FFFFFF' }}>
+                Recent Complaints
+              </Typography>
+              <Button 
+                size="small" 
+                onClick={() => window.location.href = '/admin'}
+                sx={{ color: '#00C6FF', textTransform: 'none' }}
+              >
+                View All →
+              </Button>
+            </Box>
             
             {loading ? (
               <Box textAlign="center" py={4}>
-                <Typography sx={{ color: '#9CA3AF' }}>Loading...</Typography>
+                <Typography sx={{ color: '#9CA3AF' }}>Loading complaints...</Typography>
               </Box>
             ) : complaints.length === 0 ? (
               <Box textAlign="center" py={4}>
                 <Typography sx={{ color: '#9CA3AF' }}>No complaints found</Typography>
+                <Button 
+                  variant="contained" 
+                  onClick={() => window.location.href = '/submit'}
+                  sx={{ mt: 2, borderRadius: '999px', background: 'linear-gradient(135deg, #0A66FF, #00C6FF)' }}
+                >
+                  Submit First Complaint
+                </Button>
               </Box>
             ) : (
               <Box>
-                {complaints.slice(0, 5).map((complaint) => (
-                  <Box
-                    key={complaint.id}
-                    sx={{
-                      display: 'flex',
-                      justifyContent: 'space-between',
-                      alignItems: 'center',
-                      py: 2,
-                      borderBottom: '1px solid rgba(255,255,255,0.08)',
-                      '&:last-child': { borderBottom: 'none' }
-                    }}
-                  >
-                    <Box>
-                      <Typography variant="body1" sx={{ fontWeight: 500, color: '#FFFFFF' }}>
-                        #{complaint.id} - {complaint.complaint_type}
-                      </Typography>
-                      <Typography variant="caption" sx={{ color: '#9CA3AF' }}>
-                        {complaint.status} • {complaint.priority}
-                      </Typography>
-                    </Box>
-                    <Box>
+                {complaints.slice(0, 5).map((complaint) => {
+                  const statusStyle = getStatusColor(complaint.status);
+                  const priorityStyle = getPriorityColor(complaint.priority);
+                  return (
+                    <Box
+                      key={complaint.id}
+                      sx={{
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                        py: 2,
+                        borderBottom: '1px solid rgba(255,255,255,0.08)',
+                        flexWrap: 'wrap',
+                        gap: 1,
+                        '&:last-child': { borderBottom: 'none' }
+                      }}
+                    >
+                      <Box>
+                        <Typography variant="body1" sx={{ fontWeight: 500, color: '#FFFFFF' }}>
+                          #{complaint.id} - {complaint.complaint_type?.replace('_', ' ').toUpperCase()}
+                        </Typography>
+                        <Box display="flex" gap={1} mt={0.5}>
+                          <Chip 
+                            label={complaint.status} 
+                            size="small"
+                            sx={{ 
+                              bgcolor: statusStyle.bg, 
+                              color: statusStyle.text,
+                              fontWeight: 600,
+                              fontSize: '0.7rem',
+                              height: '22px'
+                            }} 
+                          />
+                          <Chip 
+                            label={complaint.priority} 
+                            size="small"
+                            sx={{ 
+                              bgcolor: priorityStyle.bg, 
+                              color: priorityStyle.text,
+                              fontWeight: 600,
+                              fontSize: '0.7rem',
+                              height: '22px'
+                            }} 
+                          />
+                        </Box>
+                      </Box>
                       <Typography variant="caption" sx={{ color: '#6B7280' }}>
                         {new Date(complaint.created_at).toLocaleDateString()}
                       </Typography>
                     </Box>
-                  </Box>
-                ))}
+                  );
+                })}
               </Box>
             )}
           </Paper>
