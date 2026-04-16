@@ -1,155 +1,126 @@
 /* ====================================================
-   DARK BLUE GLASSMORPHISM THEME - FIXED TEXT VISIBILITY
+   COMPLETE FIX - ALL TEXT VISIBLE
    ==================================================== */
 
 :root {
-  /* Dark Backgrounds */
-  --bg-main: #020617;
-  --bg-secondary: #0F172A;
-  --bg-card: rgba(15, 23, 42, 0.95);
-  --bg-navbar: rgba(2, 6, 23, 0.95);
-  
-  /* Blue Theme */
+  --bg-dark: #020617;
+  --bg-card: #0F172A;
   --primary: #0A66FF;
   --primary-light: #00C6FF;
-  --secondary: #2F80ED;
-  --accent: #38BDF8;
-  --glow: rgba(0, 198, 255, 0.3);
-  
-  /* Text Colors - HIGH CONTRAST */
-  --text-main: #FFFFFF;
-  --text-secondary: #E5E7EB;
-  --text-muted: #D1D5DB;
-  --text-dark: #9CA3AF;
-  
-  /* Status Colors */
-  --success: #22C55E;
-  --warning: #F59E0B;
-  --error: #EF4444;
-  --info: #0A66FF;
-  
-  /* Borders */
-  --border-light: rgba(255, 255, 255, 0.12);
-  --border-medium: rgba(255, 255, 255, 0.2);
+  --text-white: #FFFFFF;
+  --text-light: #E5E7EB;
+  --text-muted: #9CA3AF;
 }
 
-/* Global Body */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
 body {
-  background: radial-gradient(circle at 10% 20%, var(--bg-secondary), var(--bg-main));
-  color: var(--text-main);
+  background: var(--bg-dark);
+  color: var(--text-white);
   font-family: 'Inter', 'Poppins', 'Roboto', sans-serif;
   min-height: 100vh;
 }
 
-/* Glassmorphism Card - SOLID ENOUGH FOR TEXT */
-.glass-card, .MuiCard-root, .MuiPaper-root {
-  background: var(--bg-card) !important;
+/* Ensure all text is visible */
+p, span, h1, h2, h3, h4, h5, h6, label, div, .MuiTypography-root {
+  color: var(--text-light) !important;
+}
+
+/* Headers should be white */
+h1, h2, h3, h4, .MuiTypography-h4, .MuiTypography-h5, .MuiTypography-h6 {
+  color: var(--text-white) !important;
+}
+
+/* Cards */
+.MuiCard-root, .MuiPaper-root {
+  background: rgba(15, 23, 42, 0.95) !important;
   backdrop-filter: blur(12px) !important;
+  border: 1px solid rgba(10, 102, 255, 0.2) !important;
   border-radius: 20px !important;
-  border: 1px solid var(--border-light) !important;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.3) !important;
 }
 
-/* Ensure text is visible on glass cards */
-.glass-card p, .glass-card span, .glass-card h1, .glass-card h2, 
-.glass-card h3, .glass-card h4, .glass-card h5, .glass-card h6,
-.MuiCard-root p, .MuiCard-root span, .MuiPaper-root p {
-  color: var(--text-secondary) !important;
-}
-
-/* Headers on cards */
-.glass-card .MuiTypography-h4,
-.glass-card .MuiTypography-h5,
-.glass-card .MuiTypography-h6 {
-  color: var(--text-main) !important;
-}
-
-/* Primary Button */
-.btn-primary, .MuiButton-containedPrimary {
-  background: linear-gradient(135deg, var(--primary), var(--primary-light)) !important;
+/* Buttons */
+.MuiButton-containedPrimary {
+  background: linear-gradient(135deg, #0A66FF, #00C6FF) !important;
   border-radius: 999px !important;
-  padding: 10px 24px !important;
-  color: white !important;
-  font-weight: 600 !important;
-  box-shadow: 0 0 20px var(--glow) !important;
   text-transform: none !important;
 }
 
-.btn-primary:hover, .MuiButton-containedPrimary:hover {
-  box-shadow: 0 0 30px var(--glow) !important;
-  transform: translateY(-2px) !important;
+.MuiButton-outlinedPrimary {
+  border-color: #0A66FF !important;
+  color: #0A66FF !important;
 }
 
-/* Secondary Button */
-.btn-secondary, .MuiButton-outlinedPrimary {
-  border: 1px solid var(--primary) !important;
-  border-radius: 999px !important;
-  padding: 8px 22px !important;
-  color: var(--primary-light) !important;
-  background: transparent !important;
+/* Text Fields */
+.MuiInputBase-root {
+  color: var(--text-white) !important;
 }
 
-.btn-secondary:hover, .MuiButton-outlinedPrimary:hover {
-  background: rgba(10, 102, 255, 0.1) !important;
-  border-color: var(--primary-light) !important;
+.MuiInputLabel-root {
+  color: var(--text-muted) !important;
 }
 
-/* Table Styles - IMPROVED CONTRAST */
+.MuiOutlinedInput-notchedOutline {
+  border-color: rgba(255,255,255,0.2) !important;
+}
+
+/* Remove any orange/pink */
+.MuiButton-contained, 
+.MuiButton-containedSecondary,
+.css-1ej5puk,
+[class*="orange"],
+[class*="F97316"],
+[class*="#F97316"] {
+  background: linear-gradient(135deg, #0A66FF, #00C6FF) !important;
+}
+
+/* Dashboard text fix */
+.MuiCardContent-root .MuiTypography-root {
+  color: var(--text-light) !important;
+}
+
+.MuiCardContent-root .MuiTypography-h3,
+.MuiCardContent-root .MuiTypography-h4,
+.MuiCardContent-root .MuiTypography-h5 {
+  color: var(--text-white) !important;
+}
+
+/* Table text */
 .MuiTableCell-root {
-  color: var(--text-secondary) !important;
-  border-bottom: 1px solid var(--border-light) !important;
+  color: var(--text-light) !important;
+  border-bottom-color: rgba(255,255,255,0.1) !important;
 }
 
 .MuiTableCell-head {
-  color: var(--text-main) !important;
-  font-weight: 700 !important;
-  background: rgba(10, 102, 255, 0.15) !important;
+  color: var(--text-white) !important;
+  background: rgba(10,102,255,0.1) !important;
 }
 
-/* Chip Styles */
+/* Chips */
 .MuiChip-root {
-  border-radius: 12px !important;
-  font-weight: 600 !important;
+  color: var(--text-light) !important;
 }
 
-/* Status Chips */
-.status-pending { background: rgba(245, 158, 11, 0.2) !important; color: #F59E0B !important; }
-.status-assigned { background: rgba(10, 102, 255, 0.2) !important; color: #0A66FF !important; }
-.status-completed { background: rgba(34, 197, 94, 0.2) !important; color: #22C55E !important; }
+/* Alert messages */
+.MuiAlert-root {
+  background: rgba(15,23,42,0.95) !important;
+  backdrop-filter: blur(12px) !important;
+}
 
 /* Scrollbar */
 ::-webkit-scrollbar {
   width: 6px;
-  height: 6px;
 }
 
 ::-webkit-scrollbar-track {
-  background: var(--bg-secondary);
-  border-radius: 3px;
+  background: var(--bg-dark);
 }
 
 ::-webkit-scrollbar-thumb {
   background: var(--primary);
   border-radius: 3px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: var(--primary-light);
-}
-
-/* Loading Animation */
-@keyframes pulse {
-  0%, 100% { opacity: 0.6; }
-  50% { opacity: 1; }
-}
-
-.loading-pulse {
-  animation: pulse 1.5s ease-in-out infinite;
-}
-
-/* Responsive */
-@media (max-width: 600px) {
-  .glass-card, .MuiCard-root {
-    border-radius: 16px !important;
-  }
 }

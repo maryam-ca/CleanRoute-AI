@@ -229,3 +229,4 @@ const ModernDashboard = ({ token, user, setToken }) => {
 };
 
 export default ModernDashboard;
+
