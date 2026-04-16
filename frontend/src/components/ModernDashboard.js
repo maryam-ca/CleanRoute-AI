@@ -130,7 +130,7 @@ const ModernDashboard = ({ user }) => {
             sx={{
               p: { xs: 2.25, sm: 3 },
               borderRadius: 5,
-              background: 'rgba(15, 23, 42, 0.95)',
+              background: 'rgba(15,23,42,0.85)',
               border: '1px solid rgba(148, 163, 184, 0.12)'
             }}
           >
@@ -217,4 +217,6 @@ const ModernDashboard = ({ user }) => {
 };
 
 export default ModernDashboard;
+
+
 

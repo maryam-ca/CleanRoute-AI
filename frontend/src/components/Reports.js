@@ -109,7 +109,7 @@ const Reports = ({ token, user, setToken }) => {
   };
 
   const reportCards = [
-    { title: 'Complaints Report', icon: <ExcelIcon sx={{ fontSize: 40 }} />, color: '#4CAF50', description: 'Export all complaints to Excel', action: handleExportExcel },
+    { title: 'Complaints Report', icon: <ExcelIcon sx={{ fontSize: 40 }} />, color: '#22C55E', description: 'Export all complaints to Excel', action: handleExportExcel },
     { title: 'PDF Report', icon: <PdfIcon sx={{ fontSize: 40 }} />, color: '#F44336', description: 'Export complaints to PDF format', action: handleExportPDF },
     { title: 'Statistics Report', icon: <StatsIcon sx={{ fontSize: 40 }} />, color: '#2196F3', description: 'Export statistics summary', action: handleExportStats },
     { title: 'Print Report', icon: <PrintIcon sx={{ fontSize: 40 }} />, color: '#FF9800', description: 'Print complaints report', action: handlePrint },
@@ -123,7 +123,7 @@ const Reports = ({ token, user, setToken }) => {
       <Toaster position="top-right" />
       
       {/* Header */}
-      <Box sx={{ bgcolor: '#1B5E20', color: 'white', py: 2, px: 4 }}>
+      <Box sx={{ mx: { xs: 2, md: 3 }, mt: 2, py: 3, px: 4, color: 'white', border: '1px solid rgba(10,102,255,0.3)', borderRadius: 6, background: 'linear-gradient(135deg, rgba(10,102,255,0.15) 0%, rgba(15,23,42,0.3) 100%)', backdropFilter: 'blur(12px)' }}>
         <Container maxWidth="xl">
           <Box display="flex" justifyContent="space-between" alignItems="center">
             <Box display="flex" alignItems="center" gap={2}>
@@ -151,19 +151,19 @@ const Reports = ({ token, user, setToken }) => {
               <Grid container spacing={3}>
                 <Grid item xs={6} sm={3}>
                   <Box textAlign="center">
-                    <Typography variant="h3" sx={{ fontWeight: 800, color: '#4CAF50' }}>{stats?.total_complaints || 0}</Typography>
+                    <Typography variant="h3" sx={{ fontWeight: 800, color: '#22C55E' }}>{stats?.total_complaints || 0}</Typography>
                     <Typography variant="caption">Total Complaints</Typography>
                   </Box>
                 </Grid>
                 <Grid item xs={6} sm={3}>
                   <Box textAlign="center">
-                    <Typography variant="h3" sx={{ fontWeight: 800, color: '#F57C00' }}>{stats?.pending_complaints || 0}</Typography>
+                    <Typography variant="h3" sx={{ fontWeight: 800, color: '#F59E0B' }}>{stats?.pending_complaints || 0}</Typography>
                     <Typography variant="caption">Pending</Typography>
                   </Box>
                 </Grid>
                 <Grid item xs={6} sm={3}>
                   <Box textAlign="center">
-                    <Typography variant="h3" sx={{ fontWeight: 800, color: '#4CAF50' }}>{stats?.resolved_complaints || 0}</Typography>
+                    <Typography variant="h3" sx={{ fontWeight: 800, color: '#22C55E' }}>{stats?.resolved_complaints || 0}</Typography>
                     <Typography variant="caption">Resolved</Typography>
                   </Box>
                 </Grid>
@@ -205,7 +205,7 @@ const Reports = ({ token, user, setToken }) => {
               </Typography>
               {loading ? (
                 <Box sx={{ textAlign: 'center', py: 4 }}>
-                  <CircularProgress sx={{ color: '#4CAF50' }} />
+                  <CircularProgress sx={{ color: '#22C55E' }} />
                 </Box>
               ) : previewComplaints.length === 0 ? (
                 <Box sx={{ textAlign: 'center', py: 4 }}>
@@ -252,5 +252,7 @@ const Reports = ({ token, user, setToken }) => {
 };
 
 export default Reports;
+
+
 
 

@@ -56,7 +56,7 @@ const SimpleRouteOptimizer = ({ token, user }) => {
     <Box sx={{ bgcolor: '#F8FAFC', minHeight: '100vh' }}>
       <Toaster position="top-right" />
       
-      <Box sx={{ bgcolor: '#F97316', color: 'white', py: 2, px: 4 }}>
+      <Box sx={{ mx: { xs: 2, md: 3 }, mt: 2, py: 3, px: 4, color: 'white', border: '1px solid rgba(10,102,255,0.3)', borderRadius: 6, background: 'linear-gradient(135deg, rgba(10,102,255,0.15) 0%, rgba(15,23,42,0.3) 100%)', backdropFilter: 'blur(12px)' }}>
         <Container maxWidth="xl">
           <Typography variant="h5" sx={{ fontWeight: 700 }}>Route Optimization</Typography>
           <Typography variant="caption">AI-Powered Collection Route Planning</Typography>
@@ -84,7 +84,7 @@ const SimpleRouteOptimizer = ({ token, user }) => {
                   variant="contained"
                   onClick={handleOptimize}
                   disabled={loading}
-                  sx={{ bgcolor: '#F97316', py: 1.5 }}
+                  sx={{ bgcolor: '#0A66FF', py: 1.5 }}
                 >
                   {loading ? <CircularProgress size={24} color="inherit" /> : 'Optimize Routes'}
                 </Button>
@@ -173,5 +173,6 @@ const SimpleRouteOptimizer = ({ token, user }) => {
 };
 
 export default SimpleRouteOptimizer;
+
 
 

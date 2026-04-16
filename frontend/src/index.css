@@ -1,14 +1,66 @@
+/* DARK THEME ONLY - NO BEIGE, NO ORANGE */
 body {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+  font-family: 'Inter', 'Poppins', 'Segoe UI', 'Roboto', sans-serif;
+  background: linear-gradient(135deg, #020617 0%, #0F172A 100%);
+  color: #FFFFFF;
 }
 
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+/* Remove any beige/light backgrounds */
+.bg-beige, .bg-light, .bg-white, [class*="bgLight"], [class*="bgWhite"] {
+  background: transparent !important;
 }
 
+/* Leaflet Map Dark Theme */
+.leaflet-container {
+  background: #020617;
+}
+
+.leaflet-popup-content-wrapper,
+.leaflet-popup-tip {
+  background: rgba(15, 23, 42, 0.95);
+  color: #FFFFFF;
+  border: 1px solid rgba(10, 102, 255, 0.3);
+  border-radius: 12px;
+}
+
+/* Custom Scrollbar - Blue Theme */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #0F172A;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #0A66FF;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #00C6FF;
+}
+
+/* All cards - consistent dark glass */
+.MuiCard-root {
+  background: rgba(15, 23, 42, 0.85) !important;
+  backdrop-filter: blur(12px) !important;
+  border: 1px solid rgba(10, 102, 255, 0.2) !important;
+}
+
+/* All buttons - blue gradient only */
+.MuiButton-containedPrimary {
+  background: linear-gradient(135deg, #0A66FF, #00C6FF) !important;
+}
+
+/* All text - high contrast */
+.MuiTypography-root {
+  color: #E5E7EB !important;
+}
+
+h1, h2, h3, h4, h5, h6, .MuiTypography-h1, .MuiTypography-h2, .MuiTypography-h3, .MuiTypography-h4, .MuiTypography-h5, .MuiTypography-h6 {
+  color: #FFFFFF !important;
+}

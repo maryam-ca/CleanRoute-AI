@@ -76,7 +76,7 @@ const AnomalyMap = ({ token, user }) => {
     <Box sx={{ bgcolor: 'transparent', minHeight: '100vh' }}>
       <Toaster position="top-right" />
       
-      <Box sx={{ bgcolor: '#EF4444', color: 'white', py: 2, px: 4 }}>
+      <Box sx={{ mx: { xs: 2, md: 3 }, mt: 2, py: 3, px: 4, color: 'white', border: '1px solid rgba(239,68,68,0.3)', borderRadius: 6, background: 'linear-gradient(135deg, rgba(239,68,68,0.15) 0%, rgba(15,23,42,0.3) 100%)', backdropFilter: 'blur(12px)' }}>
         <Container maxWidth="xl">
           <Box display="flex" justifyContent="space-between" alignItems="center">
             <Box>
@@ -89,7 +89,7 @@ const AnomalyMap = ({ token, user }) => {
               variant="contained" 
               startIcon={<RefreshIcon />} 
               onClick={fetchAnomalies}
-              sx={{ bgcolor: '#DC2626' }}
+              sx={{ bgcolor: '#0A66FF' }}
             >
               Refresh
             </Button>
@@ -102,7 +102,7 @@ const AnomalyMap = ({ token, user }) => {
         <Grid container spacing={3} sx={{ mb: 4 }}>
           <Grid item xs={6} sm={3}>
             <Card sx={{ textAlign: 'center', py: 2 }}>
-              <Typography variant="h4" sx={{ fontWeight: 800, color: '#EF4444' }}>
+              <Typography variant="h4" sx={{ fontWeight: 800, color: '#F87171' }}>
                 {stats.total_anomalies}
               </Typography>
               <Typography variant="caption">Anomalies Detected</Typography>
@@ -126,7 +126,7 @@ const AnomalyMap = ({ token, user }) => {
           </Grid>
           <Grid item xs={6} sm={3}>
             <Card sx={{ textAlign: 'center', py: 2, bgcolor: 'transparent' }}>
-              <WarningIcon sx={{ fontSize: 40, color: '#EF4444' }} />
+              <WarningIcon sx={{ fontSize: 40, color: '#F87171' }} />
               <Typography variant="caption">Active Monitoring</Typography>
             </Card>
           </Grid>
@@ -167,7 +167,7 @@ const AnomalyMap = ({ token, user }) => {
                         >
                           <Popup>
                             <Box sx={{ minWidth: 200 }}>
-                              <Typography variant="subtitle2" sx={{ fontWeight: 700, color: '#EF4444' }}>
+                              <Typography variant="subtitle2" sx={{ fontWeight: 700, color: '#F87171' }}>
                                 ⚠️ ANOMALY DETECTED
                               </Typography>
                               <Typography variant="body2">Complaint #{anomaly.id}</Typography>
@@ -210,8 +210,8 @@ const AnomalyMap = ({ token, user }) => {
                 
                 <Box display="flex" justifyContent="space-between" alignItems="center" mt={2}>
                   <Box display="flex" gap={2}>
-                    <Chip icon={<WarningIcon />} label="Anomaly (Red)" size="small" sx={{ bgcolor: '#EF4444', color: 'white' }} />
-                    <Chip icon={<LocationIcon />} label="Hotspot (Orange Circle)" size="small" sx={{ bgcolor: '#F59E0B', color: 'white' }} />
+                    <Chip icon={<WarningIcon />} label="Anomaly (Red)" size="small" sx={{ bgcolor: 'rgba(239,68,68,0.15)', color: 'white' }} />
+                    <Chip icon={<LocationIcon />} label="Hotspot (Orange Circle)" size="small" sx={{ bgcolor: 'rgba(245,158,11,0.15)', color: 'white' }} />
                   </Box>
                   <Typography variant="caption" color="text.secondary">
                     AI-powered anomaly detection using Isolation Forest
@@ -227,4 +227,8 @@ const AnomalyMap = ({ token, user }) => {
 };
 
 export default AnomalyMap;
+
+
+
+
 

@@ -316,7 +316,7 @@ const ComplaintForm = ({ token, user, setToken }) => {
     <Box sx={{ bgcolor: 'transparent', minHeight: '100vh', pt: '110px' }}>
       <Toaster position="top-right" />
       
-      <Box sx={{ mx: { xs: 2, md: 3 }, py: { xs: 3, md: 4 }, px: { xs: 2.25, md: 4 }, color: 'white', border: '1px solid rgba(148, 163, 184, 0.12)', borderRadius: 6, background: 'radial-gradient(circle at top right, rgba(100, 213, 255, 0.16), transparent 28%), linear-gradient(135deg, rgba(79, 140, 255, 0.16) 0%, rgba(15, 23, 42, 0.18) 100%)' }}>
+      <Box sx={{ mx: { xs: 2, md: 3 }, py: { xs: 3, md: 4 }, px: { xs: 2.25, md: 4 }, color: 'white', border: '1px solid rgba(10,102,255,0.3)', borderRadius: 6, background: 'linear-gradient(135deg, rgba(10,102,255,0.15) 0%, rgba(15,23,42,0.3) 100%)', backdropFilter: 'blur(12px)' }}>
         <Container maxWidth="xl">
           <Chip label="Citizen Reporting" size="small" sx={{ mb: 1.25, bgcolor: 'rgba(94, 162, 255, 0.16)', color: '#dce8ff', fontWeight: 700 }} />
           <Typography variant="h5" sx={{ fontWeight: 800, fontSize: { xs: '1.6rem', sm: '2rem' } }}>Create a new complaint</Typography>
@@ -362,5 +362,6 @@ const ComplaintForm = ({ token, user, setToken }) => {
 };
 
 export default ComplaintForm;
+
 
 

@@ -2,108 +2,49 @@ import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { ThemeProvider } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
-import { Box, CircularProgress } from '@mui/material';
 import { darkBlueTheme } from './darkBlueTheme';
-import { ColorModeProvider, useColorMode } from './ThemeContext';
 import Navigation from './components/Navigation';
-import Dashboard from './components/ModernDashboard';
+import Login from './components/Login';
+import ModernDashboard from './components/ModernDashboard';
 import ComplaintForm from './components/ComplaintForm';
 import RouteOptimizer from './components/RouteOptimizer';
+import ComplaintMap from './components/ComplaintMap';
 import WastePrediction from './components/WastePrediction';
 import Reports from './components/Reports';
 import AdminDashboard from './components/AdminDashboard';
 import TesterDashboard from './components/TesterDashboard';
 import RealTimeMap from './components/RealTimeMap';
-import ComplaintMap from './components/ComplaintMap';
 import AnomalyMap from './components/AnomalyMap';
-import Login from './components/Login';
 
-const AppContent = () => {
-  const { mode } = useColorMode();
+function App() {
   const [token, setToken] = useState(localStorage.getItem('token'));
-  const [user, setUser] = useState(localStorage.getItem('user'));
-  const [loading, setLoading] = useState(true);
-  const normalizedUser = (user || '').toLowerCase();
-  const isAdmin = normalizedUser === 'admin';
-  const isTester = normalizedUser.startsWith('tester');
-
-  useEffect(() => {
-    setLoading(false);
-  }, []);
-
-  if (loading) {
-    return (
-      <Box display="flex" justifyContent="center" alignItems="center" minHeight="100vh">
-        <CircularProgress sx={{ color: '#4f8cff' }} />
-      </Box>
-    );
-  }
+  const user = localStorage.getItem('user');
 
   if (!token) {
-    return <Login setToken={(t) => { setToken(t); setUser(localStorage.getItem('user')); }} />;
+    return <Login setToken={setToken} />;
   }
 
   return (
-    <ThemeProvider theme={mode === 'light' ? darkBlueTheme.light : darkBlueTheme.dark}>
+    <ThemeProvider theme={darkBlueTheme.light}>
       <CssBaseline />
       <Router>
         <Navigation user={user} setToken={setToken} />
-        <Box sx={{ pt: '70px' }}>
-          <Routes>
-            <Route
-              path="/"
-              element={
-                isAdmin ? (
-                  <AdminDashboard token={token} user={user} setToken={setToken} />
-                ) : isTester ? (
-                  <TesterDashboard token={token} user={user} setToken={setToken} />
-                ) : (
-                  <Dashboard token={token} user={user} setToken={setToken} />
-                )
-              }
-            />
-            <Route path="/submit" element={<ComplaintForm token={token} user={user} setToken={setToken} />} />
-            <Route path="/routes" element={<RouteOptimizer token={token} user={user} setToken={setToken} />} />
-            <Route path="/complaint-map" element={<ComplaintMap token={token} user={user} setToken={setToken} />} />
-            <Route
-              path="/anomalies"
-              element={isAdmin ? <AnomalyMap token={token} user={user} setToken={setToken} /> : <Navigate to="/" />}
-            />
-            <Route path="/map" element={<RealTimeMap token={token} user={user} setToken={setToken} />} />
-            <Route path="/predict" element={<WastePrediction token={token} user={user} setToken={setToken} />} />
-            <Route path="/reports" element={<Reports token={token} user={user} setToken={setToken} />} />
-            <Route
-              path="/admin"
-              element={isAdmin ? <AdminDashboard token={token} user={user} setToken={setToken} /> : <Navigate to="/" />}
-            />
-            <Route
-              path="/tester"
-              element={isTester ? <TesterDashboard token={token} user={user} setToken={setToken} /> : <Navigate to="/" />}
-            />
-            <Route path="*" element={<Navigate to="/" />} />
-          </Routes>
-        </Box>
+        <Routes>
+          <Route path="/" element={<ModernDashboard token={token} user={user} setToken={setToken} />} />
+          <Route path="/submit" element={<ComplaintForm token={token} user={user} setToken={setToken} />} />
+          <Route path="/routes" element={<RouteOptimizer token={token} />} />
+          <Route path="/complaint-map" element={<ComplaintMap token={token} />} />
+          <Route path="/predict" element={<WastePrediction token={token} />} />
+          <Route path="/reports" element={<Reports token={token} />} />
+          <Route path="/admin" element={<AdminDashboard token={token} user={user} setToken={setToken} />} />
+          <Route path="/tester" element={<TesterDashboard token={token} user={user} setToken={setToken} />} />
+          <Route path="/real-time-map" element={<RealTimeMap token={token} user={user} setToken={setToken} />} />
+          <Route path="/anomaly-map" element={<AnomalyMap token={token} user={user} />} />
+          <Route path="*" element={<Navigate to="/" />} />
+        </Routes>
       </Router>
     </ThemeProvider>
-  );
-};
-
-function App() {
-  return (
-    <ColorModeProvider>
-      <AppContent />
-    </ColorModeProvider>
   );
 }
 
 export default App;
-
-
-
-
-
-
-
-
-
-

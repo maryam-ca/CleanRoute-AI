@@ -94,7 +94,7 @@ const TesterDashboard = ({ token, user, setToken }) => {
         {/* Stats Cards */}
         <Grid container spacing={{ xs: 2, sm: 3 }} sx={{ mb: 4 }}>
           <Grid item xs={6} sm={6} md={4}>
-            <Card sx={{ bgcolor: 'rgba(34, 197, 94, 0.18)', color: 'white' }}>
+            <Card sx={{ bgcolor: 'rgba(255,255,255,0.05)', backdropFilter: 'blur(12px)', border: '1px solid rgba(255,255,255,0.08)' }}>
               <CardContent>
                 <Typography variant="caption">Assigned to Me</Typography>
                 <Typography variant="h3">{assignedComplaints.length}</Typography>
@@ -102,7 +102,7 @@ const TesterDashboard = ({ token, user, setToken }) => {
             </Card>
           </Grid>
           <Grid item xs={6} sm={6} md={4}>
-            <Card sx={{ bgcolor: 'rgba(245, 158, 11, 0.18)', color: 'white' }}>
+            <Card sx={{ bgcolor: 'rgba(255,255,255,0.05)', backdropFilter: 'blur(12px)', border: '1px solid rgba(255,255,255,0.08)' }}>
               <CardContent>
                 <Typography variant="caption">In Progress</Typography>
                 <Typography variant="h3">{complaints.filter(c => c.status === 'assigned').length}</Typography>
@@ -110,7 +110,7 @@ const TesterDashboard = ({ token, user, setToken }) => {
             </Card>
           </Grid>
           <Grid item xs={6} sm={6} md={4}>
-            <Card sx={{ bgcolor: 'rgba(96, 165, 250, 0.18)', color: 'white' }}>
+            <Card sx={{ bgcolor: 'rgba(255,255,255,0.05)', backdropFilter: 'blur(12px)', border: '1px solid rgba(255,255,255,0.08)' }}>
               <CardContent>
                 <Typography variant="caption">Completed</Typography>
                 <Typography variant="h3">{complaints.filter(c => c.status === 'completed').length}</Typography>
@@ -185,7 +185,7 @@ const TesterDashboard = ({ token, user, setToken }) => {
 
       {/* Complete Task Dialog */}
       <Dialog open={!!selectedComplaint} onClose={() => { setSelectedComplaint(null); setAfterImage(null); }} maxWidth="sm" fullWidth>
-        <DialogTitle sx={{ bgcolor: 'rgba(79, 140, 255, 0.16)', color: 'white' }}>
+        <DialogTitle sx={{ bgcolor: 'rgba(10,102,255,0.15)', color: 'white' }}>
           Complete Task - Complaint #{selectedComplaint?.id}
         </DialogTitle>
         <DialogContent>
@@ -230,5 +230,7 @@ const TesterDashboard = ({ token, user, setToken }) => {
 };
 
 export default TesterDashboard;
+
+
 
 

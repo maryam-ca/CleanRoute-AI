@@ -1,111 +1,67 @@
 import React, { useState } from 'react';
 import {
   AppBar, Toolbar, Typography, Button, IconButton, Menu, MenuItem,
-  Avatar, Box, Container, Chip, useTheme, Drawer, List, ListItem, ListItemIcon, ListItemText, useMediaQuery
+  Avatar, Box, Container, useMediaQuery
 } from '@mui/material';
 import {
   Dashboard as DashboardIcon,
   Add as AddIcon,
-  Map as MapIcon,
-  ShowChart as ChartIcon,
+  Route as RouteIcon,
   Description as DescriptionIcon,
+  LocationOn as MapIcon,
   AdminPanelSettings as AdminIcon,
-  Person as PersonIcon,
   Logout as LogoutIcon,
-  DarkMode as DarkModeIcon,
-  LightMode as LightModeIcon,
   DeleteSweep as CleanIcon,
   Menu as MenuIcon,
-  Assignment as TaskIcon
 } from '@mui/icons-material';
-import { useColorMode } from '../ThemeContext';
 
 const Navigation = ({ user, setToken }) => {
   const [anchorEl, setAnchorEl] = useState(null);
   const [mobileOpen, setMobileOpen] = useState(false);
-  const { mode, toggleColorMode } = useColorMode();
-  const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
-
-  const handleMenuOpen = (event) => setAnchorEl(event.currentTarget);
-  const handleMenuClose = () => setAnchorEl(null);
+  const isMobile = useMediaQuery('(max-width:900px)');
 
   const handleLogout = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('user');
     setToken(null);
-    handleMenuClose();
     setMobileOpen(false);
   };
 
   const navigateTo = (path) => {
     window.location.href = path;
     setMobileOpen(false);
+    setAnchorEl(null);
   };
 
-  // Check user roles
   const isAdmin = user === 'admin';
-  const isTester = user === 'tester1' || user === 'tester2' || user === 'tester' || user?.startsWith('tester');
+  const isTester = user?.startsWith('tester');
 
+  // Simplified navigation - max 4-5 items
   const navItems = [
     { path: '/', label: 'Dashboard', icon: <DashboardIcon />, show: true },
-    { path: '/submit', label: 'New Complaint', icon: <AddIcon />, show: true },
-    { path: '/routes', label: 'Route Optimizer', icon: <MapIcon />, show: true },
-    { path: '/predict', label: 'Waste Predict', icon: <ChartIcon />, show: true },
+    { path: '/submit', label: 'New Complaint', icon: <AddIcon />, show: !isTester },
+    { path: '/complaint-map', label: 'Map', icon: <MapIcon />, show: true },
+    { path: '/routes', label: 'Routes', icon: <RouteIcon />, show: true },
     { path: '/reports', label: 'Reports', icon: <DescriptionIcon />, show: true },
-    { path: '/admin', label: 'Admin Panel', icon: <AdminIcon />, show: isAdmin },
-    { path: '/tester', label: 'My Tasks', icon: <TaskIcon />, show: isTester },
+    { path: '/admin', label: 'Admin', icon: <AdminIcon />, show: isAdmin },
   ];
 
-  const drawer = (
-    <Box sx={{ width: 280, p: 2 }}>
-      <Box display="flex" alignItems="center" gap={1} sx={{ mb: 3, p: 1 }}>
-        <CleanIcon sx={{ fontSize: 32, color: theme.palette.primary.main }} />
-        <Typography variant="h6" sx={{ fontWeight: 700 }}>CleanRoute-AI</Typography>
-      </Box>
-      <List>
-        {navItems.filter(item => item.show).map((item) => (
-          <ListItem 
-            key={item.path} 
-            onClick={() => navigateTo(item.path)}
-            sx={{ 
-              borderRadius: 2, 
-              mb: 0.5,
-              bgcolor: window.location.pathname === item.path ? theme.palette.action.selected : 'transparent',
-              '&:hover': { bgcolor: theme.palette.action.hover }
-            }}
-          >
-            <ListItemIcon sx={{ color: window.location.pathname === item.path ? theme.palette.primary.main : 'inherit' }}>
-              {item.icon}
-            </ListItemIcon>
-            <ListItemText primary={item.label} />
-          </ListItem>
-        ))}
-        <ListItem onClick={toggleColorMode} sx={{ borderRadius: 2 }}>
-          <ListItemIcon>{mode === 'dark' ? <LightModeIcon /> : <DarkModeIcon />}</ListItemIcon>
-          <ListItemText primary={`${mode === 'dark' ? 'Light' : 'Dark'} Mode`} />
-        </ListItem>
-        <ListItem onClick={handleLogout} sx={{ borderRadius: 2, color: 'error.main' }}>
-          <ListItemIcon sx={{ color: 'error.main' }}><LogoutIcon /></ListItemIcon>
-          <ListItemText primary="Logout" />
-        </ListItem>
-      </List>
-    </Box>
-  );
+  const isActive = (path) => window.location.pathname === path;
 
   return (
     <>
-      <AppBar position="sticky" elevation={0} sx={{ borderBottom: 1, borderColor: 'divider' }}>
+      <AppBar position="fixed" elevation={0}>
         <Container maxWidth="xl">
-          <Toolbar sx={{ justifyContent: 'space-between', py: { xs: 1, sm: 0.5 }, minHeight: { xs: 56, sm: 64 } }}>
-            <Box display="flex" alignItems="center" gap={1}>
-              <CleanIcon sx={{ fontSize: { xs: 24, sm: 32 }, color: theme.palette.primary.main }} />
-              <Typography variant="h6" sx={{ fontWeight: 700, fontSize: { xs: '0.9rem', sm: '1.25rem' } }}>
+          <Toolbar sx={{ justifyContent: 'space-between', minHeight: '64px', px: { xs: 1, sm: 2 } }}>
+            {/* Logo */}
+            <Box display="flex" alignItems="center" gap={1} sx={{ cursor: 'pointer' }} onClick={() => navigateTo('/')}>
+              <CleanIcon sx={{ fontSize: 28, color: '#00C6FF' }} />
+              <Typography variant="h6" sx={{ fontWeight: 700, color: '#FFFFFF', fontSize: '1rem' }}>
                 CleanRoute-AI
               </Typography>
-              <Chip label="AI" size="small" sx={{ bgcolor: theme.palette.primary.main, color: '#FFFFFF', display: { xs: 'none', sm: 'flex' } }} />
             </Box>
 
+            {/* Desktop Navigation */}
             {!isMobile && (
               <Box display="flex" alignItems="center" gap={1}>
                 {navItems.filter(item => item.show).map((item) => (
@@ -114,8 +70,16 @@ const Navigation = ({ user, setToken }) => {
                     startIcon={item.icon}
                     onClick={() => navigateTo(item.path)}
                     sx={{
-                      color: window.location.pathname === item.path ? theme.palette.primary.main : 'text.secondary',
-                      fontWeight: window.location.pathname === item.path ? 600 : 500,
+                      color: isActive(item.path) ? '#00C6FF' : '#E5E7EB',
+                      fontWeight: isActive(item.path) ? 600 : 500,
+                      borderRadius: '8px',
+                      px: 2,
+                      py: 1,
+                      bgcolor: isActive(item.path) ? 'rgba(10,102,255,0.15)' : 'transparent',
+                      '&:hover': {
+                        bgcolor: 'rgba(10,102,255,0.1)',
+                        color: '#00C6FF',
+                      },
                     }}
                   >
                     {item.label}
@@ -124,23 +88,22 @@ const Navigation = ({ user, setToken }) => {
               </Box>
             )}
 
+            {/* User Menu */}
             <Box display="flex" alignItems="center" gap={1}>
-              {!isMobile && (
-                <IconButton onClick={toggleColorMode} size="small">
-                  {mode === 'dark' ? <LightModeIcon /> : <DarkModeIcon />}
-                </IconButton>
-              )}
-              
               <Button
-                startIcon={<Avatar sx={{ width: 28, height: 28, bgcolor: theme.palette.primary.main, fontSize: '0.8rem' }}>{user?.charAt(0).toUpperCase()}</Avatar>}
-                onClick={handleMenuOpen}
-                sx={{ textTransform: 'none', color: 'text.primary', display: { xs: 'none', sm: 'flex' } }}
+                startIcon={
+                  <Avatar sx={{ width: 32, height: 32, bgcolor: '#0A66FF', fontSize: '0.875rem' }}>
+                    {user?.charAt(0).toUpperCase()}
+                  </Avatar>
+                }
+                onClick={() => setAnchorEl(true)}
+                sx={{ textTransform: 'none', color: '#FFFFFF', fontWeight: 500 }}
               >
                 {user || 'User'}
               </Button>
-              
+
               {isMobile && (
-                <IconButton onClick={() => setMobileOpen(true)}>
+                <IconButton onClick={() => setMobileOpen(true)} sx={{ color: '#FFFFFF' }}>
                   <MenuIcon />
                 </IconButton>
               )}
@@ -149,22 +112,63 @@ const Navigation = ({ user, setToken }) => {
         </Container>
       </AppBar>
 
-      <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleMenuClose}>
-        <MenuItem disabled><Typography variant="body2">Logged in as <strong>{user}</strong></Typography></MenuItem>
-        <MenuItem onClick={handleLogout}><LogoutIcon fontSize="small" sx={{ mr: 1 }} />Logout</MenuItem>
+      {/* User Menu Dropdown */}
+      <Menu
+        anchorEl={anchorEl}
+        open={Boolean(anchorEl)}
+        onClose={() => setAnchorEl(null)}
+        PaperProps={{
+          sx: {
+            background: 'rgba(2, 6, 23, 0.95)',
+            backdropFilter: 'blur(12px)',
+            border: '1px solid rgba(10,102,255,0.3)',
+            borderRadius: '12px',
+            mt: 1,
+          },
+        }}
+      >
+        <MenuItem disabled>
+          <Typography variant="body2" sx={{ color: '#E5E7EB' }}>Logged in as <strong>{user}</strong></Typography>
+        </MenuItem>
+        <MenuItem onClick={handleLogout}>
+          <LogoutIcon fontSize="small" sx={{ mr: 1, color: '#EF4444' }} />
+          <Typography sx={{ color: '#EF4444' }}>Logout</Typography>
+        </MenuItem>
       </Menu>
 
-      <Drawer anchor="left" open={mobileOpen} onClose={() => setMobileOpen(false)}>
-        {drawer}
-      </Drawer>
+      {/* Mobile Drawer */}
+      <Menu
+        open={mobileOpen}
+        onClose={() => setMobileOpen(false)}
+        PaperProps={{
+          sx: {
+            background: 'rgba(2, 6, 23, 0.95)',
+            backdropFilter: 'blur(12px)',
+            border: '1px solid rgba(10,102,255,0.3)',
+            borderRadius: 12,
+            width: 280,
+            mt: 7,
+          },
+        }}
+      >
+        {navItems.filter(item => item.show).map((item) => (
+          <MenuItem key={item.path} onClick={() => navigateTo(item.path)} selected={isActive(item.path)}>
+            <Box display="flex" alignItems="center" gap={1.5}>
+              {item.icon}
+              <Typography sx={{ color: '#E5E7EB' }}>{item.label}</Typography>
+            </Box>
+          </MenuItem>
+        ))}
+        <MenuItem onClick={handleLogout}>
+          <LogoutIcon fontSize="small" sx={{ mr: 1.5, color: '#EF4444' }} />
+          <Typography sx={{ color: '#EF4444' }}>Logout</Typography>
+        </MenuItem>
+      </Menu>
+
+      {/* Spacer */}
+      <Toolbar />
     </>
   );
 };
 
 export default Navigation;
-
-
-
-
-
-
