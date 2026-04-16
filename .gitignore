@@ -60,3 +60,8 @@ Desktop.ini
 *.h5
 *.joblib
 *.pickle
+
+# Backup files
+*.bak
+*.backup
+backend/media/
