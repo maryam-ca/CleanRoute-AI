@@ -67,6 +67,24 @@ const api = {
     return parseResponse(response);
   },
 
+  analyzeImage: async (formData) => {
+    const token = getToken();
+    const response = await fetch(API_BASE_URL + 'analyze-image/', {
+      method: 'POST',
+      headers: token ? { 'Authorization': 'Bearer ' + token } : {},
+      body: formData
+    });
+    return parseResponse(response);
+  },
+
+  getAnomalies: async () => {
+    const token = getToken();
+    const response = await fetch(API_BASE_URL + 'anomalies/', {
+      headers: token ? { 'Authorization': 'Bearer ' + token } : {}
+    });
+    return parseResponse(response);
+  },
+
   assignToTester: async (complaintId, testerUsername) => {
     const token = getToken();
     const response = await fetch(API_BASE_URL + 'complaints/' + complaintId + '/assign_to_tester/', {

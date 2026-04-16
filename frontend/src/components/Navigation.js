@@ -39,6 +39,7 @@ const Navigation = ({ user, setToken }) => {
   const isAdmin = user === 'admin';
 
   const navItems = [
+<<<<<<< HEAD
     { path: '/', label: 'Dashboard', icon: <DashboardIcon /> },
     { path: '/submit', label: 'Complaints', icon: <AddIcon /> },
     { path: '/routes', label: 'Routes', icon: <RouteIcon /> },
@@ -82,17 +83,116 @@ const Navigation = ({ user, setToken }) => {
                   height: '20px'
                 }} 
               />
+=======
+    { path: '/', label: 'Dashboard', icon: <DashboardIcon />, show: true },
+    { path: '/submit', label: 'New Complaint', icon: <AddIcon />, show: true },
+    { path: '/routes', label: 'Route Optimizer', icon: <RouteIcon />, show: true },
+    { path: '/complaint-map', label: 'Complaint Map', icon: <MapLocationIcon />, show: true },
+    { path: '/predict', label: 'Waste Predict', icon: <ChartIcon />, show: true },
+    { path: '/reports', label: 'Reports', icon: <DescriptionIcon />, show: true },
+    { path: '/admin', label: 'Admin Panel', icon: <AdminIcon />, show: isAdmin },
+    { path: '/tester', label: 'My Tasks', icon: <TaskIcon />, show: isTester },
+    { path: '/anomalies', label: 'Anomaly Map', icon: <WarningIcon />, show: isAdmin },
+  ];
+
+  const activeItemSx = {
+    bgcolor: 'rgba(96, 165, 250, 0.18)',
+    color: '#f8fbff',
+    border: '1px solid rgba(125, 176, 255, 0.18)',
+    '&:hover': { bgcolor: 'rgba(96, 165, 250, 0.24)' }
+  };
+
+  const drawer = (
+    <Box sx={{ width: 300, p: 2, bgcolor: 'rgba(6, 13, 24, 0.96)', height: '100%', backdropFilter: 'blur(18px)' }}>
+      <Box display="flex" alignItems="center" gap={1} sx={{ mb: 3, p: 1 }}>
+        <CleanIcon sx={{ fontSize: 28, color: '#7db0ff' }} />
+        <Typography variant="h6" sx={{ fontWeight: 800, color: '#f8fbff' }}>CleanRoute-AI</Typography>
+      </Box>
+      <List>
+        {navItems.filter(item => item.show).map((item) => (
+          <ListItem 
+            key={item.path} 
+            onClick={() => navigateTo(item.path)}
+            sx={{ 
+              borderRadius: 3,
+              mb: 1,
+              color: '#cdd8ee',
+              ...(window.location.pathname === item.path ? activeItemSx : {
+                '&:hover': { bgcolor: 'rgba(255,255,255,0.05)' }
+              })
+            }}
+          >
+            <ListItemIcon sx={{ color: window.location.pathname === item.path ? '#f8fbff' : '#7db0ff' }}>
+              {item.icon}
+            </ListItemIcon>
+            <ListItemText primary={item.label} />
+          </ListItem>
+        ))}
+        <ListItem onClick={toggleColorMode} sx={{ borderRadius: 2, color: 'white' }}>
+          <ListItemIcon sx={{ color: '#7db0ff' }}>{mode === 'dark' ? <LightModeIcon /> : <DarkModeIcon />}</ListItemIcon>
+          <ListItemText primary={`${mode === 'dark' ? 'Light' : 'Dark'} Mode`} />
+        </ListItem>
+        <ListItem onClick={handleLogout} sx={{ borderRadius: 2, color: '#FF6B6B' }}>
+          <ListItemIcon sx={{ color: '#FF6B6B' }}><LogoutIcon /></ListItemIcon>
+          <ListItemText primary="Logout" />
+        </ListItem>
+      </List>
+    </Box>
+  );
+
+  return (
+    <>
+      <AppBar
+        position="fixed"
+        elevation={0}
+        sx={{
+          top: 14,
+          left: { xs: 10, sm: 16 },
+          right: { xs: 10, sm: 16 },
+          width: 'auto',
+          borderRadius: 4,
+          bgcolor: 'rgba(8, 14, 26, 0.54)',
+          border: '1px solid rgba(148, 163, 184, 0.14)',
+          backdropFilter: 'blur(20px)'
+        }}
+      >
+        <Container maxWidth="xl">
+          <Toolbar sx={{ justifyContent: 'space-between', minHeight: 76, px: { xs: 1, sm: 2.5 }, gap: 2 }}>
+            <Box display="flex" alignItems="center" gap={1}>
+              <Box
+                sx={{
+                  width: 40,
+                  height: 40,
+                  borderRadius: '14px',
+                  display: 'grid',
+                  placeItems: 'center',
+                  background: 'linear-gradient(135deg, rgba(125, 176, 255, 0.24), rgba(37, 99, 235, 0.42))',
+                  border: '1px solid rgba(125, 176, 255, 0.2)'
+                }}
+              >
+                <CleanIcon sx={{ fontSize: { xs: 22, sm: 24 }, color: '#f8fbff' }} />
+              </Box>
+              <Typography variant="h6" sx={{ fontWeight: 800, color: '#f8fbff', fontSize: { xs: '0.95rem', sm: '1.08rem', md: '1.2rem' } }}>
+                CleanRoute-AI
+              </Typography>
+              <Chip label="AI" size="small" sx={{ bgcolor: 'rgba(96, 165, 250, 0.16)', color: '#dce8ff', fontWeight: 700, display: { xs: 'none', sm: 'flex' } }} />
+>>>>>>> final-updates
             </Box>
 
             {/* Desktop Navigation */}
             {!isMobile && (
+<<<<<<< HEAD
               <Box display="flex" alignItems="center" gap={1}>
                 {navItems.map((item) => (
+=======
+              <Box display="flex" alignItems="center" gap={1} sx={{ p: 0.75, borderRadius: 999, bgcolor: 'rgba(255,255,255,0.03)', border: '1px solid rgba(148, 163, 184, 0.1)' }}>
+                {navItems.filter(item => item.show).map((item) => (
+>>>>>>> final-updates
                   <Button
                     key={item.path}
-                    startIcon={item.icon}
                     onClick={() => navigateTo(item.path)}
                     sx={{
+<<<<<<< HEAD
                       color: isActive(item.path) ? '#00C6FF' : '#E5E7EB',
                       fontWeight: isActive(item.path) ? 600 : 500,
                       borderRadius: '8px',
@@ -103,6 +203,17 @@ const Navigation = ({ user, setToken }) => {
                         bgcolor: 'rgba(10, 102, 255, 0.1)',
                         color: '#00C6FF'
                       }
+=======
+                      color: '#cdd8ee',
+                      fontWeight: 600,
+                      px: 2,
+                      py: 1,
+                      borderRadius: 999,
+                      minWidth: 'auto',
+                      ...(window.location.pathname === item.path ? activeItemSx : {
+                        '&:hover': { bgcolor: 'rgba(255,255,255,0.06)' }
+                      })
+>>>>>>> final-updates
                     }}
                   >
                     {item.label}
@@ -113,6 +224,7 @@ const Navigation = ({ user, setToken }) => {
 
             {/* User Menu */}
             <Box display="flex" alignItems="center" gap={1}>
+<<<<<<< HEAD
               <IconButton onClick={toggleColorMode} size="small" sx={{ color: '#E5E7EB' }}>
                 {mode === 'dark' ? <LightModeIcon /> : <DarkModeIcon />}
               </IconButton>
@@ -130,12 +242,28 @@ const Navigation = ({ user, setToken }) => {
                   fontWeight: 500,
                   '&:hover': { bgcolor: 'rgba(255,255,255,0.05)' }
                 }}
+=======
+              {!isMobile && (
+                <IconButton onClick={toggleColorMode} size="small" sx={{ color: '#dce8ff', bgcolor: 'rgba(255,255,255,0.03)', border: '1px solid rgba(148, 163, 184, 0.08)' }}>
+                  {mode === 'dark' ? <LightModeIcon /> : <DarkModeIcon />}
+                </IconButton>
+              )}
+              
+              <Button
+                startIcon={<Avatar sx={{ width: 32, height: 32, bgcolor: 'rgba(96, 165, 250, 0.2)', color: '#f8fbff', fontWeight: 700 }}>{user?.charAt(0).toUpperCase()}</Avatar>}
+                onClick={handleMenuOpen}
+                sx={{ textTransform: 'none', color: '#f8fbff', fontWeight: 600, display: { xs: 'none', sm: 'flex' } }}
+>>>>>>> final-updates
               >
                 {user || 'User'}
               </Button>
               
               {isMobile && (
+<<<<<<< HEAD
                 <IconButton onClick={() => setMobileOpen(true)} sx={{ color: '#FFFFFF' }}>
+=======
+                <IconButton onClick={() => setMobileOpen(true)} sx={{ color: '#f8fbff' }}>
+>>>>>>> final-updates
                   <MenuIcon />
                 </IconButton>
               )}

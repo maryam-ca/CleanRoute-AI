@@ -9,6 +9,7 @@ import os
 import math
 import random
 from datetime import datetime
+from .waste_detection import waste_detector
 
 class EnhancedWasteDetector:
     def __init__(self):
@@ -101,13 +102,13 @@ class EnhancedWasteDetector:
             
             # Generate recommendation
             if fill_level >= 85:
-                recommendation = "⚠️ URGENT: Bin is overflowing! Immediate action required."
+                recommendation = "URGENT: Bin is overflowing. Immediate action required."
             elif fill_level >= 65:
-                recommendation = "⚠️ HIGH: Schedule collection within 24 hours."
+                recommendation = "HIGH: Schedule collection within 24 hours."
             elif fill_level >= 35:
-                recommendation = "📋 MEDIUM: Plan collection within 2-3 days."
+                recommendation = "MEDIUM: Plan collection within 2-3 days."
             else:
-                recommendation = "✅ LOW: Routine collection recommended."
+                recommendation = "LOW: Routine collection recommended."
             
             return {
                 'success': True,
@@ -132,7 +133,35 @@ enhanced_detector = EnhancedWasteDetector()
 
 def analyze_waste_image(image_path, complaint_type=None):
     """Wrapper function for easy integration"""
-    return enhanced_detector.analyze_complaint(image_path, complaint_type)
+    try:
+        ml_result = waste_detector.predict_priority(image_path, complaint_type or '')
+        heuristic_result = enhanced_detector.analyze_complaint(image_path, complaint_type)
+
+        fill_level = int(
+            round((ml_result.get('fill_level', 50) + heuristic_result.get('fill_level', 50)) / 2)
+        )
+
+        priority = ml_result.get('priority') or heuristic_result.get('priority', 'medium')
+        confidence = max(
+            int(round(float(ml_result.get('confidence', 0.75)) * 100)),
+            int(heuristic_result.get('confidence', 0)),
+        )
+
+        recommendation = heuristic_result.get(
+            'recommendation',
+            ml_result.get('message', 'Waste analysis completed.'),
+        )
+
+        return {
+            'success': True,
+            'fill_level': fill_level,
+            'priority': priority,
+            'confidence': confidence,
+            'recommendation': recommendation,
+            'analyzed_at': datetime.now().isoformat(),
+        }
+    except Exception:
+        return enhanced_detector.analyze_complaint(image_path, complaint_type)
 
 if __name__ == "__main__":
     print("Enhanced Waste Detector Ready - Calibrated Version")

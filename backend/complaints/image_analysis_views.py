@@ -11,6 +11,7 @@ def analyze_image(request):
     """Analyze uploaded image and return ML detection results"""
     try:
         image_file = request.FILES.get('image')
+        complaint_type = request.data.get('complaint_type')
         if not image_file:
             return Response({'success': False, 'error': 'No image provided'}, status=400)
         
@@ -21,7 +22,7 @@ def analyze_image(request):
             tmp_path = tmp.name
         
         # Run ML detection
-        result = analyze_waste_image(tmp_path)
+        result = analyze_waste_image(tmp_path, complaint_type)
         
         # Clean up
         os.unlink(tmp_path)

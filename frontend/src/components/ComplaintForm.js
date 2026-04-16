@@ -4,8 +4,7 @@ import {
   Grid, Card, CardContent, Chip, Alert, CircularProgress, IconButton
 } from '@mui/material';
 import {
-  LocationOn, Upload as UploadIcon, Delete as DeleteIcon,
-  CheckCircle, Warning, MyLocation
+  Upload as UploadIcon, Delete as DeleteIcon, MyLocation
 } from '@mui/icons-material';
 import { motion } from 'framer-motion';
 import toast, { Toaster } from 'react-hot-toast';
@@ -63,15 +62,10 @@ const ComplaintForm = ({ token, user, setToken }) => {
       setAnalyzing(true);
       const imgFormData = new FormData();
       imgFormData.append('image', file);
+      imgFormData.append('complaint_type', formData.complaint_type);
       
       try {
-        const token = localStorage.getItem('token');
-        const response = await fetch('https://cleanroute-ai.onrender.com/api/analyze-image/', {
-          method: 'POST',
-          headers: { 'Authorization': `Bearer ${token}` },
-          body: imgFormData
-        });
-        const result = await response.json();
+        const result = await api.analyzeImage(imgFormData);
         if (result.success) {
           setMlResult(result);
           setFormData(prev => ({ 
@@ -80,10 +74,12 @@ const ComplaintForm = ({ token, user, setToken }) => {
             fill_level_before: result.fill_level 
           }));
           toast.success(`AI detected: ${result.fill_level}% fill level - ${result.priority.toUpperCase()} priority`);
+        } else {
+          toast.error(result.error || 'AI analysis failed');
         }
       } catch (error) {
         console.error('ML Analysis error:', error);
-        toast.error('AI analysis failed');
+        toast.error(error.message || 'AI analysis failed');
       } finally {
         setAnalyzing(false);
       }
@@ -116,7 +112,7 @@ const ComplaintForm = ({ token, user, setToken }) => {
       }
     } catch (error) {
       console.error('Submit error:', error);
-      toast.error('Failed to submit complaint');
+      toast.error(error.message || 'Failed to submit complaint');
     } finally {
       setLoading(false);
     }
@@ -124,10 +120,10 @@ const ComplaintForm = ({ token, user, setToken }) => {
 
   const getPriorityColor = (priority) => {
     switch(priority) {
-      case 'urgent': return '#EF4444';
-      case 'high': return '#F97316';
+      case 'urgent': return '#93C5FD';
+      case 'high': return '#60A5FA';
       case 'medium': return '#3B82F6';
-      default: return '#22C55E';
+      default: return '#BFDBFE';
     }
   };
 
@@ -141,8 +137,8 @@ const ComplaintForm = ({ token, user, setToken }) => {
                 <Card
                   sx={{
                     cursor: 'pointer',
-                    border: formData.complaint_type === type ? '2px solid #F97316' : '1px solid #ddd',
-                    bgcolor: formData.complaint_type === type ? '#FFF3E0' : 'white'
+                    border: formData.complaint_type === type ? '1px solid rgba(125, 176, 255, 0.4)' : '1px solid rgba(148, 163, 184, 0.14)',
+                    bgcolor: formData.complaint_type === type ? 'rgba(79, 140, 255, 0.12)' : 'transparent'
                   }}
                   onClick={() => setFormData({ ...formData, complaint_type: type })}
                 >
@@ -236,7 +232,7 @@ const ComplaintForm = ({ token, user, setToken }) => {
               <Box sx={{ mt: 2, position: 'relative' }}>
                 <img src={formData.imagePreview} alt="Preview" style={{ width: '100%', borderRadius: 8 }} />
                 <IconButton
-                  sx={{ position: 'absolute', top: 8, right: 8, bgcolor: 'white' }}
+                  sx={{ position: 'absolute', top: 8, right: 8, bgcolor: 'rgba(8, 14, 26, 0.75)' }}
                   onClick={() => setFormData({ ...formData, image: null, imagePreview: null, imageFile: null })}
                 >
                   <DeleteIcon />
@@ -282,18 +278,22 @@ const ComplaintForm = ({ token, user, setToken }) => {
   };
 
   return (
+<<<<<<< HEAD
     <Box sx={{ bgcolor: 'transparent', minHeight: '100vh' }}>
+=======
+    <Box sx={{ bgcolor: 'transparent', minHeight: '100vh', pt: '110px' }}>
+>>>>>>> final-updates
       <Toaster position="top-right" />
       
-      <Box sx={{ bgcolor: '#F97316', color: 'white', py: 2, px: 4 }}>
+      <Box sx={{ mx: { xs: 2, md: 3 }, py: 3, px: 4, color: 'white', border: '1px solid rgba(148, 163, 184, 0.12)', borderRadius: 6, background: 'linear-gradient(135deg, rgba(79, 140, 255, 0.16) 0%, rgba(15, 23, 42, 0.18) 100%)' }}>
         <Container maxWidth="xl">
           <Typography variant="h5" sx={{ fontWeight: 700 }}>New Complaint</Typography>
           <Typography variant="caption">Report a waste issue to authorities</Typography>
         </Container>
       </Box>
 
-      <Container maxWidth="md" sx={{ py: 4 }}>
-        <Paper sx={{ p: 4, borderRadius: 4 }}>
+      <Container maxWidth="md" sx={{ py: 5 }}>
+        <Paper sx={{ p: { xs: 3, md: 4 }, borderRadius: 6 }}>
           <Stepper activeStep={activeStep} sx={{ mb: 4 }}>
             {steps.map((label) => (
               <Step key={label}>
@@ -313,12 +313,11 @@ const ComplaintForm = ({ token, user, setToken }) => {
                 variant="contained"
                 onClick={handleSubmit}
                 disabled={loading || !formData.latitude || !formData.longitude}
-                sx={{ bgcolor: '#F97316' }}
               >
                 {loading ? <CircularProgress size={24} /> : 'Submit Complaint'}
               </Button>
             ) : (
-              <Button variant="contained" onClick={handleNext} sx={{ bgcolor: '#F97316' }}>
+              <Button variant="contained" onClick={handleNext}>
                 Next
               </Button>
             )}

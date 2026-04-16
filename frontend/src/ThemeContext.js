@@ -7,7 +7,7 @@ export const useColorMode = () => useContext(ColorModeContext);
 export const ColorModeProvider = ({ children }) => {
   const [mode, setMode] = useState(() => {
     const savedMode = localStorage.getItem('themeMode');
-    return savedMode || 'light';
+    return savedMode || 'dark';
   });
 
   useEffect(() => {
