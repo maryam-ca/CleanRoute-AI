@@ -4,6 +4,7 @@ from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
 from django.contrib.auth.models import User
 from django.utils import timezone
+from tempfile import NamedTemporaryFile
 import random
 from django.db.models import Q
 from .models import Complaint, Notification
@@ -15,6 +16,33 @@ class ComplaintViewSet(viewsets.ModelViewSet):
     queryset = Complaint.objects.all()
     serializer_class = ComplaintSerializer
     permission_classes = [IsAuthenticated]
+
+    def _analyze_uploaded_image(self, uploaded_file, complaint_type):
+        if not uploaded_file:
+            return None
+
+        suffix = ''
+        if getattr(uploaded_file, 'name', None) and '.' in uploaded_file.name:
+            suffix = '.' + uploaded_file.name.rsplit('.', 1)[-1]
+
+        temp_file = NamedTemporaryFile(delete=False, suffix=suffix)
+
+        try:
+            for chunk in uploaded_file.chunks():
+                temp_file.write(chunk)
+            temp_file.flush()
+            temp_file.close()
+            return analyze_waste_image(temp_file.name, complaint_type)
+        finally:
+            try:
+                uploaded_file.seek(0)
+            except Exception:
+                pass
+            try:
+                import os
+                os.unlink(temp_file.name)
+            except OSError:
+                pass
     
     def get_queryset(self):
         user = self.request.user
@@ -52,10 +80,13 @@ class ComplaintViewSet(viewsets.ModelViewSet):
         
         image_file = request.FILES.get('image')
         if image_file:
-            ai_result = analyze_waste_image(image_file, data['complaint_type'])
-            data['priority'] = ai_result['priority']
-            data['fill_level_before'] = ai_result['fill_level']
-            print(f"AI Result: Fill={ai_result['fill_level']}%, Priority={ai_result['priority']}")
+            ai_result = self._analyze_uploaded_image(image_file, data['complaint_type'])
+            if ai_result:
+                data['priority'] = ai_result.get('priority', data['priority'])
+                data['fill_level_before'] = ai_result.get('fill_level', 0)
+                print(
+                    f"AI Result: Fill={data['fill_level_before']}%, Priority={data['priority']}"
+                )
         
         serializer = self.get_serializer(data=data)
         if serializer.is_valid():
@@ -93,14 +124,20 @@ class ComplaintViewSet(viewsets.ModelViewSet):
     def complete_task(self, request, pk=None):
         complaint = self.get_object()
         after_image = request.FILES.get('after_image')
-        
+
+        if complaint.assigned_to_id != request.user.id:
+            return Response({'error': 'You can only complete tasks assigned to you'}, status=403)
+
+        if complaint.status != 'assigned':
+            return Response({'error': 'Only assigned complaints can be completed'}, status=400)
+
         if not after_image:
             return Response({'error': 'After cleaning image required'}, status=400)
-        
-        ai_result = analyze_waste_image(after_image, complaint.complaint_type, False)
-        
+
+        ai_result = self._analyze_uploaded_image(after_image, complaint.complaint_type) or {}
+
         complaint.after_image = after_image
-        complaint.fill_level_after = ai_result['fill_level']
+        complaint.fill_level_after = ai_result.get('fill_level', complaint.fill_level_before)
         complaint.status = 'completed'
         complaint.completed_at = timezone.now()
         complaint.save()

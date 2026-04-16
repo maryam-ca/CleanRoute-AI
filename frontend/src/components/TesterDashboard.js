@@ -64,7 +64,7 @@ const TesterDashboard = ({ token, user, setToken }) => {
       fetchData();
     } catch (error) {
       console.error('Complete task error:', error);
-      toast.error('Failed to complete task');
+      toast.error(error.message || 'Failed to complete task');
     } finally {
       setSubmitting(false);
     }

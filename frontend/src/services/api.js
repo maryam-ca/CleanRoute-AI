@@ -4,6 +4,20 @@ const getToken = () => {
   return localStorage.getItem('token');
 };
 
+const parseResponse = async (response) => {
+  const data = await response.json();
+
+  if (!response.ok) {
+    const message =
+      data?.error ||
+      data?.detail ||
+      (typeof data === 'string' ? data : 'Request failed');
+    throw new Error(message);
+  }
+
+  return data;
+};
+
 const api = {
   login: async (username, password) => {
     const response = await fetch(API_BASE_URL + 'token/', {
@@ -11,7 +25,7 @@ const api = {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ username, password })
     });
-    const data = await response.json();
+    const data = await parseResponse(response);
     if (data.access) {
       localStorage.setItem('token', data.access);
       localStorage.setItem('user', username);
@@ -26,7 +40,7 @@ const api = {
       headers: token ? { 'Authorization': 'Bearer ' + token } : {},
       body: formData
     });
-    return response.json();
+    return parseResponse(response);
   },
 
   getComplaints: async () => {
@@ -34,7 +48,7 @@ const api = {
     const response = await fetch(API_BASE_URL + 'complaints/', {
       headers: token ? { 'Authorization': 'Bearer ' + token } : {}
     });
-    return response.json();
+    return parseResponse(response);
   },
 
   getDashboardStats: async () => {
@@ -42,7 +56,7 @@ const api = {
     const response = await fetch(API_BASE_URL + 'complaints/dashboard_stats/', {
       headers: token ? { 'Authorization': 'Bearer ' + token } : {}
     });
-    return response.json();
+    return parseResponse(response);
   },
 
   getTesters: async () => {
@@ -50,7 +64,7 @@ const api = {
     const response = await fetch(API_BASE_URL + 'complaints/testers/', {
       headers: token ? { 'Authorization': 'Bearer ' + token } : {}
     });
-    return response.json();
+    return parseResponse(response);
   },
 
   assignToTester: async (complaintId, testerUsername) => {
@@ -63,7 +77,7 @@ const api = {
       },
       body: JSON.stringify({ tester_username: testerUsername })
     });
-    return response.json();
+    return parseResponse(response);
   },
 
   completeTask: async (complaintId, formData) => {
@@ -73,7 +87,7 @@ const api = {
       headers: { 'Authorization': 'Bearer ' + token },
       body: formData
     });
-    return response.json();
+    return parseResponse(response);
   },
 
   updateStatus: async (complaintId, status) => {
@@ -86,7 +100,7 @@ const api = {
       },
       body: JSON.stringify({ status })
     });
-    return response.json();
+    return parseResponse(response);
   },
 
   optimizeRoutes: async (area) => {
@@ -99,7 +113,7 @@ const api = {
       },
       body: JSON.stringify({ area })
     });
-    return response.json();
+    return parseResponse(response);
   },
 
   predictWaste: async (days) => {
@@ -107,7 +121,7 @@ const api = {
     const response = await fetch(API_BASE_URL + 'predict-waste/?days=' + days, {
       headers: token ? { 'Authorization': 'Bearer ' + token } : {}
     });
-    return response.json();
+    return parseResponse(response);
   }
 };
 
