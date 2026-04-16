@@ -1,9 +1,0 @@
-from django.contrib import admin
-from .models import Complaint
-
-@admin.register(Complaint)
-class ComplaintAdmin(admin.ModelAdmin):
-    list_display = ['id', 'complaint_number', 'complaint_type', 'priority', 'status', 'user', 'created_at']
-    list_filter = ['complaint_type', 'priority', 'status', 'created_at']
-    search_fields = ['complaint_number', 'description', 'user__username']
-    readonly_fields = ['id', 'complaint_number', 'created_at']
