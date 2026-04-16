@@ -98,7 +98,7 @@ const Navigation = ({ user, setToken }) => {
 
   return (
     <>
-      <AppBar position="fixed" elevation={3} sx={{ bgcolor: '#F97316', borderBottom: '3px solid #EC4899' }}>
+      <AppBar position="fixed" elevation={3} sx={{ bgcolor: '#795548', borderBottom: '3px solid #D7CCC8' }}>
         <Container maxWidth="xl">
           <Toolbar sx={{ justifyContent: 'space-between', px: { xs: 1, sm: 2 } }}>
             <Box display="flex" alignItems="center" gap={1}>
@@ -106,7 +106,7 @@ const Navigation = ({ user, setToken }) => {
               <Typography variant="h6" sx={{ fontWeight: 800, color: 'white', fontSize: { xs: '0.9rem', sm: '1.1rem', md: '1.25rem' } }}>
                 CleanRoute-AI
               </Typography>
-              <Chip label="AI" size="small" sx={{ bgcolor: '#EC4899', color: 'white', fontWeight: 700, display: { xs: 'none', sm: 'flex' } }} />
+              <Chip label="AI" size="small" sx={{ bgcolor: '#A1887F', color: 'white', fontWeight: 700, display: { xs: 'none', sm: 'flex' } }} />
             </Box>
 
             {!isMobile && (
@@ -137,7 +137,7 @@ const Navigation = ({ user, setToken }) => {
               )}
               
               <Button
-                startIcon={<Avatar sx={{ width: 32, height: 32, bgcolor: '#EC4899', color: 'white', fontWeight: 700 }}>{user?.charAt(0).toUpperCase()}</Avatar>}
+                startIcon={<Avatar sx={{ width: 32, height: 32, bgcolor: '#A1887F', color: 'white', fontWeight: 700 }}>{user?.charAt(0).toUpperCase()}</Avatar>}
                 onClick={handleMenuOpen}
                 sx={{ textTransform: 'none', color: 'white', fontWeight: 600, display: { xs: 'none', sm: 'flex' } }}
               >
@@ -167,5 +167,6 @@ const Navigation = ({ user, setToken }) => {
 };
 
 export default Navigation;
+
 
 

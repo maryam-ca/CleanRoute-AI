@@ -1,0 +1,70 @@
+/* Brown & White Theme Global Styles */
+:root {
+  --brown-primary: #795548;
+  --brown-dark: #5D4037;
+  --brown-light: #A1887F;
+  --beige: #D7CCC8;
+  --cream: #FAF7F2;
+  --white: #FFFFFF;
+  --text-dark: #3E2723;
+}
+
+body {
+  background-color: var(--cream);
+  color: var(--text-dark);
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--beige);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--brown-primary);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--brown-dark);
+}
+
+/* Card hover effects */
+.MuiCard-root {
+  transition: all 0.3s ease;
+}
+
+.MuiCard-root:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 20px 40px rgba(62,39,35,0.1);
+}
+
+/* Button styles */
+.MuiButton-containedPrimary {
+  background: linear-gradient(135deg, #795548 0%, #5D4037 100%) !important;
+}
+
+.MuiButton-containedSecondary {
+  background: linear-gradient(135deg, #D7CCC8 0%, #BCAAA4 100%) !important;
+  color: #3E2723 !important;
+}
+
+/* Chip styles */
+.MuiChip-root {
+  background-color: #D7CCC8 !important;
+  color: #3E2723 !important;
+}
+
+/* Link styles */
+a {
+  color: #795548 !important;
+}
+
+a:hover {
+  color: #5D4037 !important;
+}
