@@ -17,8 +17,7 @@ urlpatterns = [
     # API endpoints
     path('api/', include('complaints.urls')),
     path('api/', include('users.urls')),
-    path('api/', include('ml_engine.waste_prediction_api')),
-    path('api/optimize-routes/', include('ml_engine.urls')),
+    path('api/ml/', include('ml_engine.urls')),
 ]
 
 if settings.DEBUG:

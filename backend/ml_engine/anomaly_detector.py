@@ -1,6 +1,9 @@
 """
-Anomaly Detection Module using Isolation Forest
-Detects unusual complaint patterns and illegal dumping hotspots
+Advanced Anomaly Detection Module
+- Real-time anomaly scoring
+- Hotspot detection
+- Alert generation
+- Pattern recognition
 """
 
 import numpy as np
@@ -10,31 +13,27 @@ from sklearn.preprocessing import StandardScaler
 from datetime import datetime, timedelta
 import os
 from math import radians, sin, cos, sqrt, atan2
-from pathlib import Path
+import json
+from collections import defaultdict
 
-MODEL_DIR = Path(__file__).resolve().parent / 'models'
-MODEL_PATH = MODEL_DIR / 'anomaly_detector.pkl'
-
-class AnomalyDetector:
+class AdvancedAnomalyDetector:
     def __init__(self):
         self.model = None
         self.scaler = StandardScaler()
         self.contamination = 0.1
+        self.alert_history = []
         
     def extract_features(self, complaints):
-        """Extract features from complaints for anomaly detection"""
+        """Extract advanced features for anomaly detection"""
         features = []
-        valid_complaints = []
         
         for complaint in complaints:
-            if complaint.latitude is None or complaint.longitude is None:
-                continue
-
             # Time-based features
             hour = complaint.created_at.hour
             day_of_week = complaint.created_at.weekday()
             is_weekend = 1 if day_of_week >= 5 else 0
             is_night = 1 if hour < 6 or hour > 20 else 0
+            is_peak_hour = 1 if 7 <= hour <= 9 or 17 <= hour <= 19 else 0
             
             # Location features
             lat = complaint.latitude
@@ -50,87 +49,118 @@ class AnomalyDetector:
             # Fill level
             fill_level = complaint.fill_level_before or 50
             
+            # Derived features
+            urgency_score = priority_score * (fill_level / 100)
+            severity_score = type_score * (fill_level / 100)
+            
             features.append([
-                hour, day_of_week, is_weekend, is_night,
+                hour, day_of_week, is_weekend, is_night, is_peak_hour,
                 lat, lng,
-                priority_score, type_score, fill_level
+                priority_score, type_score, fill_level,
+                urgency_score, severity_score
             ])
-            valid_complaints.append(complaint)
         
-        return np.array(features), valid_complaints
+        return np.array(features)
     
     def train(self, complaints):
         """Train the Isolation Forest model"""
-        X, valid_complaints = self.extract_features(complaints)
-
-        if len(valid_complaints) < 10:
-            print(f"Need at least 10 complaints to train (have {len(valid_complaints)})")
+        if len(complaints) < 10:
+            print(f"⚠️ Need at least 10 complaints to train (have {len(complaints)})")
             return False
-
+        
+        X = self.extract_features(complaints)
         X_scaled = self.scaler.fit_transform(X)
         
         self.model = IsolationForest(
             contamination=self.contamination,
             random_state=42,
-            n_estimators=100
+            n_estimators=150,
+            max_samples='auto',
+            bootstrap=True
         )
         self.model.fit(X_scaled)
         
         # Save model
-        MODEL_DIR.mkdir(exist_ok=True)
-        with MODEL_PATH.open('wb') as f:
+        os.makedirs('models', exist_ok=True)
+        with open('models/anomaly_detector_advanced.pkl', 'wb') as f:
             pickle.dump({
                 'model': self.model,
-                'scaler': self.scaler
+                'scaler': self.scaler,
+                'features': ['hour', 'day_of_week', 'is_weekend', 'is_night', 'is_peak_hour',
+                            'latitude', 'longitude', 'priority_score', 'type_score', 
+                            'fill_level', 'urgency_score', 'severity_score']
             }, f)
         
-        print(f"Anomaly Detection Model trained on {len(valid_complaints)} complaints")
+        print(f"✅ Advanced Anomaly Detection Model trained on {len(complaints)} complaints")
         return True
     
-    def detect_anomalies(self, complaints):
-        """Detect anomalies in complaints"""
+    def detect_anomalies(self, complaints, threshold=0.7):
+        """Detect anomalies with severity scores"""
         if self.model is None:
             try:
-                with MODEL_PATH.open('rb') as f:
+                with open('models/anomaly_detector_advanced.pkl', 'rb') as f:
                     saved = pickle.load(f)
                     self.model = saved['model']
                     self.scaler = saved['scaler']
             except:
-                if not self.train(complaints):
-                    return []
+                return []
         
         if len(complaints) == 0:
             return []
         
-        X, valid_complaints = self.extract_features(complaints)
-        if len(valid_complaints) == 0:
-            return []
+        X = self.extract_features(complaints)
         X_scaled = self.scaler.transform(X)
         
         predictions = self.model.predict(X_scaled)
         scores = self.model.score_samples(X_scaled)
         
+        # Normalize scores to 0-1 range
+        min_score = np.min(scores)
+        max_score = np.max(scores)
+        normalized_scores = (scores - min_score) / (max_score - min_score) if max_score > min_score else scores
+        
         anomalies = []
-        for i, (complaint, pred, score) in enumerate(zip(valid_complaints, predictions, scores)):
-            if pred == -1:  # Anomaly detected
-                anomalies.append({
+        alerts = []
+        
+        for i, (complaint, pred, score, norm_score) in enumerate(zip(complaints, predictions, scores, normalized_scores)):
+            if pred == -1 or norm_score > threshold:
+                severity = 'high' if norm_score > 0.85 else 'medium' if norm_score > 0.7 else 'low'
+                
+                anomaly = {
                     'complaint_id': complaint.id,
                     'latitude': complaint.latitude,
                     'longitude': complaint.longitude,
                     'priority': complaint.priority,
                     'complaint_type': complaint.complaint_type,
-                    'anomaly_score': float(score),
+                    'anomaly_score': float(norm_score),
+                    'severity': severity,
                     'fill_level': complaint.fill_level_before,
-                    'description': complaint.description[:50] if complaint.description else ''
-                })
+                    'description': complaint.description[:100] if complaint.description else '',
+                    'timestamp': complaint.created_at.isoformat() if complaint.created_at else None
+                }
+                anomalies.append(anomaly)
+                
+                # Generate alert for high severity
+                if severity == 'high':
+                    alerts.append({
+                        'type': 'anomaly_detected',
+                        'severity': severity,
+                        'message': f"⚠️ HIGH SEVERITY ANOMALY: Illegal dumping suspected at location",
+                        'complaint_id': complaint.id,
+                        'timestamp': datetime.now().isoformat()
+                    })
         
-        return anomalies
+        # Save alerts
+        self.alert_history.extend(alerts)
+        self._save_alerts()
+        
+        return anomalies, alerts
     
-    def get_hotspots(self, complaints, radius_km=0.3):
-        """Identify anomaly hotspots (clusters)"""
-        anomalies = self.detect_anomalies(complaints)
+    def get_hotspots(self, complaints, radius_km=0.3, min_cluster_size=2):
+        """Identify anomaly hotspots (clusters) with intensity scoring"""
+        anomalies, _ = self.detect_anomalies(complaints)
         
-        if len(anomalies) < 2:
+        if len(anomalies) < min_cluster_size:
             return []
         
         # Simple distance-based clustering
@@ -152,7 +182,7 @@ class AnomalyDetector:
                 lat1, lon1 = a1['latitude'], a1['longitude']
                 lat2, lon2 = a2['latitude'], a2['longitude']
                 
-                R = 6371
+                R = 6371  # Earth's radius in km
                 dlat = radians(lat2 - lat1)
                 dlon = radians(lon2 - lon1)
                 a = sin(dlat/2)**2 + cos(radians(lat1)) * cos(radians(lat2)) * sin(dlon/2)**2
@@ -162,33 +192,61 @@ class AnomalyDetector:
                     cluster.append(a2)
                     used.add(j)
             
-            if len(cluster) >= 2:
+            if len(cluster) >= min_cluster_size:
+                # Calculate cluster intensity (average anomaly score)
+                intensity = sum(c['anomaly_score'] for c in cluster) / len(cluster)
+                
                 center_lat = sum(c['latitude'] for c in cluster) / len(cluster)
                 center_lon = sum(c['longitude'] for c in cluster) / len(cluster)
                 
                 hotspots.append({
                     'center_lat': center_lat,
                     'center_lon': center_lon,
-                    'intensity': len(cluster),
+                    'intensity': round(intensity, 3),
+                    'size': len(cluster),
+                    'radius_km': radius_km,
+                    'severity': 'high' if intensity > 0.85 else 'medium' if intensity > 0.7 else 'low',
                     'complaints': cluster
                 })
         
         return sorted(hotspots, key=lambda x: x['intensity'], reverse=True)
+    
+    def get_recent_alerts(self, minutes=60):
+        """Get recent alerts"""
+        cutoff = datetime.now() - timedelta(minutes=minutes)
+        return [alert for alert in self.alert_history 
+                if datetime.fromisoformat(alert['timestamp']) > cutoff]
+    
+    def _save_alerts(self):
+        """Save alerts to file"""
+        try:
+            with open('models/anomaly_alerts.json', 'w') as f:
+                json.dump(self.alert_history[-100:], f)  # Keep last 100 alerts
+        except:
+            pass
+    
+    def get_statistics(self, complaints):
+        """Get anomaly detection statistics"""
+        anomalies, alerts = self.detect_anomalies(complaints)
+        hotspots = self.get_hotspots(complaints)
+        
+        return {
+            'total_complaints': len(complaints),
+            'total_anomalies': len(anomalies),
+            'anomaly_rate': round(len(anomalies) / len(complaints) * 100, 2) if complaints else 0,
+            'total_hotspots': len(hotspots),
+            'high_severity_alerts': len([a for a in alerts if a['severity'] == 'high']),
+            'recent_alerts': self.get_recent_alerts(60),
+            'hotspots': hotspots,
+            'anomalies': anomalies
+        }
 
 # Global instance
-anomaly_detector = AnomalyDetector()
+anomaly_detector = AdvancedAnomalyDetector()
 
-def get_anomalies_and_hotspots(complaints):
+def get_anomaly_statistics(complaints):
     """Wrapper function"""
-    anomalies = anomaly_detector.detect_anomalies(complaints)
-    hotspots = anomaly_detector.get_hotspots(complaints)
-    
-    return {
-        'anomalies': anomalies,
-        'hotspots': hotspots,
-        'total_anomalies': len(anomalies),
-        'total_hotspots': len(hotspots)
-    }
+    return anomaly_detector.get_statistics(complaints)
 
 if __name__ == "__main__":
-    print("Anomaly Detection Module Ready")
+    print("✅ Advanced Anomaly Detection Module Ready")

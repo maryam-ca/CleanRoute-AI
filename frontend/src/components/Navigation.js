@@ -1,19 +1,20 @@
 import React, { useState } from 'react';
 import {
   AppBar, Toolbar, Typography, Button, IconButton, Menu, MenuItem,
-  Avatar, Box, Container, useMediaQuery
+  Avatar, Box, Container, useMediaQuery, Divider
 } from '@mui/material';
 import {
   Dashboard as DashboardIcon,
   Add as AddIcon,
   Route as RouteIcon,
-  AutoGraph as PredictIcon,
   Description as DescriptionIcon,
   LocationOn as MapIcon,
   AdminPanelSettings as AdminIcon,
   Logout as LogoutIcon,
   DeleteSweep as CleanIcon,
   Menu as MenuIcon,
+  Person as PersonIcon,
+  Settings as SettingsIcon
 } from '@mui/icons-material';
 
 const Navigation = ({ user, setToken }) => {
@@ -25,6 +26,7 @@ const Navigation = ({ user, setToken }) => {
     localStorage.removeItem('token');
     localStorage.removeItem('user');
     setToken(null);
+    setAnchorEl(null);
     setMobileOpen(false);
   };
 
@@ -37,22 +39,35 @@ const Navigation = ({ user, setToken }) => {
   const isAdmin = user === 'admin';
   const isTester = user?.startsWith('tester');
 
-  // Simplified navigation - max 4-5 items
   const navItems = [
     { path: '/', label: 'Dashboard', icon: <DashboardIcon />, show: true },
-    { path: '/submit', label: 'New Complaint', icon: <AddIcon />, show: !isTester },
+    { path: '/submit', label: 'Complaints', icon: <AddIcon />, show: !isTester },
     { path: '/complaint-map', label: 'Map', icon: <MapIcon />, show: true },
     { path: '/routes', label: 'Routes', icon: <RouteIcon />, show: true },
     { path: '/reports', label: 'Reports', icon: <DescriptionIcon />, show: true },
-    { path: '/predict', label: 'Predict', icon: <PredictIcon />, show: true },
     { path: '/admin', label: 'Admin', icon: <AdminIcon />, show: isAdmin },
   ];
 
   const isActive = (path) => window.location.pathname === path;
 
+  // Menu open handler
+  const handleMenuOpen = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleMenuClose = () => {
+    setAnchorEl(null);
+  };
+
   return (
     <>
-      <AppBar position="fixed" elevation={0}>
+      <AppBar position="fixed" elevation={0} sx={{ 
+        background: 'rgba(2, 6, 23, 0.95)',
+        backdropFilter: 'blur(12px)',
+        borderBottom: '1px solid rgba(10,102,255,0.3)',
+        boxShadow: '0 4px 20px rgba(0,0,0,0.3)',
+        zIndex: 1100
+      }}>
         <Container maxWidth="xl">
           <Toolbar sx={{ justifyContent: 'space-between', minHeight: '64px', px: { xs: 1, sm: 2 } }}>
             {/* Logo */}
@@ -90,18 +105,24 @@ const Navigation = ({ user, setToken }) => {
               </Box>
             )}
 
-            {/* User Menu */}
+            {/* User Avatar Button */}
             <Box display="flex" alignItems="center" gap={1}>
               <Button
-                startIcon={
-                  <Avatar sx={{ width: 32, height: 32, bgcolor: '#0A66FF', fontSize: '0.875rem' }}>
-                    {user?.charAt(0).toUpperCase()}
-                  </Avatar>
-                }
-                onClick={() => setAnchorEl(true)}
-                sx={{ textTransform: 'none', color: '#FFFFFF', fontWeight: 500 }}
+                onClick={handleMenuOpen}
+                sx={{
+                  textTransform: 'none',
+                  color: '#FFFFFF',
+                  fontWeight: 500,
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 1,
+                  '&:hover': { bgcolor: 'rgba(255,255,255,0.05)' }
+                }}
               >
-                {user || 'User'}
+                <Avatar sx={{ width: 32, height: 32, bgcolor: '#0A66FF', fontSize: '0.875rem' }}>
+                  {user?.charAt(0).toUpperCase()}
+                </Avatar>
+                <Typography sx={{ display: { xs: 'none', sm: 'block' } }}>{user || 'User'}</Typography>
               </Button>
 
               {isMobile && (
@@ -114,27 +135,57 @@ const Navigation = ({ user, setToken }) => {
         </Container>
       </AppBar>
 
-      {/* User Menu Dropdown */}
+      {/* User Dropdown Menu - Directly below the avatar */}
       <Menu
         anchorEl={anchorEl}
         open={Boolean(anchorEl)}
-        onClose={() => setAnchorEl(null)}
+        onClose={handleMenuClose}
+        anchorOrigin={{
+          vertical: 'bottom',
+          horizontal: 'right',
+        }}
+        transformOrigin={{
+          vertical: 'top',
+          horizontal: 'right',
+        }}
         PaperProps={{
           sx: {
-            background: 'rgba(2, 6, 23, 0.95)',
+            background: 'rgba(2, 6, 23, 0.98)',
             backdropFilter: 'blur(12px)',
             border: '1px solid rgba(10,102,255,0.3)',
             borderRadius: '12px',
             mt: 1,
-          },
+            minWidth: 200,
+            boxShadow: '0 10px 30px rgba(0,0,0,0.5)',
+          }
         }}
       >
-        <MenuItem disabled>
-          <Typography variant="body2" sx={{ color: '#E5E7EB' }}>Logged in as <strong>{user}</strong></Typography>
+        {/* User Info Header */}
+        <Box sx={{ px: 2, py: 1.5, borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
+          <Typography variant="subtitle2" sx={{ color: '#FFFFFF', fontWeight: 700 }}>
+            {user || 'User'}
+          </Typography>
+          <Typography variant="caption" sx={{ color: '#9CA3AF' }}>
+            {isAdmin ? 'Administrator' : isTester ? 'Field Tester' : 'Citizen'}
+          </Typography>
+        </Box>
+
+        {/* Menu Items */}
+        <MenuItem onClick={() => { navigateTo('/profile'); handleMenuClose(); }} sx={{ color: '#E5E7EB' }}>
+          <PersonIcon fontSize="small" sx={{ mr: 1.5 }} />
+          Profile
         </MenuItem>
-        <MenuItem onClick={handleLogout}>
-          <LogoutIcon fontSize="small" sx={{ mr: 1, color: '#EF4444' }} />
-          <Typography sx={{ color: '#EF4444' }}>Logout</Typography>
+        <MenuItem onClick={() => { navigateTo('/settings'); handleMenuClose(); }} sx={{ color: '#E5E7EB' }}>
+          <SettingsIcon fontSize="small" sx={{ mr: 1.5 }} />
+          Settings
+        </MenuItem>
+        
+        <Divider sx={{ my: 1, borderColor: 'rgba(255,255,255,0.1)' }} />
+        
+        {/* Logout Button - Bottom of menu */}
+        <MenuItem onClick={handleLogout} sx={{ color: '#EF4444', '&:hover': { bgcolor: 'rgba(239,68,68,0.1)' } }}>
+          <LogoutIcon fontSize="small" sx={{ mr: 1.5, color: '#EF4444' }} />
+          <Typography sx={{ color: '#EF4444', fontWeight: 500 }}>Logout</Typography>
         </MenuItem>
       </Menu>
 
@@ -144,7 +195,7 @@ const Navigation = ({ user, setToken }) => {
         onClose={() => setMobileOpen(false)}
         PaperProps={{
           sx: {
-            background: 'rgba(2, 6, 23, 0.95)',
+            background: 'rgba(2, 6, 23, 0.98)',
             backdropFilter: 'blur(12px)',
             border: '1px solid rgba(10,102,255,0.3)',
             borderRadius: 12,
@@ -153,6 +204,10 @@ const Navigation = ({ user, setToken }) => {
           },
         }}
       >
+        <Box sx={{ p: 2, borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
+          <Typography variant="subtitle2" sx={{ color: '#FFFFFF', fontWeight: 700 }}>{user || 'User'}</Typography>
+          <Typography variant="caption" sx={{ color: '#9CA3AF' }}>Menu</Typography>
+        </Box>
         {navItems.filter(item => item.show).map((item) => (
           <MenuItem key={item.path} onClick={() => navigateTo(item.path)} selected={isActive(item.path)}>
             <Box display="flex" alignItems="center" gap={1.5}>
@@ -161,18 +216,17 @@ const Navigation = ({ user, setToken }) => {
             </Box>
           </MenuItem>
         ))}
-        <MenuItem onClick={handleLogout}>
+        <Divider sx={{ my: 1, borderColor: 'rgba(255,255,255,0.1)' }} />
+        <MenuItem onClick={handleLogout} sx={{ color: '#EF4444' }}>
           <LogoutIcon fontSize="small" sx={{ mr: 1.5, color: '#EF4444' }} />
           <Typography sx={{ color: '#EF4444' }}>Logout</Typography>
         </MenuItem>
       </Menu>
 
-      {/* Spacer */}
+      {/* Spacer for fixed navbar */}
       <Toolbar />
     </>
   );
 };
 
 export default Navigation;
-
-

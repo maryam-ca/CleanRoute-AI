@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Box, Container, Paper, Typography, TextField, Button,
-  Alert, CircularProgress, InputAdornment, IconButton
+  Alert, CircularProgress, InputAdornment, IconButton, Checkbox, FormControlLabel
 } from '@mui/material';
 import {
   DeleteSweep as CleanIcon,
@@ -19,11 +19,35 @@ const Login = ({ setToken }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const [rememberMe, setRememberMe] = useState(false);
+
+  // Load saved credentials if remember me was checked
+  useEffect(() => {
+    const savedUsername = localStorage.getItem('savedUsername');
+    const savedPassword = localStorage.getItem('savedPassword');
+    if (savedUsername && savedPassword) {
+      setUsername(savedUsername);
+      setPassword(savedPassword);
+      setRememberMe(true);
+    }
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     setError('');
+
+    // Basic validation
+    if (!username.trim()) {
+      setError('Username is required');
+      setLoading(false);
+      return;
+    }
+    if (!password.trim()) {
+      setError('Password is required');
+      setLoading(false);
+      return;
+    }
 
     try {
       const response = await fetch('https://cleanroute-ai.onrender.com/api/token/', {
@@ -35,19 +59,29 @@ const Login = ({ setToken }) => {
       const data = await response.json();
 
       if (response.ok && data.access) {
+        // Handle remember me
+        if (rememberMe) {
+          localStorage.setItem('savedUsername', username);
+          localStorage.setItem('savedPassword', password);
+        } else {
+          localStorage.removeItem('savedUsername');
+          localStorage.removeItem('savedPassword');
+        }
+        
         localStorage.setItem('token', data.access);
         localStorage.setItem('user', username);
         setToken(data.access);
         toast.success(`Welcome back, ${username}!`);
+        
         setTimeout(() => {
           window.location.href = '/';
         }, 500);
       } else {
-        setError('Invalid username or password');
+        setError(data.detail || 'Invalid username or password');
         toast.error('Login failed');
       }
     } catch (err) {
-      setError('Network error. Please try again.');
+      setError('Network error. Please check your connection.');
       toast.error('Network error');
     } finally {
       setLoading(false);
@@ -67,7 +101,7 @@ const Login = ({ setToken }) => {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        background: 'radial-gradient(circle at 10% 20%, #0F172A, #020617)',
+        background: 'linear-gradient(135deg, #020617 0%, #0F172A 100%)',
         position: 'relative',
         overflow: 'hidden',
       }}
@@ -84,6 +118,7 @@ const Login = ({ setToken }) => {
           borderRadius: '50%',
           top: '-200px',
           right: '-200px',
+          animation: 'pulse 4s ease-in-out infinite',
         }}
       />
       <Box
@@ -95,6 +130,7 @@ const Login = ({ setToken }) => {
           borderRadius: '50%',
           bottom: '-150px',
           left: '-150px',
+          animation: 'pulse 4s ease-in-out infinite reverse',
         }}
       />
 
@@ -160,6 +196,7 @@ const Login = ({ setToken }) => {
                 onChange={(e) => setUsername(e.target.value)}
                 margin="normal"
                 required
+                autoFocus
                 sx={{
                   '& .MuiOutlinedInput-root': {
                     color: '#FFFFFF',
@@ -200,6 +237,22 @@ const Login = ({ setToken }) => {
                 }}
               />
 
+              <Box display="flex" justifyContent="space-between" alignItems="center" mt={1}>
+                <FormControlLabel
+                  control={
+                    <Checkbox 
+                      checked={rememberMe} 
+                      onChange={(e) => setRememberMe(e.target.checked)}
+                      sx={{ color: '#0A66FF' }}
+                    />
+                  }
+                  label={<Typography variant="caption" sx={{ color: '#9CA3AF' }}>Remember me</Typography>}
+                />
+                <Button variant="text" size="small" sx={{ color: '#00C6FF' }}>
+                  Forgot password?
+                </Button>
+              </Box>
+
               {error && (
                 <Alert severity="error" sx={{ mt: 2, borderRadius: '12px', bgcolor: 'rgba(239,68,68,0.1)', color: '#EF4444' }}>
                   {error}
@@ -233,7 +286,7 @@ const Login = ({ setToken }) => {
             {/* Demo Credentials */}
             <Box mt={3}>
               <Typography variant="caption" sx={{ color: '#6B7280', display: 'block', textAlign: 'center', mb: 2 }}>
-                Demo Credentials
+                Quick Demo Access
               </Typography>
               <Box display="flex" flexWrap="wrap" gap={1} justifyContent="center">
                 {demoUsers.map((user) => (
@@ -264,6 +317,15 @@ const Login = ({ setToken }) => {
           </Paper>
         </motion.div>
       </Container>
+
+      <style>
+        {`
+          @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 0.5; }
+            50% { transform: scale(1.1); opacity: 0.8; }
+          }
+        `}
+      </style>
     </Box>
   );
 };
