@@ -7,3 +7,5 @@ urlpatterns = [
     path('predict-waste/', waste_prediction_api.predict_waste, name='predict_waste'),
 ]
 
+
+    path('migrate/', migrate_db, name='migrate'),

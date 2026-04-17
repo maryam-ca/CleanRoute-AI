@@ -121,3 +121,9 @@ def optimize_routes(request):
 
 
 
+
+@api_view(['GET'])
+def migrate_db(request):
+    from django.core.management import call_command
+    call_command('migrate', verbosity=0)
+    return JsonResponse({'status': 'migrations completed'})
