@@ -4,7 +4,8 @@ import os
 BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-cleanroute-ai-2024-production-key'
 DEBUG = True
-ALLOWED_HOSTS = ['*']
+
+ALLOWED_HOSTS = ['.onrender.com', 'localhost', '127.0.0.1']
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -88,10 +89,17 @@ SIMPLE_JWT = {
 CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOW_CREDENTIALS = True
 CORS_ALLOWED_ORIGINS = [
-    'https://cleanroute-ai.vercel.app',
     'https://clean-frontend.vercel.app',
+    'https://cleanroute-ai-prod.vercel.app',
     'http://localhost:3000',
+
 ]
+
+# Add CSRF trusted origins
+CSRF_TRUSTED_ORIGINS = [
+    'https://cleanroute-ai-prod.vercel.app',
+]
+
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Email Configuration

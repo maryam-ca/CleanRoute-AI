@@ -164,3 +164,26 @@ yarl==1.23.0
 zope.interface==8.3
 django-cors-headers==4.4.0
 # Force redeploy 
+
+
+Django==6.0.4
+djangorestframework==3.17.1
+djangorestframework-simplejwt==5.5.1
+django-cors-headers==4.4.0
+channels==4.3.2
+channels-redis==4.3.0
+celery==5.6.3
+redis==7.4.0
+psycopg2-binary==2.9.11
+gunicorn==25.3.0
+whitenoise==6.9.0
+python-dotenv==1.2.2
+Pillow==12.2.0
+numpy==2.4.4
+scikit-learn==1.8.0
+pandas==3.0.2
+opencv-python-headless==4.13.0.92
+geopy==2.4.1
+folium==0.20.0
+twilio==9.10.4
+daphne==4.2.1
