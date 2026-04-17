@@ -127,3 +127,9 @@ def migrate_db(request):
     from django.core.management import call_command
     call_command('migrate', verbosity=0)
     return JsonResponse({'status': 'migrations completed'})
+
+@api_view(['GET'])
+def run_migrations(request):
+    from django.core.management import call_command
+    call_command('migrate', verbosity=0)
+    return JsonResponse({'status': 'Migrations completed successfully'})
