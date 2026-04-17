@@ -3,7 +3,7 @@ import os
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-cleanroute-ai-2024-production-key'
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['.onrender.com', 'localhost', '127.0.0.1']
 
@@ -17,7 +17,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'corsheaders',
     'rest_framework_simplejwt',
-    'channels',  # Add channels
+    'channels',
     'complaints',
     'users',
     'ml_engine',
@@ -49,23 +49,19 @@ TEMPLATES = [{
 }]
 
 WSGI_APPLICATION = 'core.wsgi.application'
-ASGI_APPLICATION = 'core.asgi.application'  # Add ASGI for WebSocket
+ASGI_APPLICATION = 'core.asgi.application'
 
-# Redis for WebSocket (use in-memory for development)
 CHANNEL_LAYERS = {
     'default': {
         'BACKEND': 'channels.layers.InMemoryChannelLayer',
     }
 }
 
-import dj_database_url
-
 DATABASES = {
-    'default': dj_database_url.config(
-        default='sqlite:///db.sqlite3',
-        conn_max_age=600
-    )
-}
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
+    }
 }
 
 AUTH_PASSWORD_VALIDATORS = []
@@ -92,13 +88,10 @@ SIMPLE_JWT = {
 CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOW_CREDENTIALS = True
 CORS_ALLOWED_ORIGINS = [
-    'https://clean-frontend.vercel.app',
     'https://cleanroute-ai-prod.vercel.app',
     'http://localhost:3000',
-
 ]
 
-# Add CSRF trusted origins
 CSRF_TRUSTED_ORIGINS = [
     'https://cleanroute-ai-prod.vercel.app',
 ]
@@ -116,10 +109,3 @@ DEFAULT_FROM_EMAIL = 'CleanRoute-AI <noreply@cleanroute-ai.com>'
 
 DATA_UPLOAD_MAX_NUMBER_FILES = 100
 DATA_UPLOAD_MAX_MEMORY_SIZE = 10485760
-
-
-
-
-
-# Force redeploy 
-
