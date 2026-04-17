@@ -86,28 +86,3 @@ def setup_database(request):
 def optimize_routes(request):
     # Your existing optimize_routes code here
     return JsonResponse({'success': True, 'routes': []})
-
-@api_view(['GET'])
-@permission_classes([IsAuthenticated])
-def predict_waste(request):
-    """Generate waste prediction for the next 7 days"""
-    from datetime import datetime, timedelta
-    import random
-    
-    days = int(request.GET.get('days', 7))
-    
-    predictions = []
-    for i in range(days):
-        date = datetime.now() + timedelta(days=i)
-        predictions.append({
-            'date': date.strftime('%Y-%m-%d'),
-            'predicted_complaints': random.randint(5, 25),
-            'confidence': random.randint(70, 95)
-        })
-    
-    return JsonResponse({
-        'success': True,
-        'predictions': predictions,
-        'total_expected': sum(p['predicted_complaints'] for p in predictions),
-        'peak_day': max(predictions, key=lambda x: x['predicted_complaints'])['date']
-    })
