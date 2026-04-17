@@ -64,3 +64,18 @@ body {
 h1, h2, h3, h4, h5, h6, .MuiTypography-h1, .MuiTypography-h2, .MuiTypography-h3, .MuiTypography-h4, .MuiTypography-h5, .MuiTypography-h6 {
   color: #FFFFFF !important;
 }
+
+/* Logo styling */
+.logo-image {
+  display: block;
+  width: 48px;
+  height: 48px;
+  object-fit: contain;
+}
+
+@media (max-width: 600px) {
+  .logo-image {
+    width: 36px;
+    height: 36px;
+  }
+}

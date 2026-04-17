@@ -167,7 +167,17 @@ const Login = ({ setToken }) => {
                   boxShadow: '0 0 30px rgba(0,198,255,0.4)',
                 }}
               >
-                <CleanIcon sx={{ fontSize: 40, color: '#FFFFFF' }} />
+                              <Box
+                component="img"
+                src="/logo.svg"
+                alt="CleanRoute-AI Logo"
+                sx={{
+                  width: 100,
+                  height: 100,
+                  borderRadius: '20px',
+                  mb: 2
+                }}
+              />
               </Box>
               <Typography
                 variant="h4"
@@ -331,4 +341,6 @@ const Login = ({ setToken }) => {
 };
 
 export default Login;
+
+
 

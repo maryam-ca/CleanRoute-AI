@@ -172,7 +172,16 @@ const Navigation = ({ user, setToken }) => {
           <Toolbar sx={{ justifyContent: 'space-between', minHeight: '64px', px: { xs: 1, sm: 2 } }}>
             {/* Logo */}
             <Box display="flex" alignItems="center" gap={1} sx={{ cursor: 'pointer' }} onClick={() => navigateTo('/')}>
-              <CleanIcon sx={{ fontSize: 28, color: '#00C6FF' }} />
+                            <Box
+                component="img" className="logo-image"
+                src="/logo.svg"
+                alt="CleanRoute-AI Logo"
+                sx={{
+                  width: { xs: 40, sm: 48 },
+                  height: { xs: 40, sm: 48 },
+                  borderRadius: '12px'
+                }}
+              />
               <Typography variant="h6" sx={{ fontWeight: 700, color: '#FFFFFF', fontSize: '1rem' }}>
                 CleanRoute-AI
               </Typography>
@@ -441,3 +450,6 @@ const Navigation = ({ user, setToken }) => {
 };
 
 export default Navigation;
+
+
+
