@@ -177,7 +177,7 @@ const Navigation = ({ user, setToken }) => {
                             <Box
                 component="img" className="logo-image"
                 src="/logo.svg"
-                alt="CleanRoute-AI Logo"
+                alt="🗑️ CleanRoute-AI Logo"
                 sx={{
                   width: { xs: 40, sm: 48 },
                   height: { xs: 40, sm: 48 },
@@ -185,7 +185,7 @@ const Navigation = ({ user, setToken }) => {
                 }}
               />
               <Typography variant="h6" sx={{ fontWeight: 700, color: '#FFFFFF', fontSize: '1rem' }}>
-                CleanRoute-AI
+                🗑️ CleanRoute-AI
               </Typography>
             </Box>
 
@@ -452,6 +452,7 @@ const Navigation = ({ user, setToken }) => {
 };
 
 export default Navigation;
+
 
 
 

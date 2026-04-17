@@ -36,7 +36,7 @@ const TesterDashboard = ({ token, user, setToken }) => {
     try {
       // Use the dedicated my_tasks endpoint
       const tasks = await api.getMyTasks();
-      console.log('My tasks:', tasks);
+      console.log('📋 My Tasks:', tasks);
       setComplaints(Array.isArray(tasks) ? tasks : []);
       
       if (tasks.length === 0) {
@@ -103,7 +103,7 @@ const TesterDashboard = ({ token, user, setToken }) => {
       
       <Box sx={{ mx: { xs: 2, md: 3 }, py: 3, px: 4, border: '1px solid rgba(10,102,255,0.3)', borderRadius: 6, background: 'linear-gradient(135deg, rgba(10,102,255,0.15) 0%, rgba(15,23,42,0.3) 100%)', backdropFilter: 'blur(12px)' }}>
         <Container maxWidth="xl">
-          <Typography variant="h5" sx={{ fontWeight: 800, color: '#FFFFFF' }}>My Tasks</Typography>
+          <Typography variant="h5" sx={{ fontWeight: 800, color: '#FFFFFF' }}>📋 My Tasks</Typography>
           <Typography variant="body2" sx={{ color: '#9CA3AF', mt: 0.5 }}>View and complete tasks assigned to you</Typography>
         </Container>
       </Box>
@@ -284,4 +284,5 @@ const TesterDashboard = ({ token, user, setToken }) => {
 };
 
 export default TesterDashboard;
+
 

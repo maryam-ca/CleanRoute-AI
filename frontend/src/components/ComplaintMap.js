@@ -138,7 +138,7 @@ const ComplaintMap = () => {
     <Box sx={{ minHeight: '100vh', pt: '110px', pb: 4 }}>
       <Container maxWidth="xl">
         <Box sx={{ mb: 3 }}>
-          <Typography variant="h4" sx={{ fontWeight: 800, color: '#FFFFFF' }}>🗺️ Complaint Map</Typography>
+          <Typography variant="h4" sx={{ fontWeight: 800, color: '#FFFFFF' }}>🗺️ 📍 Complaint Map</Typography>
           <Typography variant="body2" sx={{ color: '#9CA3AF' }}>
             {validComplaints.length} active complaints mapped • Color coded by priority
             {allComplaints.length - activeComplaints.length > 0 && 
@@ -277,3 +277,4 @@ const ComplaintMap = () => {
 };
 
 export default ComplaintMap;
+

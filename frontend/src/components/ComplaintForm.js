@@ -482,7 +482,7 @@ const ComplaintForm = ({ token, user, setToken }) => {
       <Box sx={{ mx: { xs: 2, md: 3 }, py: 3, px: 4, border: '1px solid rgba(10,102,255,0.3)', borderRadius: 6, background: 'linear-gradient(135deg, rgba(10,102,255,0.15) 0%, rgba(15,23,42,0.3) 100%)' }}>
         <Container maxWidth="xl">
           <Chip label="🤖 AI-Powered Reporting" size="small" sx={{ mb: 1, bgcolor: 'rgba(0,198,255,0.2)', color: '#00C6FF' }} />
-          <Typography variant="h5" sx={{ fontWeight: 800, color: '#FFFFFF' }}>Create New Complaint</Typography>
+          <Typography variant="h5" sx={{ fontWeight: 800, color: '#FFFFFF' }}>📝 Create New Complaint</Typography>
           <Typography variant="body2" sx={{ color: '#9CA3AF' }}>Our AI will analyze the image and auto-assign priority</Typography>
         </Container>
       </Box>
@@ -530,3 +530,4 @@ const ComplaintForm = ({ token, user, setToken }) => {
 };
 
 export default ComplaintForm;
+

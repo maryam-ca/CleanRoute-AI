@@ -193,7 +193,7 @@ const Login = ({ setToken }) => {
                 CleanRoute-AI
               </Typography>
               <Typography variant="body2" sx={{ color: '#9CA3AF', mt: 1 }}>
-                Smart Waste Management System
+                ♻️ Smart Waste Management System
               </Typography>
             </Box>
 
@@ -341,6 +341,7 @@ const Login = ({ setToken }) => {
 };
 
 export default Login;
+
 
 
 

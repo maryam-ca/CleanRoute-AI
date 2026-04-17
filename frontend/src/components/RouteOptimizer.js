@@ -121,7 +121,7 @@ const RouteOptimizer = () => {
         <Container maxWidth="xl">
           <Box display="flex" justifyContent="space-between" alignItems="center" flexWrap="wrap" gap={2}>
             <Box>
-              <Typography variant="h6" sx={{ fontWeight: 800, color: '#FFFFFF' }}>Route Optimization</Typography>
+              <Typography variant="h6" sx={{ fontWeight: 800, color: '#FFFFFF' }}>🗺️ Route Optimization</Typography>
               <Typography variant="caption" sx={{ color: '#9CA3AF' }}>AI-powered collection route planning</Typography>
             </Box>
             <Box display="flex" gap={2} alignItems="center">
@@ -358,6 +358,7 @@ const RouteOptimizer = () => {
 };
 
 export default RouteOptimizer;
+
 
 
 

@@ -129,7 +129,7 @@ const Reports = ({ token, user, setToken }) => {
             <Box display="flex" alignItems="center" gap={2}>
               <DownloadIcon sx={{ fontSize: 32, color: '#81C784' }} />
               <Box>
-                <Typography variant="h5" sx={{ fontWeight: 700 }}>Export Reports</Typography>
+                <Typography variant="h5" sx={{ fontWeight: 700 }}>📄 Export Reports</Typography>
                 <Typography variant="caption" sx={{ opacity: 0.8 }}>Export complaints data in multiple formats</Typography>
               </Box>
             </Box>
@@ -252,6 +252,7 @@ const Reports = ({ token, user, setToken }) => {
 };
 
 export default Reports;
+
 
 
 
