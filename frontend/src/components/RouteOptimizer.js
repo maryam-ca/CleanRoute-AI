@@ -82,7 +82,8 @@ const RouteOptimizer = () => {
     }
   };
 
-  const validComplaints = allComplaints.filter(c => c.latitude && c.longitude);
+    // Only show active complaints (not completed)
+  const validComplaints = allComplaints.filter(c => c.latitude && c.longitude && c.status !== 'completed');
   const mapCenter = validComplaints.length > 0 
     ? [validComplaints[0].latitude, validComplaints[0].longitude] 
     : [33.805787, 72.351681];
@@ -357,6 +358,7 @@ const RouteOptimizer = () => {
 };
 
 export default RouteOptimizer;
+
 
 
 

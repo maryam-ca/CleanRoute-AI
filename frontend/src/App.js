@@ -5,7 +5,7 @@ import CssBaseline from '@mui/material/CssBaseline';
 import { darkBlueTheme } from './darkBlueTheme';
 import Navigation from './components/Navigation';
 import Login from './components/Login';
-import ModernDashboard from './components/ModernDashboard';
+import DashboardSummary from './components/DashboardSummary';
 import ComplaintForm from './components/ComplaintForm';
 import RouteOptimizer from './components/RouteOptimizer';
 import ComplaintMap from './components/ComplaintMap';
@@ -30,7 +30,7 @@ function App() {
       <Router>
         <Navigation user={user} setToken={setToken} />
         <Routes>
-          <Route path="/" element={<ModernDashboard token={token} user={user} setToken={setToken} />} />
+          <Route path="/" element={<DashboardSummary token={token} user={user} setToken={setToken} />} />
           <Route path="/submit" element={<ComplaintForm token={token} user={user} setToken={setToken} />} />
           <Route path="/routes" element={<RouteOptimizer token={token} />} />
           <Route path="/complaint-map" element={<ComplaintMap token={token} />} />
@@ -48,4 +48,3 @@ function App() {
 }
 
 export default App;
-

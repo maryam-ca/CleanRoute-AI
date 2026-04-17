@@ -15,56 +15,18 @@ L.Icon.Default.mergeOptions({
 // Custom colored markers based on priority
 const getMarkerIcon = (priority) => {
   const colors = {
-    urgent: {
-      bg: '#EF4444',
-      border: '#DC2626',
-      glow: '#EF4444',
-      label: 'URGENT'
-    },
-    high: {
-      bg: '#F59E0B',
-      border: '#D97706',
-      glow: '#F59E0B',
-      label: 'HIGH'
-    },
-    medium: {
-      bg: '#0A66FF',
-      border: '#0057DB',
-      glow: '#0A66FF',
-      label: 'MEDIUM'
-    },
-    low: {
-      bg: '#22C55E',
-      border: '#16A34A',
-      glow: '#22C55E',
-      label: 'LOW'
-    }
+    urgent: { bg: '#EF4444', border: '#DC2626', glow: '#EF4444', label: 'URGENT' },
+    high: { bg: '#F59E0B', border: '#D97706', glow: '#F59E0B', label: 'HIGH' },
+    medium: { bg: '#0A66FF', border: '#0057DB', glow: '#0A66FF', label: 'MEDIUM' },
+    low: { bg: '#22C55E', border: '#16A34A', glow: '#22C55E', label: 'LOW' }
   };
   
   const priorityColor = colors[priority] || colors.medium;
   
-  // Create custom div icon for colored markers
   return L.divIcon({
     html: `
-      <div style="
-        background-color: ${priorityColor.bg};
-        width: 24px;
-        height: 24px;
-        border-radius: 50%;
-        border: 2px solid white;
-        box-shadow: 0 0 10px ${priorityColor.glow};
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        cursor: pointer;
-        transition: transform 0.2s;
-      ">
-        <span style="
-          color: white;
-          font-size: 10px;
-          font-weight: bold;
-          text-shadow: 0 0 2px black;
-        ">${priorityColor.label.charAt(0)}</span>
+      <div style="background-color: ${priorityColor.bg}; width: 24px; height: 24px; border-radius: 50%; border: 2px solid white; box-shadow: 0 0 10px ${priorityColor.glow}; display: flex; align-items: center; justify-content: center; cursor: pointer;">
+        <span style="color: white; font-size: 10px; font-weight: bold;">${priorityColor.label.charAt(0)}</span>
       </div>
     `,
     iconSize: [24, 24],
@@ -74,7 +36,7 @@ const getMarkerIcon = (priority) => {
 };
 
 const ComplaintMap = () => {
-  const [complaints, setComplaints] = useState([]);
+  const [allComplaints, setAllComplaints] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedPriority, setSelectedPriority] = useState('all');
@@ -102,13 +64,35 @@ const ComplaintMap = () => {
       
       const data = await response.json();
       const complaintsArray = Array.isArray(data) ? data : (data.results || []);
-      setComplaints(complaintsArray);
+      setAllComplaints(complaintsArray);
     } catch (err) {
       console.error('Error fetching complaints:', err);
       setError(err.message);
     } finally {
       setLoading(false);
     }
+  };
+
+  // Filter out completed complaints - ONLY active (pending + assigned)
+  const activeComplaints = allComplaints.filter(c => c.status !== 'completed');
+  
+  // Apply priority filter
+  const filteredByPriority = activeComplaints.filter(c => {
+    if (selectedPriority === 'all') return true;
+    return c.priority?.toLowerCase() === selectedPriority;
+  });
+
+  const validComplaints = filteredByPriority.filter(c => c.latitude && c.longitude);
+  const mapCenter = validComplaints.length > 0 
+    ? [validComplaints[0].latitude, validComplaints[0].longitude] 
+    : [33.805787, 72.351681];
+
+  // Count active complaints by priority
+  const priorityCounts = {
+    urgent: activeComplaints.filter(c => c.priority?.toLowerCase() === 'urgent').length,
+    high: activeComplaints.filter(c => c.priority?.toLowerCase() === 'high').length,
+    medium: activeComplaints.filter(c => c.priority?.toLowerCase() === 'medium').length,
+    low: activeComplaints.filter(c => c.priority?.toLowerCase() === 'low').length
   };
 
   const getPriorityColor = (priority) => {
@@ -124,27 +108,8 @@ const ComplaintMap = () => {
     switch(status?.toLowerCase()) {
       case 'pending': return '#F59E0B';
       case 'assigned': return '#0A66FF';
-      case 'completed': return '#22C55E';
       default: return '#9CA3AF';
     }
-  };
-
-  const filteredComplaints = complaints.filter(c => {
-    if (selectedPriority === 'all') return true;
-    return c.priority?.toLowerCase() === selectedPriority;
-  });
-
-  const validComplaints = filteredComplaints.filter(c => c.latitude && c.longitude);
-  const mapCenter = validComplaints.length > 0 
-    ? [validComplaints[0].latitude, validComplaints[0].longitude] 
-    : [33.805787, 72.351681];
-
-  // Count complaints by priority
-  const priorityCounts = {
-    urgent: complaints.filter(c => c.priority?.toLowerCase() === 'urgent').length,
-    high: complaints.filter(c => c.priority?.toLowerCase() === 'high').length,
-    medium: complaints.filter(c => c.priority?.toLowerCase() === 'medium').length,
-    low: complaints.filter(c => c.priority?.toLowerCase() === 'low').length
   };
 
   if (loading) {
@@ -172,18 +137,18 @@ const ComplaintMap = () => {
   return (
     <Box sx={{ minHeight: '100vh', pt: '110px', pb: 4 }}>
       <Container maxWidth="xl">
-        {/* Header */}
         <Box sx={{ mb: 3 }}>
           <Typography variant="h4" sx={{ fontWeight: 800, color: '#FFFFFF' }}>🗺️ Complaint Map</Typography>
           <Typography variant="body2" sx={{ color: '#9CA3AF' }}>
-            {validComplaints.length} complaints mapped • Color coded by priority
+            {validComplaints.length} active complaints mapped • Color coded by priority
+            {allComplaints.length - activeComplaints.length > 0 && 
+              ` (${allComplaints.length - activeComplaints.length} completed in archive)`}
           </Typography>
         </Box>
 
-        {/* Priority Filter Buttons */}
         <Box sx={{ display: 'flex', gap: 2, mb: 3, flexWrap: 'wrap' }}>
           <Chip
-            label={`All (${complaints.length})`}
+            label={`All (${activeComplaints.length})`}
             onClick={() => setSelectedPriority('all')}
             sx={{
               bgcolor: selectedPriority === 'all' ? '#0A66FF' : 'rgba(255,255,255,0.1)',
@@ -239,14 +204,7 @@ const ComplaintMap = () => {
           />
         </Box>
 
-        {/* Map Section */}
-        <Paper sx={{ 
-          borderRadius: 4, 
-          overflow: 'hidden', 
-          border: '1px solid rgba(10,102,255,0.3)',
-          height: '600px',
-          width: '100%'
-        }}>
+        <Paper sx={{ borderRadius: 4, overflow: 'hidden', border: '1px solid rgba(10,102,255,0.3)', height: '600px', width: '100%' }}>
           <MapContainer
             key={mapCenter.join(',')}
             center={mapCenter}
@@ -271,26 +229,8 @@ const ComplaintMap = () => {
                       #{complaint.id} - {complaint.complaint_type?.replace('_', ' ')}
                     </Typography>
                     <Box sx={{ mt: 1, display: 'flex', gap: 1, flexWrap: 'wrap' }}>
-                      <Chip 
-                        label={complaint.priority?.toUpperCase()} 
-                        size="small"
-                        sx={{ 
-                          bgcolor: getPriorityColor(complaint.priority).bg, 
-                          color: 'white',
-                          fontWeight: 600,
-                          fontSize: '0.7rem'
-                        }} 
-                      />
-                      <Chip 
-                        label={complaint.status} 
-                        size="small"
-                        sx={{ 
-                          bgcolor: getStatusColor(complaint.status), 
-                          color: 'white',
-                          fontWeight: 600,
-                          fontSize: '0.7rem'
-                        }} 
-                      />
+                      <Chip label={complaint.priority?.toUpperCase()} size="small" sx={{ bgcolor: getPriorityColor(complaint.priority).bg, color: 'white', fontWeight: 600 }} />
+                      <Chip label={complaint.status} size="small" sx={{ bgcolor: getStatusColor(complaint.status), color: 'white', fontWeight: 600 }} />
                     </Box>
                     <Typography variant="caption" sx={{ color: '#9CA3AF', display: 'block', mt: 1 }}>
                       Fill Level: {complaint.fill_level_before || 0}%
@@ -298,11 +238,6 @@ const ComplaintMap = () => {
                     <Typography variant="caption" sx={{ color: '#9CA3AF', display: 'block' }}>
                       Location: {complaint.latitude?.toFixed(4)}, {complaint.longitude?.toFixed(4)}
                     </Typography>
-                    {complaint.description && (
-                      <Typography variant="caption" sx={{ color: '#6B7280', display: 'block', mt: 1 }}>
-                        {complaint.description.substring(0, 100)}
-                      </Typography>
-                    )}
                   </Box>
                 </Popup>
               </Marker>
@@ -310,7 +245,6 @@ const ComplaintMap = () => {
           </MapContainer>
         </Paper>
         
-        {/* Legend */}
         <Box sx={{ display: 'flex', justifyContent: 'center', gap: 4, mt: 3, flexWrap: 'wrap' }}>
           <Tooltip title="Urgent - Immediate attention required">
             <Box display="flex" alignItems="center" gap={1}>

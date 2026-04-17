@@ -21,8 +21,11 @@ const ModernDashboard = ({ user }) => {
   const fetchData = async () => {
     setLoading(true);
     try {
-      const complaintsData = await api.getComplaints();
-      setComplaints(Array.isArray(complaintsData) ? complaintsData : []);
+            const complaintsData = await api.getComplaints();
+      // Filter out completed for active view
+      const allComplaints = Array.isArray(complaintsData) ? complaintsData : [];
+      const activeComplaints = allComplaints.filter(c => c.status !== 'completed');
+      setComplaints(activeComplaints);
       setLastUpdated(new Date());
       toast.success('Data refreshed', { icon: '🔄', duration: 2000 });
     } catch (error) {
@@ -302,4 +305,5 @@ const ModernDashboard = ({ user }) => {
 };
 
 export default ModernDashboard;
+
 

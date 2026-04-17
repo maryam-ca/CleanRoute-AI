@@ -11,6 +11,7 @@ import {
   Description as DescriptionIcon,
   LocationOn as MapIcon,
   AdminPanelSettings as AdminIcon,
+  Archive as ArchiveIcon,
   Logout as LogoutIcon,
   DeleteSweep as CleanIcon,
   Menu as MenuIcon,
@@ -132,6 +133,7 @@ const Navigation = ({ user, setToken }) => {
         { path: '/predict', label: 'Predict', icon: <PredictIcon />, show: true },
         { path: '/reports', label: 'Reports', icon: <DescriptionIcon />, show: true },
         { path: '/admin', label: 'Admin', icon: <AdminIcon />, show: true },
+        
       ];
     } else if (isTester) {
       return [
@@ -450,6 +452,9 @@ const Navigation = ({ user, setToken }) => {
 };
 
 export default Navigation;
+
+
+
 
 
 
