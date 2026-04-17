@@ -307,7 +307,7 @@ const AdminDashboard = ({ token, user, setToken }) => {
           </Grid>
         </Grid>
 
-        {/* Complaints Table */}
+        {/* Complaints Table with Assigned To Column */}
         <Paper sx={{ borderRadius: 4, overflow: 'hidden', background: 'rgba(15,23,42,0.85)', border: '1px solid rgba(10,102,255,0.2)' }}>
           <Box sx={{ p: 3, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <Typography variant="h6" sx={{ color: '#FFFFFF' }}>
@@ -332,6 +332,7 @@ const AdminDashboard = ({ token, user, setToken }) => {
                     <TableCell sx={{ color: '#FFFFFF' }}>Priority</TableCell>
                     <TableCell sx={{ color: '#FFFFFF' }}>Location</TableCell>
                     <TableCell sx={{ color: '#FFFFFF' }}>Fill Level</TableCell>
+                    <TableCell sx={{ color: '#FFFFFF' }}>Assigned To</TableCell>
                     <TableCell sx={{ color: '#FFFFFF' }}>Status</TableCell>
                     <TableCell sx={{ color: '#FFFFFF' }} align="center">Action</TableCell>
                   </TableRow>
@@ -344,6 +345,17 @@ const AdminDashboard = ({ token, user, setToken }) => {
                       <TableCell><Chip label={complaint.priority} sx={{ bgcolor: getPriorityColor(complaint.priority), color: 'white' }} /></TableCell>
                       <TableCell>{complaint.latitude?.toFixed(4)}, {complaint.longitude?.toFixed(4)}</TableCell>
                       <TableCell><Chip label={`${complaint.fill_level_before || 0}%`} size="small" /></TableCell>
+                      <TableCell>
+                        {complaint.assigned_to_username || complaint.assigned_to ? (
+                          <Chip 
+                            label={complaint.assigned_to_username || complaint.assigned_to} 
+                            size="small" 
+                            sx={{ bgcolor: '#0A66FF', color: 'white', fontWeight: 600 }} 
+                          />
+                        ) : (
+                          <Chip label="Unassigned" size="small" sx={{ bgcolor: '#9CA3AF', color: 'white' }} />
+                        )}
+                      </TableCell>
                       <TableCell><Chip label={complaint.status} sx={{ bgcolor: getStatusColor(complaint.status), color: 'white' }} /></TableCell>
                       <TableCell align="center">
                         {complaint.status === 'pending' && autoAssignMode ? (
