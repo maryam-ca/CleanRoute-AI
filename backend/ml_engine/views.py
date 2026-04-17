@@ -1,5 +1,40 @@
 from django.http import JsonResponse
 from rest_framework.decorators import api_view, permission_classes
+
+@api_view(['GET'])
+def seed_database(request):
+    from django.contrib.auth.models import User
+    from complaints.models import Complaint
+    from django.utils import timezone
+    import random
+    
+    # Create users
+    users = [('admin','admin123',True),('citizen','citizen123',False),
+             ('tester1','tester123',False),('tester2','tester123',False),
+             ('tester3','tester123',False),('tester4','tester123',False),
+             ('tester5','tester123',False)]
+    
+    for username, password, is_admin in users:
+        user, created = User.objects.get_or_create(username=username)
+        if created:
+            user.set_password(password)
+            if is_admin:
+                user.is_staff = user.is_superuser = True
+            user.save()
+    
+    # Create complaints
+    coords = [(33.81489,72.348424),(33.81406,72.349107),(33.814301,72.349665),
+              (33.813543,72.35003),(33.813459,72.351639),(33.812157,72.351564)]
+    
+    citizen = User.objects.get(username='citizen')
+    for lat, lng in coords:
+        Complaint.objects.get_or_create(
+            latitude=lat, longitude=lng,
+            defaults={'complaint_type':'overflowing','priority':'high',
+                     'fill_level_before':75,'status':'assigned','user':citizen}
+        )
+    
+    return JsonResponse({'status': 'Database seeded successfully', 'users': len(users), 'complaints': len(coords)})
 from rest_framework.permissions import IsAuthenticated
 from complaints.models import Complaint
 from django.contrib.auth.models import User
@@ -133,3 +168,4 @@ def run_migrations(request):
     from django.core.management import call_command
     call_command('migrate', verbosity=0)
     return JsonResponse({'status': 'Migrations completed successfully'})
+
