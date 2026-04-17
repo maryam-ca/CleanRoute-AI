@@ -60,7 +60,7 @@ const DashboardSummary = ({ user }) => {
     { name: 'Completed', value: stats.completed, color: '#22C55E' }
   ].filter(item => item.value > 0);
 
-  // Data for priority distribution (horizontal bar chart)
+  // Data for priority distribution
   const priorityData = [
     { name: 'Urgent', value: complaints.filter(c => c.priority === 'urgent' && c.status !== 'completed').length, color: '#EF4444' },
     { name: 'High', value: complaints.filter(c => c.priority === 'high' && c.status !== 'completed').length, color: '#F59E0B' },
@@ -203,7 +203,7 @@ const DashboardSummary = ({ user }) => {
             </motion.div>
           </Grid>
 
-          {/* Bar Chart - Priority Distribution (Horizontal) */}
+          {/* Bar Chart - Priority Distribution */}
           <Grid item xs={12} md={6}>
             <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.6 }}>
               <Paper sx={{ p: 3, borderRadius: 4, background: 'rgba(15,23,42,0.85)', border: '1px solid rgba(10,102,255,0.2)', height: '100%' }}>

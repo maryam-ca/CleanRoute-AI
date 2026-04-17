@@ -258,12 +258,8 @@ const AdminDashboard = ({ token, user, setToken }) => {
                 <Card sx={{ bgcolor: 'rgba(255,255,255,0.05)', border: '1px solid rgba(10,102,255,0.2)' }}>
                   <CardContent>
                     <Typography variant="subtitle1" sx={{ fontWeight: 700, color: '#00C6FF' }}>{tester.username}</Typography>
-                    <Typography variant="h3" sx={{ color: '#FFFFFF', fontWeight: 800 }}>{tester.assigned}</Typography>
-                    <Typography variant="caption" sx={{ color: '#9CA3AF' }}>Assigned Tasks</Typography>
-                    <Box display="flex" justifyContent="space-between" mt={1}>
-                      <Typography variant="caption" sx={{ color: '#22C55E' }}>Completed: {tester.completed}</Typography>
-                      <Typography variant="caption" sx={{ color: '#9CA3AF' }}>Total: {tester.total}</Typography>
-                    </Box>
+                                      <Typography variant="h3" sx={{ color: '#FFFFFF', fontWeight: 800 }}>{tester.assigned}</Typography>
+                  <Typography variant="caption" sx={{ color: '#9CA3AF' }}>Assigned Tasks</Typography>
                   </CardContent>
                 </Card>
               </Grid>
@@ -409,5 +405,6 @@ const AdminDashboard = ({ token, user, setToken }) => {
 };
 
 export default AdminDashboard;
+
 
 

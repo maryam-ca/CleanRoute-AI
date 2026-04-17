@@ -155,16 +155,16 @@ const Login = ({ setToken }) => {
             <Box textAlign="center" mb={4}>
               <Box
                 sx={{
-                  width: 70,
-                  height: 70,
+                  width: 100,
+                  height: 100,
                   background: 'linear-gradient(135deg, #0A66FF, #00C6FF)',
-                  borderRadius: '20px',
+                  borderRadius: '28px',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
                   margin: '0 auto',
                   mb: 2,
-                  boxShadow: '0 0 30px rgba(0,198,255,0.4)',
+                  boxShadow: '0 0 40px rgba(0,198,255,0.5)'
                 }}
               >
                               <Box
@@ -341,6 +341,7 @@ const Login = ({ setToken }) => {
 };
 
 export default Login;
+
 
 
 
