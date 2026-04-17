@@ -187,3 +187,5 @@ geopy==2.4.1
 folium==0.20.0
 twilio==9.10.4
 daphne==4.2.1
+psycopg2-binary==2.9.11
+dj-database-url==2.1.0
