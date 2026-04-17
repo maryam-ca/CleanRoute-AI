@@ -128,7 +128,22 @@ const api = {
     });
     if (!response.ok) throw new Error('AI analysis failed');
     return response.json();
+  },
+  autoAssign: async (complaintId) => {
+    const token = localStorage.getItem('token');
+    const response = await fetch(API_URL + 'complaints/auto_assign/', {
+      method: 'POST',
+      headers: {
+        'Authorization': 'Bearer ' + token,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ complaint_id: complaintId })
+    });
+    if (!response.ok) throw new Error('Failed to auto-assign');
+    return response.json();
   }
 };
 
 export default api;
+
+

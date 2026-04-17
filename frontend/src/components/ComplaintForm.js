@@ -18,6 +18,7 @@ const ComplaintForm = ({ token, user, setToken }) => {
   const [mlResult, setMlResult] = useState(null);
   const [analyzing, setAnalyzing] = useState(false);
   const [analysisProgress, setAnalysisProgress] = useState(0);
+  const [autoAssign, setAutoAssign] = useState(true);
   const [formData, setFormData] = useState({
     complaint_type: 'overflowing',
     latitude: '',
@@ -406,7 +407,27 @@ const ComplaintForm = ({ token, user, setToken }) => {
     
     try {
       const response = await api.createComplaint(submitData);
-      if (response.id || response.success) {
+            if (response.id || response.success) {
+        // If auto-assign is enabled, trigger AI assignment
+        if (autoAssign) {
+          try {
+            const token = localStorage.getItem('token');
+            const assignResponse = await fetch('http://localhost:8000/api/complaints/auto_assign/', {
+              method: 'POST',
+              headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({ complaint_id: response.id })
+            });
+            const assignResult = await assignResponse.json();
+            if (assignResult.success) {
+              toast.success(`AI Auto-assigned to ${assignResult.assigned_to}`, { icon: '🤖' });
+            }
+          } catch (assignError) {
+            console.error('Auto-assign error:', assignError);
+          }
+        }
         toast.success('Complaint submitted successfully!', { icon: '✅' });
         setTimeout(() => {
           window.location.href = '/';
@@ -477,4 +498,5 @@ const ComplaintForm = ({ token, user, setToken }) => {
 };
 
 export default ComplaintForm;
+
 
