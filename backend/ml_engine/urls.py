@@ -8,4 +8,5 @@ urlpatterns = [
 ]
 
 
-    path('migrate/', migrate_db, name='migrate'),
+    
+
