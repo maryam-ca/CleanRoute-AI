@@ -1,168 +1,139 @@
 """
-Enhanced Waste Detection System - Calibrated Version
-AI-powered fill level detection and priority assignment
+Enhanced Waste Detection using YOUR Trained ML Model
 """
 
 import cv2
 import numpy as np
+import pickle
 import os
-import math
-import random
-from datetime import datetime
-from .waste_detection import waste_detector
+import sys
 
-class EnhancedWasteDetector:
-    def __init__(self):
-        self.classes = ['low', 'medium', 'high', 'urgent']
+# Global model instance
+_waste_model = None
+_scaler = None
+_classes = None
+
+def load_model():
+    """Load the trained waste detection model"""
+    global _waste_model, _scaler, _classes
+    try:
+        model_path = os.path.join(os.path.dirname(__file__), 'models', 'waste_detector.pkl')
+        print(f"🔍 Loading model from: {model_path}")
         
-    def calculate_fill_level(self, image_path):
-        """Calculate fill level percentage from image (0-100) - CALIBRATED"""
+        with open(model_path, 'rb') as f:
+            saved = pickle.load(f)
+            _waste_model = saved['model']
+            _scaler = saved['scaler']
+            _classes = saved.get('classes', ['low', 'medium', 'high', 'urgent'])
+        
+        print(f"✅ Model loaded! Classes: {_classes}")
+        return True
+    except Exception as e:
+        print(f"❌ Could not load model: {e}")
+        return False
+
+def extract_features_from_image(image_path):
+    """Extract features from image for model prediction"""
+    try:
         img = cv2.imread(image_path)
         if img is None:
-            return 50
+            print(f"❌ Could not read image: {image_path}")
+            return None
         
-        # Resize for processing
-        img = cv2.resize(img, (256, 256))
-        
-        # Convert to grayscale
+        img = cv2.resize(img, (128, 128))
         gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
         
-        # Method 1: Edge detection (waste creates more edges)
+        brightness = np.mean(gray) / 255.0
         edges = cv2.Canny(gray, 50, 150)
         edge_density = np.sum(edges > 0) / edges.size
-        
-        # Method 2: Dark area detection (waste is typically darker)
-        _, dark_mask = cv2.threshold(gray, 80, 255, cv2.THRESH_BINARY_INV)
-        dark_density = np.sum(dark_mask > 0) / dark_mask.size
-        
-        # Method 3: Texture complexity (waste creates more texture)
         texture = np.std(gray) / 128.0
-        texture = min(1.0, texture)
         
-        # Method 4: Color variance (more waste = more color variation)
-        hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
-        color_variance = np.var(hsv[:,:,1]) / 10000
-        color_variance = min(1.0, color_variance / 0.5)
+        features = [brightness, edge_density, texture]
+        print(f"📊 Extracted features: brightness={brightness:.3f}, edges={edge_density:.3f}, texture={texture:.3f}")
         
-        # CALIBRATED weights - reduced sensitivity
-        fill_level = (
-            edge_density * 25 +      # Reduced from 35
-            dark_density * 25 +      # Reduced from 35
-            texture * 25 +           # Increased from 15
-            color_variance * 25      # Increased from 15
-        )
+        return features
         
-        # Scale to 0-100
-        fill_level = min(100, max(0, fill_level * 100))
-        
-        # CALIBRATED adjustments
-        if fill_level < 20:
-            fill_level = fill_level * 1.2  # Slightly increase low values
-        elif fill_level > 80:
-            fill_level = fill_level * 0.9  # Slightly decrease high values
-        elif 40 <= fill_level <= 60:
-            fill_level = fill_level * 1.1  # Boost medium values
-            
-        # Ensure bounds
-        fill_level = min(100, max(0, fill_level))
-            
-        return int(fill_level)
+    except Exception as e:
+        print(f"❌ Feature extraction error: {e}")
+        return None
+
+def analyze_waste_image(image_path, complaint_type=None, use_ml=True):
+    """Analyze waste image using trained ML model"""
     
-    def determine_priority(self, fill_level, is_near_sensitive=False):
-        """Determine priority based on fill level"""
-        if fill_level >= 85 or is_near_sensitive:
-            return 'urgent'
-        elif fill_level >= 65:
-            return 'high'
-        elif fill_level >= 35:
-            return 'medium'
-        else:
-            return 'low'
+    print(f"\n🔍 Analyzing image: {image_path}")
     
-    def get_confidence(self, fill_level):
-        """Calculate confidence score"""
-        if 30 <= fill_level <= 70:
-            return random.randint(80, 92)
-        elif fill_level > 80 or fill_level < 20:
-            return random.randint(70, 85)
-        else:
-            return random.randint(75, 88)
+    # Load model
+    if use_ml:
+        load_model()
     
-    def analyze_complaint(self, image_path, complaint_type=None):
-        """Complete analysis of complaint image"""
+    # Extract features
+    features = extract_features_from_image(image_path)
+    
+    if features is None:
+        return {
+            'success': False,
+            'error': 'Could not analyze image'
+        }
+    
+    # Use ML model if available
+    if use_ml and _waste_model is not None and _scaler is not None:
         try:
-            # Calculate fill level
-            fill_level = self.calculate_fill_level(image_path)
+            features_scaled = _scaler.transform([features])
+            prediction = _waste_model.predict(features_scaled)[0]
+            probabilities = _waste_model.predict_proba(features_scaled)[0]
+            confidence = max(probabilities) * 100
             
-            # Determine priority
-            priority = self.determine_priority(fill_level)
+            priority_map = {0: 'low', 1: 'medium', 2: 'high', 3: 'urgent'}
+            fill_level_map = {'low': 20, 'medium': 45, 'high': 70, 'urgent': 90}
+            recommendation_map = {
+                'low': '✅ Schedule collection within 72 hours',
+                'medium': '📅 Schedule collection within 48 hours',
+                'high': '⚠️ Schedule collection within 24 hours',
+                'urgent': '🚨 URGENT: Bin is overflowing! Immediate action required!'
+            }
             
-            # Calculate confidence
-            confidence = self.get_confidence(fill_level)
+            priority = priority_map[prediction]
+            fill_level = fill_level_map[priority]
+            recommendation = recommendation_map[priority]
             
-            # Generate recommendation
-            if fill_level >= 85:
-                recommendation = "URGENT: Bin is overflowing. Immediate action required."
-            elif fill_level >= 65:
-                recommendation = "HIGH: Schedule collection within 24 hours."
-            elif fill_level >= 35:
-                recommendation = "MEDIUM: Plan collection within 2-3 days."
-            else:
-                recommendation = "LOW: Routine collection recommended."
+            print(f"🎯 ML Prediction: {priority.upper()} (confidence: {confidence:.1f}%)")
             
             return {
                 'success': True,
                 'fill_level': fill_level,
                 'priority': priority,
-                'confidence': confidence,
+                'confidence': round(confidence, 1),
                 'recommendation': recommendation,
-                'analyzed_at': datetime.now().isoformat()
+                'method': 'ML Model (Random Forest)'
             }
             
         except Exception as e:
-            return {
-                'success': False,
-                'error': str(e),
-                'fill_level': 50,
-                'priority': 'medium',
-                'confidence': 0
-            }
+            print(f"❌ ML prediction error: {e}")
+    
+    # Fallback: brightness-based detection
+    print("⚠️ Using fallback brightness detection")
+    brightness = features[0]
+    
+    if brightness < 0.2:
+        fill_level = 90
+        priority = 'urgent'
+    elif brightness < 0.35:
+        fill_level = 70
+        priority = 'high'
+    elif brightness < 0.6:
+        fill_level = 45
+        priority = 'medium'
+    else:
+        fill_level = 20
+        priority = 'low'
+    
+    return {
+        'success': True,
+        'fill_level': fill_level,
+        'priority': priority,
+        'confidence': 75.0,
+        'recommendation': f'Detected as {priority.upper()}',
+        'method': 'Fallback (Brightness)'
+    }
 
-# Initialize detector
-enhanced_detector = EnhancedWasteDetector()
-
-def analyze_waste_image(image_path, complaint_type=None):
-    """Wrapper function for easy integration"""
-    try:
-        ml_result = waste_detector.predict_priority(image_path, complaint_type or '')
-        heuristic_result = enhanced_detector.analyze_complaint(image_path, complaint_type)
-
-        fill_level = int(
-            round((ml_result.get('fill_level', 50) + heuristic_result.get('fill_level', 50)) / 2)
-        )
-
-        priority = ml_result.get('priority') or heuristic_result.get('priority', 'medium')
-        confidence = max(
-            int(round(float(ml_result.get('confidence', 0.75)) * 100)),
-            int(heuristic_result.get('confidence', 0)),
-        )
-
-        recommendation = heuristic_result.get(
-            'recommendation',
-            ml_result.get('message', 'Waste analysis completed.'),
-        )
-
-        return {
-            'success': True,
-            'fill_level': fill_level,
-            'priority': priority,
-            'confidence': confidence,
-            'recommendation': recommendation,
-            'analyzed_at': datetime.now().isoformat(),
-        }
-    except Exception:
-        return enhanced_detector.analyze_complaint(image_path, complaint_type)
-
-if __name__ == "__main__":
-    print("Enhanced Waste Detector Ready - Calibrated Version")
-
+print("✅ Enhanced waste detector ready")
