@@ -1,5 +1,5 @@
 // API Service for CleanRoute-AI
-const API_URL = 'http://localhost:8000/api/';
+const API_URL = 'https://cleanroute-ai.onrender.com/api/';
 
 const api = {
   // Authentication

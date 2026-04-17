@@ -73,7 +73,7 @@ const Navigation = ({ user, setToken }) => {
     setLoading(true);
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch('http://localhost:8000/api/users/profile/', {
+      const response = await fetch('https://cleanroute-ai.onrender.com/api/users/profile/', {
         method: 'PUT',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -100,7 +100,7 @@ const Navigation = ({ user, setToken }) => {
     setLoading(true);
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch('http://localhost:8000/api/users/settings/', {
+      const response = await fetch('https://cleanroute-ai.onrender.com/api/users/settings/', {
         method: 'PUT',
         headers: {
           'Authorization': `Bearer ${token}`,

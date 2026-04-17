@@ -54,7 +54,7 @@ const AdminDashboard = ({ token, user, setToken }) => {
   const fetchTesters = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch('http://localhost:8000/api/users/testers/', {
+      const response = await fetch('https://cleanroute-ai.onrender.com/api/users/testers/', {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       if (response.ok) {
@@ -127,7 +127,7 @@ const AdminDashboard = ({ token, user, setToken }) => {
     setAssigning(true);
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch('http://localhost:8000/api/complaints/auto_assign/', {
+      const response = await fetch('https://cleanroute-ai.onrender.com/api/complaints/auto_assign/', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -160,7 +160,7 @@ const AdminDashboard = ({ token, user, setToken }) => {
     try {
       const token = localStorage.getItem('token');
       for (const complaint of pendingComplaints) {
-        const response = await fetch('http://localhost:8000/api/complaints/auto_assign/', {
+        const response = await fetch('https://cleanroute-ai.onrender.com/api/complaints/auto_assign/', {
           method: 'POST',
           headers: {
             'Authorization': `Bearer ${token}`,

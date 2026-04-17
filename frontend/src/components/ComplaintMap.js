@@ -54,7 +54,7 @@ const ComplaintMap = () => {
         return;
       }
       
-      const response = await fetch('http://localhost:8000/api/complaints/', {
+      const response = await fetch('https://cleanroute-ai.onrender.com/api/complaints/', {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       

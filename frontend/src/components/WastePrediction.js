@@ -41,7 +41,7 @@ const WastePrediction = ({ token }) => {
       // Try to get real predictions
             // Try to get real predictions from backend
       const token = localStorage.getItem('token');
-      const response = await fetch('http://localhost:8000/api/ml/predict-waste/?days=7', {
+      const response = await fetch('https://cleanroute-ai.onrender.com/api/ml/predict-waste/?days=7', {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       if (response.ok) {

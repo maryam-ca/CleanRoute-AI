@@ -45,7 +45,7 @@ const RouteOptimizer = () => {
     
     try {
       const token = localStorage.getItem('token');
-      const complaintsRes = await fetch('http://localhost:8000/api/complaints/', {
+      const complaintsRes = await fetch('https://cleanroute-ai.onrender.com/api/complaints/', {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       const complaintsData = await complaintsRes.json();
