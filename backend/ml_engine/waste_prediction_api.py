@@ -1,22 +1,22 @@
 from django.http import JsonResponse
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
+from .advanced_waste_predictor import advanced_predictor
 from .waste_predictor import WastePredictor
-import json
 
-predictor = WastePredictor()
+# Simple predictor instance
+simple_predictor = WastePredictor()
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def predict_waste(request):
-    """API endpoint for waste prediction"""
+    """Simple waste prediction (legacy)"""
     try:
         days = int(request.GET.get('days', 7))
-        days = min(days, 30)  # Limit to 30 days max
+        days = min(days, 30)
         
-        # Get predictions
-        forecast = predictor.predict_future(days)
-        result = predictor.get_forecast(days)
+        forecast = simple_predictor.predict_future(days)
+        result = simple_predictor.get_forecast(days)
         
         return JsonResponse({
             'success': True,
@@ -29,17 +29,39 @@ def predict_waste(request):
             'unit': 'tons'
         })
     except Exception as e:
-        print(f"Prediction error: {str(e)}")
-        # Return demo data as fallback
-        demo_forecast = [round(50 + i * 2 + (i % 3) * 3, 1) for i in range(days)]
+        return JsonResponse({'error': str(e)}, status=500)
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def predict_waste_advanced(request):
+    """Advanced waste prediction with ensemble models"""
+    try:
+        days = int(request.GET.get('days', 7))
+        days = min(days, 30)
+        
+        # Train models if not already trained
+        try:
+            result = advanced_predictor.get_forecast(days)
+        except:
+            advanced_predictor.train()
+            result = advanced_predictor.get_forecast(days)
+        
         return JsonResponse({
             'success': True,
-            'forecast': demo_forecast,
+            'forecast': result['forecast'],
+            'confidence_intervals': result.get('confidence_intervals', []),
             'days': days,
-            'total': round(sum(demo_forecast), 1),
-            'average': round(sum(demo_forecast) / days, 1),
-            'peak': max(demo_forecast),
-            'peak_day': demo_forecast.index(max(demo_forecast)) + 1,
+            'total': result['total'],
+            'average': result['average'],
+            'peak': result['peak'],
+            'peak_day': result['peak_day'],
             'unit': 'tons',
-            'note': 'Demo data - train model for accurate predictions'
+            'model_performance': result.get('model_performance', {}),
+            'model_weights': result.get('model_weights', {}),
+            'method': 'Ensemble (Linear + Ridge + Random Forest + Gradient Boosting)'
         })
+    except Exception as e:
+        print(f"Advanced prediction error: {str(e)}")
+        import traceback
+        traceback.print_exc()
+        return JsonResponse({'error': str(e), 'fallback': True}, status=500)

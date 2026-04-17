@@ -18,7 +18,6 @@ const ComplaintForm = ({ token, user, setToken }) => {
   const [mlResult, setMlResult] = useState(null);
   const [analyzing, setAnalyzing] = useState(false);
   const [analysisProgress, setAnalysisProgress] = useState(0);
-  const [autoAssign, setAutoAssign] = useState(true);
   const [formData, setFormData] = useState({
     complaint_type: 'overflowing',
     latitude: '',
@@ -65,10 +64,13 @@ const ComplaintForm = ({ token, user, setToken }) => {
   const handleImageChange = async (e) => {
     const file = e.target.files[0];
     if (file) {
+      // Create preview URL
+      const previewUrl = URL.createObjectURL(file);
+      
       setFormData({
         ...formData,
         image: file,
-        imagePreview: URL.createObjectURL(file)
+        imagePreview: previewUrl
       });
       
       // Simulate AI analysis progress
@@ -100,9 +102,9 @@ const ComplaintForm = ({ token, user, setToken }) => {
           }));
           toast.success(`AI Analysis Complete: ${result.fill_level}% fill level`, { icon: '🤖' });
         } else {
-          // Fallback: Simulate AI detection based on image brightness
+          // Fallback analysis
           const img = new Image();
-          img.src = URL.createObjectURL(file);
+          img.src = previewUrl;
           await new Promise((resolve) => { img.onload = resolve; });
           
           const canvas = document.createElement('canvas');
@@ -308,10 +310,38 @@ const ComplaintForm = ({ token, user, setToken }) => {
             )}
             
             {formData.imagePreview && !analyzing && (
-              <Box sx={{ mt: 2, position: 'relative' }}>
-                <img src={formData.imagePreview} alt="Preview" style={{ width: '100%', borderRadius: 16, maxHeight: 300, objectFit: 'cover' }} />
+              <Box sx={{ 
+                mt: 3, 
+                position: 'relative',
+                width: '100%',
+                maxHeight: '320px',
+                backgroundColor: 'rgba(0,0,0,0.3)',
+                borderRadius: '16px',
+                overflow: 'hidden',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center'
+              }}>
+                <img 
+                  src={formData.imagePreview} 
+                  alt="Preview" 
+                  style={{ 
+                    width: 'auto',
+                    maxWidth: '100%',
+                    height: 'auto',
+                    maxHeight: '300px',
+                    objectFit: 'contain',
+                    borderRadius: '12px'
+                  }} 
+                />
                 <IconButton
-                  sx={{ position: 'absolute', top: 8, right: 8, bgcolor: 'rgba(0,0,0,0.7)' }}
+                  sx={{ 
+                    position: 'absolute', 
+                    top: 8, 
+                    right: 8, 
+                    bgcolor: 'rgba(0,0,0,0.7)',
+                    '&:hover': { bgcolor: 'rgba(0,0,0,0.9)' }
+                  }}
                   onClick={() => setFormData({ ...formData, image: null, imagePreview: null, mlResult: null })}
                 >
                   <DeleteIcon />
@@ -321,7 +351,7 @@ const ComplaintForm = ({ token, user, setToken }) => {
             
             <TextField
               fullWidth
-              label="Description (Optional)"
+              label="Description (Short)"
               multiline
               rows={3}
               value={formData.description}
@@ -379,7 +409,29 @@ const ComplaintForm = ({ token, user, setToken }) => {
               )}
               {formData.imagePreview && (
                 <Grid item xs={12}>
-                  <img src={formData.imagePreview} alt="Preview" style={{ width: '100%', borderRadius: 16, maxHeight: 200, objectFit: 'cover' }} />
+                  <Box sx={{ 
+                    width: '100%',
+                    maxHeight: '200px',
+                    backgroundColor: 'rgba(0,0,0,0.3)',
+                    borderRadius: '16px',
+                    overflow: 'hidden',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center'
+                  }}>
+                    <img 
+                      src={formData.imagePreview} 
+                      alt="Preview" 
+                      style={{ 
+                        width: 'auto',
+                        maxWidth: '100%',
+                        height: 'auto',
+                        maxHeight: '180px',
+                        objectFit: 'contain',
+                        borderRadius: '12px'
+                      }} 
+                    />
+                  </Box>
                 </Grid>
               )}
             </Grid>
@@ -407,27 +459,7 @@ const ComplaintForm = ({ token, user, setToken }) => {
     
     try {
       const response = await api.createComplaint(submitData);
-            if (response.id || response.success) {
-        // If auto-assign is enabled, trigger AI assignment
-        if (autoAssign) {
-          try {
-            const token = localStorage.getItem('token');
-            const assignResponse = await fetch('http://localhost:8000/api/complaints/auto_assign/', {
-              method: 'POST',
-              headers: {
-                'Authorization': `Bearer ${token}`,
-                'Content-Type': 'application/json'
-              },
-              body: JSON.stringify({ complaint_id: response.id })
-            });
-            const assignResult = await assignResponse.json();
-            if (assignResult.success) {
-              toast.success(`AI Auto-assigned to ${assignResult.assigned_to}`, { icon: '🤖' });
-            }
-          } catch (assignError) {
-            console.error('Auto-assign error:', assignError);
-          }
-        }
+      if (response.id || response.success) {
         toast.success('Complaint submitted successfully!', { icon: '✅' });
         setTimeout(() => {
           window.location.href = '/';
@@ -498,5 +530,3 @@ const ComplaintForm = ({ token, user, setToken }) => {
 };
 
 export default ComplaintForm;
-
-
