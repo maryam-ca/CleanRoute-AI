@@ -110,3 +110,67 @@ DEFAULT_FROM_EMAIL = 'CleanRoute-AI <noreply@cleanroute-ai.com>'
 DATA_UPLOAD_MAX_NUMBER_FILES = 100
 DATA_UPLOAD_MAX_MEMORY_SIZE = 10485760
 
+
+# ============================================
+# AUTO-SEED DATABASE ON STARTUP (for Render free tier)
+# ============================================
+import sys
+if 'gunicorn' in sys.argv[0] or 'runserver' in sys.argv:
+    try:
+        from django.contrib.auth.models import User
+        from complaints.models import Complaint
+        from django.utils import timezone
+        import random
+        
+        # Check if database is empty
+        if User.objects.count() == 0:
+            print("🌱 Seeding database on startup...")
+            
+            # Create users
+            users_data = [
+                ('admin', 'admin123', True),
+                ('citizen', 'citizen123', False),
+                ('tester1', 'tester123', False),
+                ('tester2', 'tester123', False),
+                ('tester3', 'tester123', False),
+                ('tester4', 'tester123', False),
+                ('tester5', 'tester123', False),
+            ]
+            
+            for username, password, is_admin in users_data:
+                user = User.objects.create_user(username=username, password=password)
+                if is_admin:
+                    user.is_staff = True
+                    user.is_superuser = True
+                    user.save()
+                print(f"  ✅ Created user: {username}")
+            
+            # Create sample complaints
+            attock_coords = [
+                (33.81489, 72.348424), (33.81406, 72.349107), (33.814301, 72.349665),
+                (33.813543, 72.35003), (33.813459, 72.351639), (33.812157, 72.351564),
+                (33.811381, 72.349215), (33.809857, 72.349365), (33.808252, 72.349655),
+                (33.808216, 72.352219), (33.806594, 72.351511), (33.80691, 72.34855),
+            ]
+            
+            citizen = User.objects.get(username='citizen')
+            priorities = ['urgent', 'high', 'medium', 'low']
+            types = ['overflowing', 'spillage', 'missed', 'illegal']
+            
+            for i, (lat, lng) in enumerate(attock_coords[:8]):
+                Complaint.objects.create(
+                    complaint_type=random.choice(types),
+                    latitude=lat,
+                    longitude=lng,
+                    description=f'Test complaint {i+1} in Attock',
+                    priority=random.choice(priorities),
+                    fill_level_before=random.randint(40, 95),
+                    status='assigned',
+                    user=citizen,
+                    created_at=timezone.now()
+                )
+                print(f"  ✅ Created complaint {i+1}")
+            
+            print("🎉 Database seeding complete!")
+    except Exception as e:
+        print(f"⚠️ Auto-seed error: {e}")
