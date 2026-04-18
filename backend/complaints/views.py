@@ -78,7 +78,7 @@ class ComplaintViewSet(viewsets.ModelViewSet):
 
     @action(detail=False, methods=['post'])
     def auto_assign(self, request):
-        """Enhanced AI assignment: Route Optimization (60%) + Workload Balance (40%)"""
+        """Prefer testers already working near the complaint, then balance workload."""
         try:
             complaint_id = request.data.get('complaint_id')
             
@@ -99,7 +99,7 @@ class ComplaintViewSet(viewsets.ModelViewSet):
             
             for tester in testers:
                 assigned_count = Complaint.objects.filter(assigned_to=tester, status='assigned').count()
-                workload_score = max(0, 40 - (assigned_count * 4))
+                workload_score = max(0, 25 - (assigned_count * 3))
                 
                 route_score = 0
                 if complaint.latitude and complaint.longitude:
@@ -107,6 +107,7 @@ class ComplaintViewSet(viewsets.ModelViewSet):
                     
                     if tester_complaints.count() > 0:
                         total_distance = 0
+                        min_distance = None
                         for tc in tester_complaints:
                             if tc.latitude and tc.longitude:
                                 lat1, lon1 = radians(complaint.latitude), radians(complaint.longitude)
@@ -116,14 +117,19 @@ class ComplaintViewSet(viewsets.ModelViewSet):
                                 a = sin(dlat/2)**2 + cos(lat1) * cos(lat2) * sin(dlon/2)**2
                                 distance = 6371 * 2 * atan2(sqrt(a), sqrt(1-a))
                                 total_distance += distance
+                                min_distance = distance if min_distance is None else min(min_distance, distance)
                         
                         avg_distance = total_distance / tester_complaints.count()
-                        route_score = max(0, 60 - (avg_distance * 20))
-                        route_score = min(60, route_score)
+                        proximity_score = max(0, 55 - (avg_distance * 12))
+                        nearest_bonus = max(0, 20 - ((min_distance or avg_distance) * 8))
+                        route_score = min(75, proximity_score + nearest_bonus)
+
+                        if (min_distance or avg_distance) > 4:
+                            route_score = max(0, route_score - 15)
                     else:
-                        route_score = 30
+                        route_score = 20
                 else:
-                    route_score = 30
+                    route_score = 20
                 
                 total_score = workload_score + route_score
                 

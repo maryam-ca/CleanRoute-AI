@@ -54,6 +54,9 @@ const RouteOptimizer = () => {
       
       if (data && data.routes && data.routes.length > 0) {
         setRoutes(data);
+        if (Array.isArray(data.complaints)) {
+          setAllComplaints(data.complaints);
+        }
         toast.success(`Optimized into ${data.total_clusters || data.routes.length} routes`);
       } else if (complaints.length > 0) {
         const chunkSize = Math.ceil(complaints.length / 3);
@@ -163,7 +166,7 @@ const RouteOptimizer = () => {
                 >
                   <InputLabel sx={{ color: '#BDD8EB' }}>Area</InputLabel>
                   <Select value={area} label="Area" onChange={(e) => setArea(e.target.value)}>
-                    <MenuItem value="Attock">Attock City</MenuItem>
+                    <MenuItem value="Attock">Whole Attock City</MenuItem>
                     <MenuItem value="Mehria Town">Mehria Town</MenuItem>
                   </Select>
                 </FormControl>
@@ -235,16 +238,21 @@ const RouteOptimizer = () => {
                   position={[complaint.latitude, complaint.longitude]}
                 >
                   <Popup>
-                    <Box sx={{ minWidth: 180 }}>
-                      <Typography variant="subtitle2" sx={{ fontWeight: 700 }}>
+                    <div style={{ minWidth: '200px', color: '#0f172a', fontFamily: 'Manrope, Segoe UI, sans-serif', lineHeight: 1.5 }}>
+                      <div style={{ fontWeight: 800, fontSize: '14px', marginBottom: '6px', color: '#0f172a' }}>
                         #{complaint.id} - {complaint.complaint_type?.replace('_', ' ')}
-                      </Typography>
-                      <Typography variant="caption" sx={{ color: '#9CA3AF' }}>
-                        Priority: {complaint.priority}<br />
-                        Status: {complaint.status}<br />
-                        Fill Level: {complaint.fill_level_before || 0}%
-                      </Typography>
-                    </Box>
+                      </div>
+                      <div style={{ fontSize: '12px', color: '#334155' }}>
+                        <div><strong>Priority:</strong> {complaint.priority}</div>
+                        <div><strong>Status:</strong> {complaint.status}</div>
+                        <div><strong>Fill Level:</strong> {complaint.fill_level_before || 0}%</div>
+                        {complaint.description ? (
+                          <div style={{ marginTop: '6px' }}>
+                            <strong>Description:</strong> {complaint.description}
+                          </div>
+                        ) : null}
+                      </div>
+                    </div>
                   </Popup>
                 </Marker>
               ))}
