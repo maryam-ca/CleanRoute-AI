@@ -57,10 +57,10 @@ const ComplaintForm = ({ token, user, setToken }) => {
   const steps = ['Issue Type', 'Location', 'Photo Analysis', 'Review'];
 
   const complaintTypeMeta = {
-    overflowing: { title: 'Overflowing Bin', hint: 'Waste is exceeding bin capacity.', icon: '🗑️', color: '#EF4444' },
-    missed: { title: 'Missed Pickup', hint: 'Collection was skipped for this area.', icon: '⏰', color: '#0A66FF' },
-    illegal: { title: 'Illegal Dumping', hint: 'Unauthorized waste dumping needs action.', icon: '🚫', color: '#8B5CF6' },
-    other: { title: 'Other Issue', hint: 'Report any related sanitation issue.', icon: '📝', color: '#9CA3AF' }
+    overflowing: { title: 'Overflowing Bin', hint: 'Waste is exceeding bin capacity.', icon: '01', color: '#EF4444' },
+    missed: { title: 'Missed Pickup', hint: 'Collection was skipped for this area.', icon: '02', color: '#0A66FF' },
+    illegal: { title: 'Illegal Dumping', hint: 'Unauthorized waste dumping needs action.', icon: '03', color: '#8B5CF6' },
+    other: { title: 'Other Issue', hint: 'Report any related sanitation issue.', icon: '04', color: '#9CA3AF' }
   };
 
   const panelSx = {
@@ -238,7 +238,7 @@ const ComplaintForm = ({ token, user, setToken }) => {
             priority: result.priority,
             fill_level_before: result.fill_level
           }));
-          toast.success(`AI Analysis Complete: ${result.fill_level}% fill level`, { icon: '🤖' });
+          toast.success(`Analysis complete: ${result.fill_level}% fill level`);
         } else {
           throw new Error(result.error || 'Analysis failed');
         }
@@ -715,7 +715,7 @@ const ComplaintForm = ({ token, user, setToken }) => {
     try {
       const response = await api.createComplaint(submitData);
       if (response.id || response.success) {
-        toast.success('Complaint submitted successfully!', { icon: '✅' });
+        toast.success('Complaint submitted successfully');
         setTimeout(() => {
           window.location.href = '/';
         }, 1500);

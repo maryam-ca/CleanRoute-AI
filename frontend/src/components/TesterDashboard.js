@@ -102,7 +102,7 @@ const TesterDashboard = ({ user }) => {
       <Container maxWidth="xl">
         <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
           <Typography variant="h4" sx={{ fontWeight: 800, color: '#FFFFFF' }}>
-            📋 My Tasks ({tasks.length})
+            My Tasks ({tasks.length})
           </Typography>
           <Button startIcon={<RefreshIcon />} onClick={() => window.location.reload()} variant="outlined">
             Refresh

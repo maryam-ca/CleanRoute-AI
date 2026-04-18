@@ -27,7 +27,7 @@ const ModernDashboard = ({ user }) => {
       const activeComplaints = allComplaints.filter(c => c.status !== 'completed');
       setComplaints(activeComplaints);
       setLastUpdated(new Date());
-      toast.success('Data refreshed', { icon: '🔄', duration: 2000 });
+      toast.success('Data refreshed', { duration: 2000 });
     } catch (error) {
       console.error('Error fetching data:', error);
       toast.error('Failed to load data');
@@ -54,7 +54,7 @@ const ModernDashboard = ({ user }) => {
       title: 'Total Complaints', 
       value: total, 
       color: '#FFFFFF', 
-      icon: '📋', 
+      icon: 'TD', 
       trend: trends.total.value,
       trendPositive: trends.total.positive,
       description: 'All time complaints'
@@ -72,7 +72,7 @@ const ModernDashboard = ({ user }) => {
       title: 'Assigned', 
       value: assigned, 
       color: '#60A5FA', 
-      icon: '🚛', 
+      icon: 'AS', 
       trend: trends.assigned.value,
       trendPositive: trends.assigned.positive,
       description: 'In progress'
@@ -81,7 +81,7 @@ const ModernDashboard = ({ user }) => {
       title: 'Completed', 
       value: completed, 
       color: '#22C55E', 
-      icon: '✅', 
+      icon: 'CP', 
       trend: trends.completed.value,
       trendPositive: trends.completed.positive,
       description: 'Successfully resolved'

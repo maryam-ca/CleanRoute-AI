@@ -138,7 +138,7 @@ const ComplaintMap = () => {
     <Box sx={{ minHeight: '100vh', pt: '110px', pb: 4 }}>
       <Container maxWidth="xl">
         <Box sx={{ mb: 3 }}>
-          <Typography variant="h4" sx={{ fontWeight: 800, color: '#FFFFFF' }}>🗺️ 📍 Complaint Map</Typography>
+          <Typography variant="h4" sx={{ fontWeight: 800, color: '#FFFFFF' }}>Complaint Map</Typography>
           <Typography variant="body2" sx={{ color: '#9CA3AF' }}>
             {validComplaints.length} active complaints mapped • Color coded by priority
             {allComplaints.length - activeComplaints.length > 0 && 
@@ -159,7 +159,7 @@ const ComplaintMap = () => {
             }}
           />
           <Chip
-            label={`🔴 Urgent (${priorityCounts.urgent})`}
+            label={`Urgent (${priorityCounts.urgent})`}
             onClick={() => setSelectedPriority('urgent')}
             sx={{
               bgcolor: selectedPriority === 'urgent' ? '#EF4444' : 'rgba(239,68,68,0.2)',
@@ -170,7 +170,7 @@ const ComplaintMap = () => {
             }}
           />
           <Chip
-            label={`🟠 High (${priorityCounts.high})`}
+            label={`High (${priorityCounts.high})`}
             onClick={() => setSelectedPriority('high')}
             sx={{
               bgcolor: selectedPriority === 'high' ? '#F59E0B' : 'rgba(245,158,11,0.2)',
@@ -181,7 +181,7 @@ const ComplaintMap = () => {
             }}
           />
           <Chip
-            label={`🔵 Medium (${priorityCounts.medium})`}
+            label={`Medium (${priorityCounts.medium})`}
             onClick={() => setSelectedPriority('medium')}
             sx={{
               bgcolor: selectedPriority === 'medium' ? '#0A66FF' : 'rgba(10,102,255,0.2)',
@@ -192,7 +192,7 @@ const ComplaintMap = () => {
             }}
           />
           <Chip
-            label={`🟢 Low (${priorityCounts.low})`}
+            label={`Low (${priorityCounts.low})`}
             onClick={() => setSelectedPriority('low')}
             sx={{
               bgcolor: selectedPriority === 'low' ? '#22C55E' : 'rgba(34,197,94,0.2)',

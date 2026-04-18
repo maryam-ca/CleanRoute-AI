@@ -219,11 +219,11 @@ const LiveRealTimeMap = ({ token, user }) => {
                     <CardContent>
                       <Typography variant="h6" sx={{ fontWeight: 700, color: '#1B5E20' }}>Vehicle Status</Typography>
                       <Box mt={2}>
-                        <Typography variant="body2">📍 Latitude: {vehicleLocation.lat.toFixed(6)}</Typography>
-                        <Typography variant="body2">📍 Longitude: {vehicleLocation.lng.toFixed(6)}</Typography>
-                        <Typography variant="body2">⚡ Speed: 35 km/h</Typography>
-                        <Typography variant="body2">🎯 Next Stop: {complaints.length} complaints pending</Typography>
-                        <Typography variant="body2">📊 Coverage: 78% of area</Typography>
+                        <Typography variant="body2">Latitude: {vehicleLocation.lat.toFixed(6)}</Typography>
+                        <Typography variant="body2">Longitude: {vehicleLocation.lng.toFixed(6)}</Typography>
+                        <Typography variant="body2">Speed: 35 km/h</Typography>
+                        <Typography variant="body2">Next Stop: {complaints.length} complaints pending</Typography>
+                        <Typography variant="body2">Coverage: 78% of area</Typography>
                       </Box>
                     </CardContent>
                   </Card>

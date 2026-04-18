@@ -129,7 +129,7 @@ const Dashboard = ({ token, user, setToken }) => {
         {/* Welcome Section */}
         <Box sx={{ mb: { xs: 2, sm: 4 } }}>
           <Typography variant="h4" sx={{ fontWeight: 800, mb: 1, fontSize: { xs: '1.5rem', sm: '2rem' } }}>
-            Welcome back, {user || 'User'}! 👋
+            Welcome back, {user || 'User'}
           </Typography>
           <Typography variant="body1" color="text.secondary" sx={{ fontSize: { xs: '0.875rem', sm: '1rem' } }}>
             Here's what's happening with your waste management system today.
@@ -158,7 +158,7 @@ const Dashboard = ({ token, user, setToken }) => {
             <Card>
               <CardContent sx={{ p: { xs: 2, sm: 3 } }}>
                 <Typography variant="h6" sx={{ fontWeight: 700, mb: 2, fontSize: { xs: '1rem', sm: '1.25rem' } }}>
-                  📈 Weekly Trends
+                  Weekly Trends
                 </Typography>
                 <Box sx={{ height: { xs: 250, sm: 350 } }}>
                   <ResponsiveContainer width="100%" height="100%">
@@ -186,7 +186,7 @@ const Dashboard = ({ token, user, setToken }) => {
             <Card sx={{ height: '100%' }}>
               <CardContent sx={{ p: { xs: 2, sm: 3 } }}>
                 <Typography variant="h6" sx={{ fontWeight: 700, mb: 2, fontSize: { xs: '1rem', sm: '1.25rem' } }}>
-                  🥧 By Type
+                  By Type
                 </Typography>
                 <Box sx={{ height: { xs: 200, sm: 280 } }}>
                   <ResponsiveContainer width="100%" height="100%">
@@ -210,7 +210,7 @@ const Dashboard = ({ token, user, setToken }) => {
           <CardContent sx={{ p: { xs: 2, sm: 3 } }}>
             <Box display="flex" justifyContent="space-between" alignItems="center" flexWrap="wrap" gap={2} sx={{ mb: 2 }}>
               <Typography variant="h6" sx={{ fontWeight: 700, fontSize: { xs: '1rem', sm: '1.25rem' } }}>
-                📋 Recent ({complaints.length})
+                Recent ({complaints.length})
               </Typography>
               <Box display="flex" gap={1} flexWrap="wrap">
                 <TextField

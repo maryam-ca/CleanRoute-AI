@@ -265,21 +265,21 @@ const WastePrediction = ({ token }) => {
           <Grid item xs={12}>
             <Card sx={{ ...glassPanelSx, background: 'linear-gradient(135deg, rgba(54,196,255,0.12), rgba(83,215,105,0.08), rgba(255,209,102,0.06))' }}>
               <CardContent>
-                <Typography variant="h6" sx={{ fontWeight: 700, color: '#FFFFFF', mb: 1 }}>🤖 AI Insights & Recommendations</Typography>
+                <Typography variant="h6" sx={{ fontWeight: 700, color: '#FFFFFF', mb: 1 }}>AI Insights & Recommendations</Typography>
                 <Grid container spacing={2}>
                   <Grid item xs={12} md={6}>
                     <Alert severity="info" sx={{ bgcolor: 'rgba(10,102,255,0.2)', color: '#00C6FF', borderRadius: 3 }}>
-                      <strong>📊 Peak Day Alert:</strong> Day {stats?.peakDay || 4} is predicted to have {stats?.peak || 0} tons of waste. Schedule additional vehicles.
+                      <strong>Peak Day Alert:</strong> Day {stats?.peakDay || 4} is predicted to have {stats?.peak || 0} tons of waste. Schedule additional vehicles.
                     </Alert>
                   </Grid>
                   <Grid item xs={12} md={6}>
                     <Alert severity="warning" sx={{ bgcolor: 'rgba(245,158,11,0.2)', color: '#F59E0B', borderRadius: 3 }}>
-                      <strong>⚠️ Resource Planning:</strong> Increase collection capacity by 25% on peak days to avoid overflow.
+                      <strong>Resource Planning:</strong> Increase collection capacity by 25% on peak days to avoid overflow.
                     </Alert>
                   </Grid>
                   <Grid item xs={12}>
                     <Alert severity="success" sx={{ bgcolor: 'rgba(34,197,94,0.1)', color: '#22C55E', borderRadius: 3 }}>
-                      <strong>✅ Model Performance:</strong> Linear Regression model achieved R² = {mlMetrics.r2Score} with RMSE = {mlMetrics.rmse}, indicating reliable predictions.
+                      <strong>Model Performance:</strong> Linear Regression model achieved R² = {mlMetrics.r2Score} with RMSE = {mlMetrics.rmse}, indicating reliable predictions.
                     </Alert>
                   </Grid>
                 </Grid>

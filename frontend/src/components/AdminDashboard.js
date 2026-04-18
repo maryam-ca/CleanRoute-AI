@@ -224,7 +224,7 @@ const AdminDashboard = ({ token, user, setToken }) => {
         <Container maxWidth="xl">
           <Box display="flex" justifyContent="space-between" alignItems="center" flexWrap="wrap" gap={2}>
             <Box>
-              <Typography variant="h5" sx={{ fontWeight: 800, color: '#FFFFFF' }}>⚙️ Admin Dashboard</Typography>
+              <Typography variant="h5" sx={{ fontWeight: 800, color: '#FFFFFF' }}>Admin Dashboard</Typography>
               <Typography variant="body2" sx={{ color: '#9CA3AF' }}>Manage complaints, assign testers, and track progress</Typography>
             </Box>
             <FormControlLabel
@@ -239,7 +239,7 @@ const AdminDashboard = ({ token, user, setToken }) => {
                 <Box display="flex" alignItems="center" gap={1}>
                   <AutoFixHighIcon sx={{ color: autoAssignMode ? '#00C6FF' : '#9CA3AF', fontSize: 20 }} />
                   <Typography variant="body2" sx={{ color: autoAssignMode ? '#00C6FF' : '#9CA3AF', fontWeight: 600 }}>
-                    {autoAssignMode ? '🤖 AUTO-ASSIGN ACTIVE' : '👤 MANUAL MODE'}
+                    {autoAssignMode ? 'AUTO-ASSIGN ACTIVE' : 'MANUAL MODE'}
                   </Typography>
                 </Box>
               }

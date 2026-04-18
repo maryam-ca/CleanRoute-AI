@@ -14,7 +14,7 @@ const MLPerformanceDashboard = () => {
   return (
     <Card sx={{ background: 'rgba(15,23,42,0.85)', border: '1px solid rgba(10,102,255,0.2)', borderRadius: 4 }}>
       <CardContent>
-        <Typography variant="h6" sx={{ fontWeight: 700, color: '#FFFFFF', mb: 2 }}>🤖 ML Model Performance Dashboard</Typography>
+        <Typography variant="h6" sx={{ fontWeight: 700, color: '#FFFFFF', mb: 2 }}>ML Model Performance Dashboard</Typography>
         <Grid container spacing={2}>
           {models.map((model, idx) => (
             <Grid item xs={12} sm={6} md={4} key={idx}>

@@ -38,7 +38,7 @@ const AnomalyHotspotMap = ({ token, user }) => {
   return (
     <Box sx={{ bgcolor: '#F8FAFC', minHeight: '100vh' }}>
       <Box sx={{ bgcolor: '#F97316', color: 'white', py: 2, px: 4 }}>
-        <Container><Typography variant="h5">🔥 Anomaly Detection & Hotspot Map</Typography></Container>
+        <Container><Typography variant="h5">Anomaly Detection & Hotspot Map</Typography></Container>
       </Box>
       <Container sx={{ py: 4 }}>
         <Paper sx={{ p: 2, borderRadius: 4 }}>

@@ -108,10 +108,10 @@ const DashboardSummary = ({ user }) => {
   };
 
   const weeklyData = getWeeklyTrend();
-  const slogan = stats.completionRate > 75 ? '🎉 Excellent progress! Keep up the great work!' :
-    stats.completionRate > 50 ? "👍 Good progress! You're on the right track!" :
-      stats.completionRate > 25 ? '📈 Making progress! Keep pushing forward!' :
-        "🚀 Let's get started! Every complaint matters!";
+  const slogan = stats.completionRate > 75 ? 'Excellent progress. Keep up the strong work.' :
+    stats.completionRate > 50 ? "Good progress. You're moving in the right direction." :
+      stats.completionRate > 25 ? 'Progress is building. Keep pushing forward.' :
+        'Every complaint matters. Let’s get the system moving.';
   const activeCases = stats.pending + stats.assigned;
   const topPriority = priorityData[0]?.name || 'Stable';
 
@@ -164,12 +164,14 @@ const DashboardSummary = ({ user }) => {
 
   const dashboardCardSx = {
     position: 'relative',
-    overflow: 'hidden',
-    borderRadius: 6,
+    overflow: 'visible',
+    borderRadius: '32px !important',
     border: '1px solid rgba(139,225,255,0.18)',
     background: 'linear-gradient(180deg, rgba(10, 28, 57, 0.88) 0%, rgba(7, 21, 42, 0.94) 100%)',
     backdropFilter: 'blur(18px)',
-    boxShadow: '0 28px 55px rgba(3,12,25,0.28)'
+    boxShadow: '0 28px 55px rgba(3,12,25,0.28)',
+    width: '100%',
+    minWidth: 0
   };
 
   if (loading) {
@@ -220,17 +222,25 @@ const DashboardSummary = ({ user }) => {
         <Grid container spacing={3} sx={{ mb: 4 }}>
           {statCards.map((card, index) => (
             <Grid item xs={12} sm={6} md={3} key={card.title}>
-              <motion.div initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 + index * 0.1 }}>
+              <motion.div
+                initial={{ opacity: 0, y: 24 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.1 + index * 0.1 }}
+                style={{ width: '100%', display: 'block' }}
+              >
                 <Card
                   sx={{
                     ...dashboardCardSx,
-                    minHeight: 230,
+                    minHeight: 290,
+                    height: '100%',
                     '&::before': {
                       content: '""',
                       position: 'absolute',
                       inset: '0 auto auto 0',
                       width: '100%',
                       height: 4,
+                      borderTopLeftRadius: '32px',
+                      borderTopRightRadius: '32px',
                       background: `linear-gradient(90deg, ${card.accent}, transparent)`
                     },
                     '&::after': {
@@ -241,22 +251,34 @@ const DashboardSummary = ({ user }) => {
                       width: 130,
                       height: 130,
                       borderRadius: '50%',
-                      background: `radial-gradient(circle, ${card.glow} 0%, transparent 70%)`
+                      background: `radial-gradient(circle, ${card.glow} 0%, transparent 70%)`,
+                      pointerEvents: 'none'
                     }
                   }}
                 >
-                  <Box sx={{ p: 3, display: 'flex', flexDirection: 'column', height: '100%' }}>
+                  <Box
+                    sx={{
+                      p: 3,
+                      display: 'flex',
+                      flexDirection: 'column',
+                      height: '100%',
+                      minWidth: 0,
+                      overflow: 'hidden',
+                      borderRadius: '32px'
+                    }}
+                  >
                     <Box sx={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', mb: 3 }}>
-                      <Box>
-                        <Typography variant="overline" sx={{ color: card.accent, letterSpacing: '0.16em', fontWeight: 800 }}>
+                      <Box sx={{ minWidth: 0, pr: 1 }}>
+                        <Typography variant="overline" sx={{ color: card.accent, letterSpacing: '0.16em', fontWeight: 800, display: 'block', whiteSpace: 'normal' }}>
                           {card.eyebrow}
                         </Typography>
-                        <Typography variant="h6" sx={{ color: '#FFFFFF', fontWeight: 700, lineHeight: 1.15 }}>
+                        <Typography variant="h6" sx={{ color: '#FFFFFF', fontWeight: 700, lineHeight: 1.15, wordBreak: 'break-word' }}>
                           {card.title}
                         </Typography>
                       </Box>
                       <Box
                         sx={{
+                          flexShrink: 0,
                           width: 46,
                           height: 46,
                           borderRadius: '16px',
@@ -273,11 +295,11 @@ const DashboardSummary = ({ user }) => {
                     <Typography variant="h2" sx={{ fontWeight: 800, color: card.accent, lineHeight: 0.95, mb: 1 }}>
                       {card.value}
                     </Typography>
-                    <Typography variant="body2" sx={{ color: '#BDD8EB', mb: 3, maxWidth: 220 }}>
+                    <Typography variant="body2" sx={{ color: '#BDD8EB', mb: 3, maxWidth: 240, wordBreak: 'break-word' }}>
                       {card.subtitle}
                     </Typography>
 
-                    <Box sx={{ mt: 'auto' }}>
+                    <Box sx={{ mt: 'auto', minWidth: 0 }}>
                       <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
                         <Typography variant="caption" sx={{ color: '#DDEDF8' }}>
                           Progress
@@ -299,7 +321,7 @@ const DashboardSummary = ({ user }) => {
                           }
                         }}
                       />
-                      <Typography variant="caption" sx={{ display: 'block', mt: 1.5, color: '#8FB9D3' }}>
+                      <Typography variant="caption" sx={{ display: 'block', mt: 1.5, color: '#8FB9D3', wordBreak: 'break-word' }}>
                         {card.footer}
                       </Typography>
                     </Box>

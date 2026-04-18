@@ -186,7 +186,7 @@ const AnomalyMap = ({ token, user }) => {
                     <Popup>
                       <Box sx={{ minWidth: 200 }}>
                         <Typography variant="subtitle2" sx={{ fontWeight: 700, color: getSeverityColor(anomaly.severity) }}>
-                          ⚠️ {anomaly.severity.toUpperCase()} SEVERITY ANOMALY
+                          {anomaly.severity.toUpperCase()} SEVERITY ANOMALY
                         </Typography>
                         <Typography variant="body2">Complaint #{anomaly.complaint_id}</Typography>
                         <Typography variant="body2">Type: {anomaly.complaint_type}</Typography>
@@ -214,7 +214,7 @@ const AnomalyMap = ({ token, user }) => {
                   >
                     <Popup>
                       <Typography variant="subtitle2" sx={{ fontWeight: 700 }}>
-                        🔥 Hotspot #{idx + 1}
+                        Hotspot #{idx + 1}
                       </Typography>
                       <Typography variant="body2">Intensity: {hotspot.intensity}</Typography>
                       <Typography variant="body2">Anomalies: {hotspot.size}</Typography>
