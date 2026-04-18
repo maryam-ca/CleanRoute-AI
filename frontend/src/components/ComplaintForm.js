@@ -479,20 +479,21 @@ const ComplaintForm = ({ token, user, setToken }) => {
     <Box sx={{ minHeight: '100vh', pt: '110px', pb: 4 }}>
       <Toaster position="top-right" />
       
-      <Box sx={{ mx: { xs: 2, md: 3 }, py: 3, px: 4, border: '1px solid rgba(10,102,255,0.3)', borderRadius: 6, background: 'linear-gradient(135deg, rgba(10,102,255,0.15) 0%, rgba(15,23,42,0.3) 100%)' }}>
+      <Box sx={{ mx: { xs: 2, md: 3 }, py: 3.25, px: 4, border: '1px solid rgba(139,225,255,0.22)', borderRadius: 6, background: 'linear-gradient(135deg, rgba(15,78,148,0.34) 0%, rgba(19,107,89,0.22) 58%, rgba(7,22,43,0.45) 100%)', backdropFilter: 'blur(16px)', position: 'relative', overflow: 'hidden' }}>
+        <Box sx={{ position: 'absolute', inset: 0, pointerEvents: 'none', background: 'radial-gradient(circle at 20% 20%, rgba(255,244,173,0.16), transparent 16%), radial-gradient(circle at 80% 18%, rgba(54,196,255,0.18), transparent 18%)' }} />
         <Container maxWidth="xl">
-          <Chip label="🤖 AI-Powered Reporting" size="small" sx={{ mb: 1, bgcolor: 'rgba(0,198,255,0.2)', color: '#00C6FF' }} />
-          <Typography variant="h5" sx={{ fontWeight: 800, color: '#FFFFFF' }}>📝 Create New Complaint</Typography>
-          <Typography variant="body2" sx={{ color: '#9CA3AF' }}>Our AI will analyze the image and auto-assign priority</Typography>
+          <Chip label="AI Intake Workflow" size="small" sx={{ mb: 1, bgcolor: 'rgba(216,255,114,0.16)', color: '#D8FF72', border: '1px solid rgba(216,255,114,0.18)' }} />
+          <Typography variant="h5" sx={{ fontWeight: 800, color: '#FFFFFF' }}>Create New Complaint</Typography>
+          <Typography variant="body2" sx={{ color: '#DDEDF8' }}>Capture the issue, let AI inspect the image, and submit a polished report in one guided flow.</Typography>
         </Container>
       </Box>
 
       <Container maxWidth="md" sx={{ py: 4 }}>
-        <Paper sx={{ p: { xs: 2, md: 4 }, borderRadius: 4, background: 'rgba(15,23,42,0.85)', border: '1px solid rgba(10,102,255,0.2)' }}>
-          <Stepper activeStep={activeStep} sx={{ mb: 4 }}>
+        <Paper sx={{ p: { xs: 2, md: 4 }, borderRadius: 5, background: 'linear-gradient(180deg, rgba(13, 42, 78, 0.86) 0%, rgba(8, 24, 46, 0.9) 100%)', border: '1px solid rgba(139,225,255,0.18)', boxShadow: '0 24px 48px rgba(3,12,25,0.28)' }}>
+          <Stepper activeStep={activeStep} sx={{ mb: 4, '& .MuiStepLabel-label': { color: '#BDD8EB' }, '& .Mui-active .MuiStepLabel-label': { color: '#FFFFFF', fontWeight: 700 }, '& .Mui-completed .MuiStepLabel-label': { color: '#D8FF72' }, '& .MuiStepIcon-root': { color: 'rgba(116,221,255,0.3)' }, '& .Mui-active .MuiStepIcon-root': { color: '#36C4FF' }, '& .Mui-completed .MuiStepIcon-root': { color: '#53D769' } }}>
             {steps.map((label) => (
               <Step key={label}>
-                <StepLabel StepIconProps={{ sx: { color: '#0A66FF' } }}>{label}</StepLabel>
+                <StepLabel>{label}</StepLabel>
               </Step>
             ))}
           </Stepper>

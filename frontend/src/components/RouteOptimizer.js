@@ -27,7 +27,7 @@ L.Icon.Default.mergeOptions({
   shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
 });
 
-const routeColors = ['#0A66FF', '#00C6FF', '#8B5CF6', '#EC4899', '#F59E0B'];
+const routeColors = ['#36C4FF', '#53D769', '#D8FF72', '#FF8A65', '#A78BFA'];
 
 const RouteOptimizer = () => {
   const [area, setArea] = useState('Attock');
@@ -102,126 +102,162 @@ const RouteOptimizer = () => {
   const routePaths = getRoutePaths();
 
   return (
-    <Box sx={{ height: '100vh', display: 'flex', flexDirection: 'column', pt: '64px' }}>
+    <Box sx={{ minHeight: '100vh', pt: '96px', pb: 4 }}>
       <Toaster position="top-right" />
       
-      {/* Header - Fixed at top */}
-      <Box sx={{ 
-        position: 'fixed', 
-        top: 64, 
-        left: 0, 
-        right: 0, 
-        zIndex: 1100,
-        bgcolor: 'rgba(2,6,23,0.95)',
-        backdropFilter: 'blur(12px)',
-        borderBottom: '1px solid rgba(10,102,255,0.3)',
-        py: 1.5,
-        px: 3
-      }}>
-        <Container maxWidth="xl">
-          <Box display="flex" justifyContent="space-between" alignItems="center" flexWrap="wrap" gap={2}>
-            <Box>
-              <Typography variant="h6" sx={{ fontWeight: 800, color: '#FFFFFF' }}>🗺️ Route Optimization</Typography>
-              <Typography variant="caption" sx={{ color: '#9CA3AF' }}>AI-powered collection route planning</Typography>
-            </Box>
-            <Box display="flex" gap={2} alignItems="center">
-              <FormControl size="small" sx={{ minWidth: 150 }}>
-                <Select value={area} onChange={(e) => setArea(e.target.value)} sx={{ color: '#FFFFFF', bgcolor: 'rgba(255,255,255,0.05)' }}>
-                  <MenuItem value="Attock">Attock City</MenuItem>
-                  <MenuItem value="Mehria Town">Mehria Town</MenuItem>
-                </Select>
-              </FormControl>
-              <Button 
-                variant="contained" 
-                startIcon={loading ? <CircularProgress size={18} /> : <OptimizeIcon />} 
-                onClick={optimizeRoutes} 
-                disabled={loading}
-                sx={{ borderRadius: '999px' }}
+      <Box sx={{ mx: { xs: 2, md: 3 }, mb: 3 }}>
+        <Container maxWidth="xl" disableGutters>
+          <Box
+            sx={{
+              py: { xs: 2.5, md: 3.25 },
+              px: { xs: 2, md: 3.5 },
+              border: '1px solid rgba(139,225,255,0.22)',
+              borderRadius: 6,
+              background: 'linear-gradient(135deg, rgba(15,78,148,0.34) 0%, rgba(19,107,89,0.22) 58%, rgba(7,22,43,0.45) 100%)',
+              backdropFilter: 'blur(16px)',
+              position: 'relative',
+              overflow: 'hidden',
+            }}
+          >
+            <Box sx={{ position: 'absolute', inset: 0, pointerEvents: 'none', background: 'radial-gradient(circle at 25% 24%, rgba(255,244,173,0.18), transparent 16%), radial-gradient(circle at 82% 18%, rgba(54,196,255,0.18), transparent 20%)' }} />
+            <Box display="flex" justifyContent="space-between" alignItems={{ xs: 'flex-start', lg: 'center' }} flexWrap="wrap" gap={2.5} position="relative">
+              <Box sx={{ minWidth: 0, flex: '1 1 340px' }}>
+                <Chip label="AI Route Command" size="small" sx={{ mb: 1.25, bgcolor: 'rgba(216,255,114,0.16)', color: '#D8FF72', border: '1px solid rgba(216,255,114,0.18)' }} />
+                <Typography variant="h4" sx={{ fontWeight: 800, color: '#FFFFFF', fontSize: { xs: '1.6rem', md: '2.2rem' }, lineHeight: 1.1, pr: { md: 2 } }}>
+                  Route Optimizer
+                </Typography>
+                <Typography variant="body2" sx={{ color: '#DDEDF8', mt: 1, maxWidth: 680, lineHeight: 1.7 }}>
+                  Generate cleaner collection paths, compare route load, and guide field movement from one live optimization screen.
+                </Typography>
+              </Box>
+              <Box
+                sx={{
+                  display: 'flex',
+                  gap: 1.25,
+                  alignItems: 'center',
+                  flexWrap: 'wrap',
+                  justifyContent: { xs: 'stretch', md: 'flex-end' },
+                  width: { xs: '100%', lg: 'auto' },
+                  flex: '0 1 420px',
+                }}
               >
-                {loading ? 'Optimizing...' : 'Optimize Routes'}
-              </Button>
-              <IconButton onClick={() => setDrawerOpen(!drawerOpen)} sx={{ color: '#00C6FF' }}>
-                {drawerOpen ? <CloseIcon /> : <MenuIcon />}
-              </IconButton>
+                <FormControl
+                  size="small"
+                  sx={{
+                    minWidth: { xs: '100%', sm: 180 },
+                    '& .MuiOutlinedInput-root': {
+                      borderRadius: '16px',
+                      background: 'rgba(255,255,255,0.06)',
+                      color: '#F5FBFF',
+                    },
+                  }}
+                >
+                  <InputLabel sx={{ color: '#BDD8EB' }}>Area</InputLabel>
+                  <Select value={area} label="Area" onChange={(e) => setArea(e.target.value)}>
+                    <MenuItem value="Attock">Attock City</MenuItem>
+                    <MenuItem value="Mehria Town">Mehria Town</MenuItem>
+                  </Select>
+                </FormControl>
+                <Button 
+                  variant="contained" 
+                  startIcon={loading ? <CircularProgress size={18} sx={{ color: '#041328' }} /> : <OptimizeIcon />} 
+                  onClick={optimizeRoutes} 
+                  disabled={loading}
+                  sx={{ borderRadius: '999px', px: 2.75, minWidth: { xs: '100%', sm: 'auto' } }}
+                >
+                  {loading ? 'Optimizing...' : 'Optimize Routes'}
+                </Button>
+                <IconButton onClick={() => setDrawerOpen(!drawerOpen)} sx={{ color: '#74DDFF', border: '1px solid rgba(116,221,255,0.22)', bgcolor: 'rgba(255,255,255,0.04)' }}>
+                  {drawerOpen ? <CloseIcon /> : <MenuIcon />}
+                </IconButton>
+              </Box>
             </Box>
           </Box>
         </Container>
       </Box>
 
-      {/* Main Content - FULL SCREEN MAP */}
-      <Box sx={{ display: 'flex', flex: 1, mt: '60px', height: 'calc(100vh - 124px)' }}>
-        {/* MAP - Takes most of the screen */}
-        <Box sx={{ flex: 1, position: 'relative', minHeight: 'calc(100vh - 124px)' }}>
+      <Box sx={{ display: 'flex', flex: 1, px: { xs: 2, md: 3 }, gap: 2.5, alignItems: 'stretch' }}>
+        <Box sx={{ flex: 1, position: 'relative', minHeight: { xs: '58vh', md: '70vh' } }}>
           {error && (
             <Alert severity="error" sx={{ position: 'absolute', top: 10, right: 10, zIndex: 1000 }}>
               {error}
             </Alert>
           )}
           
-          <MapContainer
-            key={mapCenter.join(',')}
-            center={mapCenter}
-            zoom={13}
-            style={{ height: '100%', width: '100%' }}
-            scrollWheelZoom={true}
+          <Paper
+            sx={{
+              height: '100%',
+              minHeight: { xs: '58vh', md: '70vh' },
+              borderRadius: 6,
+              overflow: 'hidden',
+              border: '1px solid rgba(139,225,255,0.18)',
+              background: 'rgba(7,22,43,0.68)',
+              backdropFilter: 'blur(16px)',
+              position: 'relative',
+            }}
           >
-            <TileLayer
-              attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-            />
-            
-            {/* Show markers for complaints */}
-            {validComplaints.map((complaint) => (
-              <Marker
-                key={complaint.id}
-                position={[complaint.latitude, complaint.longitude]}
-              >
-                <Popup>
-                  <Box sx={{ minWidth: 180 }}>
-                    <Typography variant="subtitle2" sx={{ fontWeight: 700 }}>
-                      #{complaint.id} - {complaint.complaint_type?.replace('_', ' ')}
-                    </Typography>
-                    <Typography variant="caption" sx={{ color: '#9CA3AF' }}>
-                      Priority: {complaint.priority}<br />
-                      Status: {complaint.status}<br />
-                      Fill Level: {complaint.fill_level_before || 0}%
-                    </Typography>
-                  </Box>
-                </Popup>
-              </Marker>
-            ))}
-            
-            {/* Draw ROUTE LINES between complaints */}
-            {routes?.routes && routePaths.map((path, idx) => (
-              path.length > 1 && (
-                <Polyline
-                  key={`route-${idx}`}
-                  positions={path}
-                  pathOptions={{
-                    color: routeColors[idx % routeColors.length],
-                    weight: 4,
-                    opacity: 0.9,
-                    lineCap: 'round',
-                    lineJoin: 'round'
-                  }}
-                />
-              )
-            ))}
-          </MapContainer>
+            <MapContainer
+              key={mapCenter.join(',')}
+              center={mapCenter}
+              zoom={13}
+              style={{ height: '100%', width: '100%' }}
+              scrollWheelZoom={true}
+            >
+              <TileLayer
+                attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+              />
+              
+              {validComplaints.map((complaint) => (
+                <Marker
+                  key={complaint.id}
+                  position={[complaint.latitude, complaint.longitude]}
+                >
+                  <Popup>
+                    <Box sx={{ minWidth: 180 }}>
+                      <Typography variant="subtitle2" sx={{ fontWeight: 700 }}>
+                        #{complaint.id} - {complaint.complaint_type?.replace('_', ' ')}
+                      </Typography>
+                      <Typography variant="caption" sx={{ color: '#9CA3AF' }}>
+                        Priority: {complaint.priority}<br />
+                        Status: {complaint.status}<br />
+                        Fill Level: {complaint.fill_level_before || 0}%
+                      </Typography>
+                    </Box>
+                  </Popup>
+                </Marker>
+              ))}
+              
+              {routes?.routes && routePaths.map((path, idx) => (
+                path.length > 1 && (
+                  <Polyline
+                    key={`route-${idx}`}
+                    positions={path}
+                    pathOptions={{
+                      color: routeColors[idx % routeColors.length],
+                      weight: 5,
+                      opacity: 0.92,
+                      lineCap: 'round',
+                      lineJoin: 'round'
+                    }}
+                  />
+                )
+              ))}
+            </MapContainer>
+          </Paper>
           
-          {/* Legend Overlay */}
           <Paper sx={{ 
             position: 'absolute', 
             bottom: 20, 
             left: 20, 
             zIndex: 1000, 
             p: 1.5,
-            bgcolor: 'rgba(2,6,23,0.9)',
-            backdropFilter: 'blur(8px)',
-            border: '1px solid rgba(10,102,255,0.3)',
-            borderRadius: 2
+            bgcolor: 'rgba(7,22,43,0.88)',
+            backdropFilter: 'blur(12px)',
+            border: '1px solid rgba(139,225,255,0.24)',
+            borderRadius: 4
           }}>
-            <Typography variant="caption" sx={{ color: '#00C6FF', display: 'block', mb: 1 }}>Legend</Typography>
+            <Typography variant="caption" sx={{ color: '#74DDFF', display: 'block', mb: 1, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase' }}>Legend</Typography>
             <Box display="flex" flexDirection="column" gap={0.5}>
               <Box display="flex" alignItems="center" gap={1}>
                 <Box sx={{ width: 16, height: 3, bgcolor: '#EF4444', borderRadius: 2 }} />
@@ -250,7 +286,6 @@ const RouteOptimizer = () => {
           </Paper>
         </Box>
 
-        {/* Drawer - Routes Panel (Collapsible) */}
         <Drawer
           anchor="right"
           open={drawerOpen}
@@ -259,27 +294,32 @@ const RouteOptimizer = () => {
           sx={{
             width: 320,
             flexShrink: 0,
+            display: { xs: 'block', md: 'block' },
             '& .MuiDrawer-paper': {
               width: 320,
-              position: 'relative',
-              height: 'calc(100vh - 124px)',
+              position: isMobile ? 'fixed' : 'relative',
+              height: isMobile ? '100vh' : 'auto',
               top: 'auto',
-              bgcolor: 'rgba(15,23,42,0.95)',
-              backdropFilter: 'blur(12px)',
-              borderLeft: '1px solid rgba(10,102,255,0.2)',
-              mt: '60px'
+              bgcolor: 'rgba(7,22,43,0.95)',
+              backdropFilter: 'blur(16px)',
+              borderLeft: '1px solid rgba(139,225,255,0.18)',
+              borderRadius: isMobile ? 0 : '28px',
+              mt: isMobile ? 0 : 0
             },
           }}
         >
           <Box sx={{ p: 2, height: '100%', overflow: 'auto' }}>
-            <Typography variant="h6" sx={{ fontWeight: 700, color: '#FFFFFF', mb: 2 }}>
+            <Typography variant="overline" sx={{ color: '#D8FF72', fontWeight: 800, letterSpacing: '0.14em' }}>
+              Route Intelligence
+            </Typography>
+            <Typography variant="h6" sx={{ fontWeight: 800, color: '#FFFFFF', mb: 2 }}>
               Routes Summary
             </Typography>
             
             {!routes && !loading && (
               <Box textAlign="center" py={4}>
-                <RouteIcon sx={{ fontSize: 48, color: '#0A66FF', mb: 2, opacity: 0.5 }} />
-                <Typography variant="body2" sx={{ color: '#9CA3AF' }}>
+                <RouteIcon sx={{ fontSize: 48, color: '#36C4FF', mb: 2, opacity: 0.7 }} />
+                <Typography variant="body2" sx={{ color: '#BDD8EB' }}>
                   Click "Optimize Routes" to generate routes
                 </Typography>
               </Box>
@@ -287,8 +327,8 @@ const RouteOptimizer = () => {
             
             {loading && (
               <Box textAlign="center" py={4}>
-                <CircularProgress sx={{ color: '#0A66FF' }} />
-                <Typography variant="body2" sx={{ color: '#9CA3AF', mt: 2 }}>Optimizing routes...</Typography>
+                <CircularProgress sx={{ color: '#36C4FF' }} />
+                <Typography variant="body2" sx={{ color: '#BDD8EB', mt: 2 }}>Optimizing routes...</Typography>
               </Box>
             )}
             
@@ -296,18 +336,18 @@ const RouteOptimizer = () => {
               <>
                 <Grid container spacing={1} sx={{ mb: 2 }}>
                   <Grid item xs={6}>
-                    <Card sx={{ bgcolor: 'rgba(10,102,255,0.1)' }}>
+                    <Card sx={{ bgcolor: 'rgba(54,196,255,0.1)', border: '1px solid rgba(116,221,255,0.18)' }}>
                       <CardContent sx={{ p: 1.5, textAlign: 'center' }}>
-                        <Typography variant="caption" sx={{ color: '#9CA3AF' }}>Total Routes</Typography>
-                        <Typography variant="h5" sx={{ color: '#0A66FF' }}>{routes.total_clusters || routes.routes?.length || 0}</Typography>
+                        <Typography variant="caption" sx={{ color: '#BDD8EB' }}>Total Routes</Typography>
+                        <Typography variant="h5" sx={{ color: '#36C4FF' }}>{routes.total_clusters || routes.routes?.length || 0}</Typography>
                       </CardContent>
                     </Card>
                   </Grid>
                   <Grid item xs={6}>
-                    <Card sx={{ bgcolor: 'rgba(0,198,255,0.1)' }}>
+                    <Card sx={{ bgcolor: 'rgba(83,215,105,0.1)', border: '1px solid rgba(83,215,105,0.18)' }}>
                       <CardContent sx={{ p: 1.5, textAlign: 'center' }}>
-                        <Typography variant="caption" sx={{ color: '#9CA3AF' }}>Time Saved</Typography>
-                        <Typography variant="h5" sx={{ color: '#00C6FF' }}>{routes.time_saved || 25}%</Typography>
+                        <Typography variant="caption" sx={{ color: '#BDD8EB' }}>Time Saved</Typography>
+                        <Typography variant="h5" sx={{ color: '#53D769' }}>{routes.time_saved || 25}%</Typography>
                       </CardContent>
                     </Card>
                   </Grid>
@@ -315,10 +355,10 @@ const RouteOptimizer = () => {
                 
                 <Divider sx={{ my: 2, borderColor: 'rgba(255,255,255,0.1)' }} />
                 
-                <Typography variant="subtitle2" sx={{ color: '#FFFFFF', mb: 1 }}>Routes</Typography>
+                <Typography variant="subtitle2" sx={{ color: '#FFFFFF', mb: 1, fontWeight: 700 }}>Routes</Typography>
                 
                 {(routes.routes || []).map((route, idx) => (
-                  <Card key={idx} sx={{ mb: 1.5, bgcolor: 'rgba(255,255,255,0.05)' }}>
+                  <Card key={idx} sx={{ mb: 1.5, bgcolor: 'rgba(255,255,255,0.04)', border: '1px solid rgba(139,225,255,0.14)' }}>
                     <CardContent sx={{ p: 2 }}>
                       <Box display="flex" justifyContent="space-between" alignItems="center">
                         <Box>
@@ -330,7 +370,7 @@ const RouteOptimizer = () => {
                           </Typography>
                         </Box>
                         <Box textAlign="right">
-                          <Typography variant="caption" sx={{ color: '#00C6FF', fontWeight: 600 }}>
+                          <Typography variant="caption" sx={{ color: '#74DDFF', fontWeight: 700 }}>
                             {route.distance || `${(idx + 1) * 1.5} km`}
                           </Typography>
                           <Typography variant="caption" sx={{ color: '#9CA3AF', display: 'block' }}>

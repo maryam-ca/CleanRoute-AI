@@ -111,13 +111,13 @@ const WastePrediction = ({ token }) => {
       <Toaster position="top-right" />
       
       {/* Header */}
-      <Box sx={{ mx: { xs: 2, md: 3 }, py: 3, px: 4, border: '1px solid rgba(10,102,255,0.3)', borderRadius: 6, background: 'linear-gradient(135deg, rgba(10,102,255,0.15) 0%, rgba(15,23,42,0.3) 100%)' }}>
+      <Box sx={{ mx: { xs: 2, md: 3 }, py: 3.25, px: 4, border: '1px solid rgba(139,225,255,0.22)', borderRadius: 6, background: 'linear-gradient(135deg, rgba(15,78,148,0.34) 0%, rgba(19,107,89,0.22) 58%, rgba(7,22,43,0.45) 100%)', backdropFilter: 'blur(16px)' }}>
         <Container maxWidth="xl">
           <Box display="flex" justifyContent="space-between" alignItems="center" sx={{ flexWrap: 'wrap', gap: 2 }}>
             <Box>
-              <Chip label="AI PREDICTION MODEL" size="small" sx={{ mb: 1, bgcolor: 'rgba(0,198,255,0.2)', color: '#00C6FF' }} />
+              <Chip label="Forecast Intelligence" size="small" sx={{ mb: 1, bgcolor: 'rgba(216,255,114,0.16)', color: '#D8FF72', border: '1px solid rgba(216,255,114,0.18)' }} />
               <Typography variant="h5" sx={{ fontWeight: 800, color: '#FFFFFF' }}>Waste Generation Forecast</Typography>
-              <Typography variant="body2" sx={{ color: '#9CA3AF' }}>7-day AI-powered prediction with confidence intervals</Typography>
+              <Typography variant="body2" sx={{ color: '#DDEDF8' }}>7-day AI-powered prediction with confidence intervals and planning signals</Typography>
             </Box>
             <Button variant="outlined" startIcon={<RefreshIcon />} onClick={fetchPredictions} disabled={loading} sx={{ borderRadius: '999px' }}>
               {loading ? 'Loading...' : 'Refresh'}
@@ -130,7 +130,7 @@ const WastePrediction = ({ token }) => {
         {/* ML Model Performance Card */}
         <Grid container spacing={3} sx={{ mb: 4 }}>
           <Grid item xs={12}>
-            <Card sx={{ background: 'rgba(15,23,42,0.85)', border: '1px solid rgba(10,102,255,0.2)', borderRadius: 4 }}>
+            <Card sx={{ background: 'rgba(15,23,42,0.85)', border: '1px solid rgba(139,225,255,0.18)', borderRadius: 5 }}>
               <CardContent>
                 <Box display="flex" alignItems="center" sx={{ gap: 1, mb: 2 }}>
                   <ScienceIcon sx={{ color: '#00C6FF' }} />
@@ -163,7 +163,7 @@ const WastePrediction = ({ token }) => {
         {/* Stats Cards */}
         <Grid container spacing={3} sx={{ mb: 4 }}>
           <Grid item xs={12} sm={6} md={3}>
-            <Card sx={{ background: 'rgba(15,23,42,0.85)', border: '1px solid rgba(10,102,255,0.2)', borderRadius: 4 }}>
+            <Card sx={{ background: 'rgba(15,23,42,0.85)', border: '1px solid rgba(139,225,255,0.18)', borderRadius: 5 }}>
               <CardContent>
                 <Typography variant="caption" sx={{ color: '#9CA3AF' }}>Total Waste (7 days)</Typography>
                 <Typography variant="h3" sx={{ color: '#00C6FF', fontWeight: 800 }}>{stats?.total || 0} <Typography component="span" variant="caption" sx={{ color: '#9CA3AF' }}>tons</Typography></Typography>
@@ -172,7 +172,7 @@ const WastePrediction = ({ token }) => {
             </Card>
           </Grid>
           <Grid item xs={12} sm={6} md={3}>
-            <Card sx={{ background: 'rgba(15,23,42,0.85)', border: '1px solid rgba(10,102,255,0.2)', borderRadius: 4 }}>
+            <Card sx={{ background: 'rgba(15,23,42,0.85)', border: '1px solid rgba(139,225,255,0.18)', borderRadius: 5 }}>
               <CardContent>
                 <Typography variant="caption" sx={{ color: '#9CA3AF' }}>Daily Average</Typography>
                 <Typography variant="h3" sx={{ color: '#0A66FF', fontWeight: 800 }}>{stats?.average || 0} <Typography component="span" variant="caption" sx={{ color: '#9CA3AF' }}>tons/day</Typography></Typography>
@@ -184,7 +184,7 @@ const WastePrediction = ({ token }) => {
             </Card>
           </Grid>
           <Grid item xs={12} sm={6} md={3}>
-            <Card sx={{ background: 'rgba(15,23,42,0.85)', border: '1px solid rgba(10,102,255,0.2)', borderRadius: 4 }}>
+            <Card sx={{ background: 'rgba(15,23,42,0.85)', border: '1px solid rgba(139,225,255,0.18)', borderRadius: 5 }}>
               <CardContent>
                 <Typography variant="caption" sx={{ color: '#9CA3AF' }}>Peak Day</Typography>
                 <Typography variant="h3" sx={{ color: '#F59E0B', fontWeight: 800 }}>Day {stats?.peakDay || 4}</Typography>
@@ -193,7 +193,7 @@ const WastePrediction = ({ token }) => {
             </Card>
           </Grid>
           <Grid item xs={12} sm={6} md={3}>
-            <Card sx={{ background: 'rgba(15,23,42,0.85)', border: '1px solid rgba(10,102,255,0.2)', borderRadius: 4 }}>
+            <Card sx={{ background: 'rgba(15,23,42,0.85)', border: '1px solid rgba(139,225,255,0.18)', borderRadius: 5 }}>
               <CardContent>
                 <Typography variant="caption" sx={{ color: '#9CA3AF' }}>Model Confidence</Typography>
                 <Typography variant="h3" sx={{ color: '#22C55E', fontWeight: 800 }}>{confidence?.overall || 92}%</Typography>
@@ -257,7 +257,7 @@ const WastePrediction = ({ token }) => {
         {/* AI Insights */}
         <Grid container spacing={3} sx={{ mt: 2 }}>
           <Grid item xs={12}>
-            <Card sx={{ background: 'linear-gradient(135deg, rgba(10,102,255,0.1), rgba(0,198,255,0.05))', border: '1px solid rgba(10,102,255,0.3)', borderRadius: 4 }}>
+            <Card sx={{ background: 'linear-gradient(135deg, rgba(54,196,255,0.12), rgba(83,215,105,0.08))', border: '1px solid rgba(139,225,255,0.22)', borderRadius: 5 }}>
               <CardContent>
                 <Typography variant="h6" sx={{ fontWeight: 700, color: '#FFFFFF', mb: 1 }}>🤖 AI Insights & Recommendations</Typography>
                 <Grid container spacing={2}>

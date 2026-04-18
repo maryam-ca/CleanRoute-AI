@@ -119,21 +119,21 @@ const Reports = ({ token, user, setToken }) => {
   const previewComplaints = Array.isArray(complaints) ? complaints.slice(0, 10) : [];
 
   return (
-    <Box sx={{ bgcolor: 'transparent', minHeight: '100vh' }}>
+    <Box sx={{ bgcolor: 'transparent', minHeight: '100vh', pt: '110px', pb: 4 }}>
       <Toaster position="top-right" />
       
-      {/* Header */}
-      <Box sx={{ mx: { xs: 2, md: 3 }, mt: 2, py: 3, px: 4, color: 'white', border: '1px solid rgba(10,102,255,0.3)', borderRadius: 6, background: 'linear-gradient(135deg, rgba(10,102,255,0.15) 0%, rgba(15,23,42,0.3) 100%)', backdropFilter: 'blur(12px)' }}>
+      <Box sx={{ mx: { xs: 2, md: 3 }, py: 3.25, px: 4, color: 'white', border: '1px solid rgba(139,225,255,0.22)', borderRadius: 6, background: 'linear-gradient(135deg, rgba(15,78,148,0.34) 0%, rgba(19,107,89,0.22) 58%, rgba(7,22,43,0.45) 100%)', backdropFilter: 'blur(16px)' }}>
         <Container maxWidth="xl">
-          <Box display="flex" justifyContent="space-between" alignItems="center">
+          <Box display="flex" justifyContent="space-between" alignItems={{ xs: 'flex-start', md: 'center' }} flexWrap="wrap" gap={2}>
             <Box display="flex" alignItems="center" gap={2}>
-              <DownloadIcon sx={{ fontSize: 32, color: '#81C784' }} />
+              <DownloadIcon sx={{ fontSize: 32, color: '#D8FF72' }} />
               <Box>
-                <Typography variant="h5" sx={{ fontWeight: 700 }}>📄 Export Reports</Typography>
-                <Typography variant="caption" sx={{ opacity: 0.8 }}>Export complaints data in multiple formats</Typography>
+                <Chip label="Delivery & Export Hub" size="small" sx={{ mb: 1, bgcolor: 'rgba(216,255,114,0.16)', color: '#D8FF72', border: '1px solid rgba(216,255,114,0.18)' }} />
+                <Typography variant="h5" sx={{ fontWeight: 800 }}>Export Reports</Typography>
+                <Typography variant="body2" sx={{ color: '#DDEDF8' }}>Prepare presentation-ready outputs, summary files, and printable analytics from one workspace.</Typography>
               </Box>
             </Box>
-            <Button variant="outlined" onClick={() => window.location.href = '/'} sx={{ color: 'white', borderColor: 'rgba(255,255,255,0.3)' }}>
+            <Button variant="outlined" onClick={() => window.location.href = '/'} sx={{ color: 'white', borderColor: 'rgba(255,255,255,0.3)', borderRadius: '999px' }}>
               Back to Dashboard
             </Button>
           </Box>
@@ -143,9 +143,9 @@ const Reports = ({ token, user, setToken }) => {
       <Container maxWidth="xl" sx={{ py: 4 }}>
         {/* Stats Summary */}
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
-          <Card sx={{ mb: 4, borderRadius: 4 }}>
+          <Card sx={{ mb: 4, borderRadius: 5, border: '1px solid rgba(139,225,255,0.18)' }}>
             <CardContent>
-              <Typography variant="h6" sx={{ fontWeight: 700, color: '#1B5E20', mb: 2 }}>
+              <Typography variant="h6" sx={{ fontWeight: 700, color: '#FFFFFF', mb: 2 }}>
                 Data Summary
               </Typography>
               <Grid container spacing={3}>
@@ -183,11 +183,11 @@ const Reports = ({ token, user, setToken }) => {
           {reportCards.map((card, index) => (
             <Grid item xs={12} sm={6} md={3} key={index}>
               <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: index * 0.1 }}>
-                <Card sx={{ borderRadius: 4, textAlign: 'center', py: 3, cursor: 'pointer', '&:hover': { transform: 'translateY(-4px)', boxShadow: 6 } }} onClick={card.action}>
+                <Card sx={{ borderRadius: 5, textAlign: 'center', py: 3, cursor: 'pointer', border: '1px solid rgba(139,225,255,0.16)', '&:hover': { transform: 'translateY(-4px)', boxShadow: 6, borderColor: 'rgba(216,255,114,0.22)' } }} onClick={card.action}>
                   <CardContent>
                     <Box sx={{ color: card.color, mb: 2 }}>{card.icon}</Box>
-                    <Typography variant="h6" sx={{ fontWeight: 700, mb: 1 }}>{card.title}</Typography>
-                    <Typography variant="caption" color="text.secondary">{card.description}</Typography>
+                    <Typography variant="h6" sx={{ fontWeight: 700, mb: 1, color: '#FFFFFF' }}>{card.title}</Typography>
+                    <Typography variant="caption" sx={{ color: '#BDD8EB' }}>{card.description}</Typography>
                     {exporting && <CircularProgress size={24} sx={{ mt: 2 }} />}
                   </CardContent>
                 </Card>
@@ -198,9 +198,9 @@ const Reports = ({ token, user, setToken }) => {
 
         {/* Preview Section */}
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }}>
-          <Card sx={{ mt: 4, borderRadius: 4 }}>
+          <Card sx={{ mt: 4, borderRadius: 5, border: '1px solid rgba(139,225,255,0.18)' }}>
             <CardContent>
-              <Typography variant="h6" sx={{ fontWeight: 700, color: '#1B5E20', mb: 2 }}>
+              <Typography variant="h6" sx={{ fontWeight: 700, color: '#FFFFFF', mb: 2 }}>
                 Recent Complaints Preview
               </Typography>
               {loading ? (

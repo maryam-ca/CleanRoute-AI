@@ -1,0 +1,66 @@
+Image_ID,Category,Fill_Level,Priority,File_Path
+low_1,low,20,LOW,dataset/train\low\low (1).jpg
+low_2,low,20,LOW,dataset/train\low\low (2).jpg
+low_3,low,20,LOW,dataset/train\low\low (3).jpg
+low_4,low,20,LOW,dataset/train\low\low (4).jpg
+low_5,low,20,LOW,dataset/train\low\low_0.jpg
+medium_1,medium,45,MEDIUM,dataset/train\medium\medium (1).jpg
+medium_2,medium,45,MEDIUM,dataset/train\medium\medium (10).jpg
+medium_3,medium,45,MEDIUM,dataset/train\medium\medium (11).jpg
+medium_4,medium,45,MEDIUM,dataset/train\medium\medium (12).jpg
+medium_5,medium,45,MEDIUM,dataset/train\medium\medium (13).jpg
+medium_6,medium,45,MEDIUM,dataset/train\medium\medium (14).jpg
+medium_7,medium,45,MEDIUM,dataset/train\medium\medium (15).jpg
+medium_8,medium,45,MEDIUM,dataset/train\medium\medium (2).jpg
+medium_9,medium,45,MEDIUM,dataset/train\medium\medium (3).jpg
+medium_10,medium,45,MEDIUM,dataset/train\medium\medium (4).jpg
+medium_11,medium,45,MEDIUM,dataset/train\medium\medium (5).jpg
+medium_12,medium,45,MEDIUM,dataset/train\medium\medium (6).jpg
+medium_13,medium,45,MEDIUM,dataset/train\medium\medium (7).jpg
+medium_14,medium,45,MEDIUM,dataset/train\medium\medium (8).jpg
+medium_15,medium,45,MEDIUM,dataset/train\medium\medium (9).jpg
+medium_16,medium,45,MEDIUM,dataset/train\medium\medium_0.jpg
+high_1,high,70,HIGH,dataset/train\high\high (1).jpg
+high_2,high,70,HIGH,dataset/train\high\high (2).jpg
+high_3,high,70,HIGH,dataset/train\high\high (3).jpg
+high_4,high,70,HIGH,dataset/train\high\high (4).jpg
+high_5,high,70,HIGH,dataset/train\high\high (5).jpg
+high_6,high,70,HIGH,dataset/train\high\high (6).jpg
+high_7,high,70,HIGH,dataset/train\high\high_0.jpg
+urgent_1,urgent,90,URGENT,dataset/train\urgent\urgent (1).jpg
+urgent_2,urgent,90,URGENT,dataset/train\urgent\urgent (10).jpg
+urgent_3,urgent,90,URGENT,dataset/train\urgent\urgent (11).jpg
+urgent_4,urgent,90,URGENT,dataset/train\urgent\urgent (12).jpg
+urgent_5,urgent,90,URGENT,dataset/train\urgent\urgent (13).jpg
+urgent_6,urgent,90,URGENT,dataset/train\urgent\urgent (14).jpg
+urgent_7,urgent,90,URGENT,dataset/train\urgent\urgent (15).jpg
+urgent_8,urgent,90,URGENT,dataset/train\urgent\urgent (16).jpg
+urgent_9,urgent,90,URGENT,dataset/train\urgent\urgent (17).jpg
+urgent_10,urgent,90,URGENT,dataset/train\urgent\urgent (18).jpg
+urgent_11,urgent,90,URGENT,dataset/train\urgent\urgent (19).jpg
+urgent_12,urgent,90,URGENT,dataset/train\urgent\urgent (2).jpg
+urgent_13,urgent,90,URGENT,dataset/train\urgent\urgent (20).jpg
+urgent_14,urgent,90,URGENT,dataset/train\urgent\urgent (21).jpg
+urgent_15,urgent,90,URGENT,dataset/train\urgent\urgent (22).jpg
+urgent_16,urgent,90,URGENT,dataset/train\urgent\urgent (23).jpg
+urgent_17,urgent,90,URGENT,dataset/train\urgent\urgent (24).jpg
+urgent_18,urgent,90,URGENT,dataset/train\urgent\urgent (25).jpg
+urgent_19,urgent,90,URGENT,dataset/train\urgent\urgent (26).jpg
+urgent_20,urgent,90,URGENT,dataset/train\urgent\urgent (27).jpg
+urgent_21,urgent,90,URGENT,dataset/train\urgent\urgent (28).jpg
+urgent_22,urgent,90,URGENT,dataset/train\urgent\urgent (29).jpg
+urgent_23,urgent,90,URGENT,dataset/train\urgent\urgent (3).jpg
+urgent_24,urgent,90,URGENT,dataset/train\urgent\urgent (30).jpg
+urgent_25,urgent,90,URGENT,dataset/train\urgent\urgent (31).jpg
+urgent_26,urgent,90,URGENT,dataset/train\urgent\urgent (32).jpg
+urgent_27,urgent,90,URGENT,dataset/train\urgent\urgent (33).jpg
+urgent_28,urgent,90,URGENT,dataset/train\urgent\urgent (34).jpg
+urgent_29,urgent,90,URGENT,dataset/train\urgent\urgent (35).jpg
+urgent_30,urgent,90,URGENT,dataset/train\urgent\urgent (36).jpg
+urgent_31,urgent,90,URGENT,dataset/train\urgent\urgent (4).jpg
+urgent_32,urgent,90,URGENT,dataset/train\urgent\urgent (5).jpg
+urgent_33,urgent,90,URGENT,dataset/train\urgent\urgent (6).jpg
+urgent_34,urgent,90,URGENT,dataset/train\urgent\urgent (7).jpg
+urgent_35,urgent,90,URGENT,dataset/train\urgent\urgent (8).jpg
+urgent_36,urgent,90,URGENT,dataset/train\urgent\urgent (9).jpg
+urgent_37,urgent,90,URGENT,dataset/train\urgent\urgent_0.jpg
