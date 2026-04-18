@@ -1,4 +1,4 @@
-# 🗑️ CleanRoute-AI - AI-Powered Smart Waste Management System
+# CleanRoute-AI - AI-Powered Smart Waste Management System
 
 [![Django](https://img.shields.io/badge/Django-6.0-green)](https://www.djangoproject.com/)
 [![React](https://img.shields.io/badge/React-19-blue)](https://reactjs.org/)
@@ -481,17 +481,17 @@ curl -X GET https://cleanroute-ai.onrender.com/api/complaints/ \
 
 ## 13. PROJECT RESOURCES
 
-### 🎥 Demo Video
+### Demo Video
 Watch the full working demonstration of CleanRoute-AI:
 
 [CleanRoute-AI Demo Video](https://youtu.be/your-video-link)
 
-### 📝 Project Blog (Medium)
+### Project Blog (Medium)
 Read the detailed article explaining the development process, architecture, and insights:
 
 🔗 [https://medium.com/@ruhmmachaudhary/cleanroute-ai](https://medium.com/@ruhmmachaudhary/cleanroute-ai)
 
-### 📖 Live Demo
+### Live Demo
 
 | Service | URL |
 |---------|-----|
