@@ -1,15 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import {
-  Box, Container, Paper, Typography, Button, Grid, Card, CardContent,
-  Chip, CircularProgress, IconButton, Tooltip, Divider, Alert
+  Box, Container, Typography, Button, Grid, Card, CardContent,
+  Chip, CircularProgress
 } from '@mui/material';
 import {
   Download as DownloadIcon,
   PictureAsPdf as PdfIcon,
   Description as ExcelIcon,
   BarChart as StatsIcon,
-  Print as PrintIcon,
-  Share as ShareIcon
+  Print as PrintIcon
 } from '@mui/icons-material';
 import { motion } from 'framer-motion';
 import toast, { Toaster } from 'react-hot-toast';
@@ -114,6 +113,13 @@ const Reports = ({ token, user, setToken }) => {
     { title: 'Statistics Report', icon: <StatsIcon sx={{ fontSize: 40 }} />, color: '#2196F3', description: 'Export statistics summary', action: handleExportStats },
     { title: 'Print Report', icon: <PrintIcon sx={{ fontSize: 40 }} />, color: '#FF9800', description: 'Print complaints report', action: handlePrint },
   ];
+  const glassPanelSx = {
+    borderRadius: 6,
+    border: '1px solid rgba(139,225,255,0.18)',
+    background: 'linear-gradient(180deg, rgba(10, 28, 57, 0.88) 0%, rgba(7, 21, 42, 0.94) 100%)',
+    backdropFilter: 'blur(18px)',
+    boxShadow: '0 28px 55px rgba(3,12,25,0.28)'
+  };
 
   // Ensure complaints is an array for preview
   const previewComplaints = Array.isArray(complaints) ? complaints.slice(0, 10) : [];
@@ -143,7 +149,7 @@ const Reports = ({ token, user, setToken }) => {
       <Container maxWidth="xl" sx={{ py: 4 }}>
         {/* Stats Summary */}
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
-          <Card sx={{ mb: 4, borderRadius: 5, border: '1px solid rgba(139,225,255,0.18)' }}>
+          <Card sx={{ ...glassPanelSx, mb: 4 }}>
             <CardContent>
               <Typography variant="h6" sx={{ fontWeight: 700, color: '#FFFFFF', mb: 2 }}>
                 Data Summary
@@ -163,7 +169,7 @@ const Reports = ({ token, user, setToken }) => {
                 </Grid>
                 <Grid item xs={6} sm={3}>
                   <Box textAlign="center">
-                    <Typography variant="h3" sx={{ fontWeight: 800, color: '#22C55E' }}>{stats?.resolved_complaints || 0}</Typography>
+                    <Typography variant="h3" sx={{ fontWeight: 800, color: '#22C55E' }}>{stats?.completed_complaints || stats?.resolved_complaints || 0}</Typography>
                     <Typography variant="caption">Resolved</Typography>
                   </Box>
                 </Grid>
@@ -183,7 +189,7 @@ const Reports = ({ token, user, setToken }) => {
           {reportCards.map((card, index) => (
             <Grid item xs={12} sm={6} md={3} key={index}>
               <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: index * 0.1 }}>
-                <Card sx={{ borderRadius: 5, textAlign: 'center', py: 3, cursor: 'pointer', border: '1px solid rgba(139,225,255,0.16)', '&:hover': { transform: 'translateY(-4px)', boxShadow: 6, borderColor: 'rgba(216,255,114,0.22)' } }} onClick={card.action}>
+                <Card sx={{ ...glassPanelSx, textAlign: 'center', py: 3, cursor: 'pointer', '&:hover': { transform: 'translateY(-4px)', boxShadow: 6, borderColor: 'rgba(216,255,114,0.22)' } }} onClick={card.action}>
                   <CardContent>
                     <Box sx={{ color: card.color, mb: 2 }}>{card.icon}</Box>
                     <Typography variant="h6" sx={{ fontWeight: 700, mb: 1, color: '#FFFFFF' }}>{card.title}</Typography>
@@ -198,7 +204,7 @@ const Reports = ({ token, user, setToken }) => {
 
         {/* Preview Section */}
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }}>
-          <Card sx={{ mt: 4, borderRadius: 5, border: '1px solid rgba(139,225,255,0.18)' }}>
+          <Card sx={{ ...glassPanelSx, mt: 4 }}>
             <CardContent>
               <Typography variant="h6" sx={{ fontWeight: 700, color: '#FFFFFF', mb: 2 }}>
                 Recent Complaints Preview
@@ -212,31 +218,31 @@ const Reports = ({ token, user, setToken }) => {
                   <Typography color="text.secondary">No complaints data available</Typography>
                 </Box>
               ) : (
-                <Box sx={{ overflowX: 'auto' }}>
-                  <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                <Box sx={{ overflowX: 'auto', borderRadius: 4, border: '1px solid rgba(139,225,255,0.12)' }}>
+                  <table style={{ width: '100%', borderCollapse: 'collapse', background: 'rgba(255,255,255,0.02)' }}>
                     <thead>
-                      <tr style={{ backgroundColor: '#E8F5E9' }}>
-                        <th style={{ padding: '12px', textAlign: 'left' }}>ID</th>
-                        <th style={{ padding: '12px', textAlign: 'left' }}>Type</th>
-                        <th style={{ padding: '12px', textAlign: 'left' }}>Priority</th>
-                        <th style={{ padding: '12px', textAlign: 'left' }}>Status</th>
-                        <th style={{ padding: '12px', textAlign: 'left' }}>Date</th>
+                      <tr style={{ backgroundColor: 'rgba(116,221,255,0.08)' }}>
+                        <th style={{ padding: '14px 16px', textAlign: 'left', color: '#EAF8FF' }}>ID</th>
+                        <th style={{ padding: '14px 16px', textAlign: 'left', color: '#EAF8FF' }}>Type</th>
+                        <th style={{ padding: '14px 16px', textAlign: 'left', color: '#EAF8FF' }}>Priority</th>
+                        <th style={{ padding: '14px 16px', textAlign: 'left', color: '#EAF8FF' }}>Status</th>
+                        <th style={{ padding: '14px 16px', textAlign: 'left', color: '#EAF8FF' }}>Date</th>
                       </tr>
                     </thead>
                     <tbody>
                       {previewComplaints.map((complaint) => (
-                        <tr key={complaint.id} style={{ borderBottom: '1px solid #E8F5E9' }}>
-                          <td style={{ padding: '12px' }}>#{complaint.id}</td>
-                          <td style={{ padding: '12px' }}>{complaint.complaint_type}</td>
-                          <td style={{ padding: '12px' }}>
+                        <tr key={complaint.id} style={{ borderBottom: '1px solid rgba(139,225,255,0.08)' }}>
+                          <td style={{ padding: '14px 16px', color: '#DDEDF8' }}>#{complaint.id}</td>
+                          <td style={{ padding: '14px 16px', color: '#DDEDF8' }}>{complaint.complaint_type?.replace('_', ' ')}</td>
+                          <td style={{ padding: '14px 16px' }}>
                             <Chip 
                               label={complaint.priority} 
                               size="small" 
                               sx={{ bgcolor: complaint.priority === 'high' ? '#F57C00' : complaint.priority === 'urgent' ? '#D32F2F' : '#4CAF50', color: 'white' }} 
                             />
                           </td>
-                          <td style={{ padding: '12px' }}>{complaint.status}</td>
-                          <td style={{ padding: '12px' }}>{new Date(complaint.created_at).toLocaleDateString()}</td>
+                          <td style={{ padding: '14px 16px', color: '#DDEDF8' }}>{complaint.status}</td>
+                          <td style={{ padding: '14px 16px', color: '#DDEDF8' }}>{new Date(complaint.created_at).toLocaleDateString()}</td>
                         </tr>
                       ))}
                     </tbody>

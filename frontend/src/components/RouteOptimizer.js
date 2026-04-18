@@ -13,9 +13,6 @@ import {
   Route as RouteIcon, 
   Menu as MenuIcon,
   Close as CloseIcon,
-  Timeline as TimelineIcon,
-  Speed as SpeedIcon,
-  LocationOn as LocationIcon
 } from '@mui/icons-material';
 import api from '../services/api';
 
@@ -100,6 +97,18 @@ const RouteOptimizer = () => {
   };
 
   const routePaths = getRoutePaths();
+  const glassPanelSx = {
+    borderRadius: 6,
+    border: '1px solid rgba(139,225,255,0.18)',
+    background: 'linear-gradient(180deg, rgba(10, 28, 57, 0.88) 0%, rgba(7, 21, 42, 0.94) 100%)',
+    backdropFilter: 'blur(18px)',
+    boxShadow: '0 28px 55px rgba(3,12,25,0.28)'
+  };
+  const summaryCards = [
+    { label: 'Active Complaints', value: validComplaints.length, accent: '#74DDFF' },
+    { label: 'Route Clusters', value: routes?.total_clusters || routes?.routes?.length || 0, accent: '#D8FF72' },
+    { label: 'Time Saved', value: `${routes?.time_saved || 0}%`, accent: '#53D769' }
+  ];
 
   return (
     <Box sx={{ minHeight: '100vh', pt: '96px', pb: 4 }}>
@@ -178,6 +187,21 @@ const RouteOptimizer = () => {
 
       <Box sx={{ display: 'flex', flex: 1, px: { xs: 2, md: 3 }, gap: 2.5, alignItems: 'stretch' }}>
         <Box sx={{ flex: 1, position: 'relative', minHeight: { xs: '58vh', md: '70vh' } }}>
+          <Grid container spacing={2} sx={{ mb: 2.5 }}>
+            {summaryCards.map((card) => (
+              <Grid item xs={12} sm={4} key={card.label}>
+                <Paper sx={{ ...glassPanelSx, p: 2.2 }}>
+                  <Typography variant="caption" sx={{ color: '#8FB9D3', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
+                    {card.label}
+                  </Typography>
+                  <Typography variant="h4" sx={{ color: card.accent, fontWeight: 800, mt: 0.5 }}>
+                    {card.value}
+                  </Typography>
+                </Paper>
+              </Grid>
+            ))}
+          </Grid>
+
           {error && (
             <Alert severity="error" sx={{ position: 'absolute', top: 10, right: 10, zIndex: 1000 }}>
               {error}
@@ -188,11 +212,8 @@ const RouteOptimizer = () => {
             sx={{
               height: '100%',
               minHeight: { xs: '58vh', md: '70vh' },
-              borderRadius: 6,
+              ...glassPanelSx,
               overflow: 'hidden',
-              border: '1px solid rgba(139,225,255,0.18)',
-              background: 'rgba(7,22,43,0.68)',
-              backdropFilter: 'blur(16px)',
               position: 'relative',
             }}
           >
@@ -252,7 +273,7 @@ const RouteOptimizer = () => {
             left: 20, 
             zIndex: 1000, 
             p: 1.5,
-            bgcolor: 'rgba(7,22,43,0.88)',
+            bgcolor: 'rgba(7,22,43,0.9)',
             backdropFilter: 'blur(12px)',
             border: '1px solid rgba(139,225,255,0.24)',
             borderRadius: 4
@@ -377,6 +398,11 @@ const RouteOptimizer = () => {
                             {route.estimated_time || `${(idx + 1) * 5} min`}
                           </Typography>
                         </Box>
+                      </Box>
+                      <Divider sx={{ my: 1.4, borderColor: 'rgba(255,255,255,0.08)' }} />
+                      <Box sx={{ display: 'flex', justifyContent: 'space-between', gap: 1 }}>
+                        <Chip label={`${route.complaints?.length || route.total_complaints || 0} pickups`} size="small" sx={{ bgcolor: 'rgba(54,196,255,0.14)', color: '#74DDFF' }} />
+                        <Chip label={route.estimated_time || `${(idx + 1) * 5} min`} size="small" sx={{ bgcolor: 'rgba(216,255,114,0.14)', color: '#D8FF72' }} />
                       </Box>
                       {route.high_priority > 0 && (
                         <Chip 
