@@ -224,21 +224,28 @@ const ComplaintMap = () => {
                 icon={getMarkerIcon(complaint.priority)}
               >
                 <Popup>
-                  <Box sx={{ minWidth: 220, p: 1 }}>
-                    <Typography variant="subtitle2" sx={{ fontWeight: 700, color: '#FFFFFF' }}>
+                  <div style={{ minWidth: '220px', color: '#0f172a', fontFamily: 'Manrope, Segoe UI, sans-serif', lineHeight: 1.5 }}>
+                    <div style={{ fontWeight: 800, fontSize: '14px', marginBottom: '8px', color: '#0f172a' }}>
                       #{complaint.id} - {complaint.complaint_type?.replace('_', ' ')}
-                    </Typography>
-                    <Box sx={{ mt: 1, display: 'flex', gap: 1, flexWrap: 'wrap' }}>
-                      <Chip label={complaint.priority?.toUpperCase()} size="small" sx={{ bgcolor: getPriorityColor(complaint.priority).bg, color: 'white', fontWeight: 600 }} />
-                      <Chip label={complaint.status} size="small" sx={{ bgcolor: getStatusColor(complaint.status), color: 'white', fontWeight: 600 }} />
-                    </Box>
-                    <Typography variant="caption" sx={{ color: '#9CA3AF', display: 'block', mt: 1 }}>
-                      Fill Level: {complaint.fill_level_before || 0}%
-                    </Typography>
-                    <Typography variant="caption" sx={{ color: '#9CA3AF', display: 'block' }}>
-                      Location: {complaint.latitude?.toFixed(4)}, {complaint.longitude?.toFixed(4)}
-                    </Typography>
-                  </Box>
+                    </div>
+                    <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginBottom: '8px' }}>
+                      <span style={{ backgroundColor: getPriorityColor(complaint.priority).bg, color: '#ffffff', fontSize: '11px', fontWeight: 700, padding: '4px 10px', borderRadius: '999px', textTransform: 'uppercase' }}>
+                        {complaint.priority || 'medium'}
+                      </span>
+                      <span style={{ backgroundColor: getStatusColor(complaint.status), color: '#ffffff', fontSize: '11px', fontWeight: 700, padding: '4px 10px', borderRadius: '999px' }}>
+                        {complaint.status}
+                      </span>
+                    </div>
+                    <div style={{ fontSize: '12px', color: '#334155' }}>
+                      <div><strong>Fill Level:</strong> {complaint.fill_level_before || 0}%</div>
+                      <div><strong>Location:</strong> {complaint.latitude?.toFixed(4)}, {complaint.longitude?.toFixed(4)}</div>
+                      {complaint.description ? (
+                        <div style={{ marginTop: '6px' }}>
+                          <strong>Description:</strong> {complaint.description}
+                        </div>
+                      ) : null}
+                    </div>
+                  </div>
                 </Popup>
               </Marker>
             ))}

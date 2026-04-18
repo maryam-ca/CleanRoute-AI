@@ -46,7 +46,7 @@ const RouteOptimizer = () => {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       const complaintsData = await complaintsRes.json();
-      const complaints = Array.isArray(complaintsData) ? complaintsData : [];
+      const complaints = Array.isArray(complaintsData) ? complaintsData : (complaintsData.results || []);
       setAllComplaints(complaints);
       
       const data = await api.optimizeRoutes(area);
@@ -82,10 +82,22 @@ const RouteOptimizer = () => {
     }
   };
 
+  const routedComplaints = routes?.routes
+    ? routes.routes.flatMap((route) => route.complaints || [])
+    : [];
+  const uniqueRoutedComplaints = Array.from(
+    new Map(
+      routedComplaints
+        .filter((complaint) => complaint?.id && complaint.latitude && complaint.longitude && complaint.status !== 'completed')
+        .map((complaint) => [complaint.id, complaint])
+    ).values()
+  );
+
     // Only show active complaints (not completed)
   const validComplaints = allComplaints.filter(c => c.latitude && c.longitude && c.status !== 'completed');
-  const mapCenter = validComplaints.length > 0 
-    ? [validComplaints[0].latitude, validComplaints[0].longitude] 
+  const displayedComplaints = uniqueRoutedComplaints.length > 0 ? uniqueRoutedComplaints : validComplaints;
+  const mapCenter = displayedComplaints.length > 0 
+    ? [displayedComplaints[0].latitude, displayedComplaints[0].longitude] 
     : [33.805787, 72.351681];
 
   // Build route paths for polylines
@@ -108,7 +120,7 @@ const RouteOptimizer = () => {
     boxShadow: '0 28px 55px rgba(3,12,25,0.28)'
   };
   const summaryCards = [
-    { label: 'Active Complaints', value: validComplaints.length, accent: '#74DDFF' },
+    { label: 'Active Complaints', value: displayedComplaints.length, accent: '#74DDFF' },
     { label: 'Route Clusters', value: routes?.total_clusters || routes?.routes?.length || 0, accent: '#D8FF72' },
     { label: 'Time Saved', value: `${routes?.time_saved || 0}%`, accent: '#53D769' }
   ];
@@ -232,7 +244,7 @@ const RouteOptimizer = () => {
                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
               />
               
-              {validComplaints.map((complaint) => (
+              {displayedComplaints.map((complaint) => (
                 <Marker
                   key={complaint.id}
                   position={[complaint.latitude, complaint.longitude]}
