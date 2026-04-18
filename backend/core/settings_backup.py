@@ -162,7 +162,7 @@ if 'gunicorn' in sys.argv[0] or 'runserver' in sys.argv:
             
             citizen = User.objects.get(username='citizen')
             priorities = ['urgent', 'high', 'medium', 'low']
-            types = ['overflowing', 'spillage', 'missed', 'illegal']
+            types = ['overflowing', 'missed', 'illegal', 'other']
             
             for i, (lat, lng) in enumerate(mehria_coords):
                 Complaint.objects.create(

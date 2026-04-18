@@ -16,7 +16,7 @@ class ExportService {
       'Longitude': c.longitude,
       'Description': c.description,
       'Submitted': new Date(c.created_at).toLocaleString(),
-      'Resolved': c.resolved_at ? new Date(c.resolved_at).toLocaleString() : 'N/A'
+      'Completed': c.completed_at ? new Date(c.completed_at).toLocaleString() : 'N/A'
     })));
     
     const workbook = XLSX.utils.book_new();
@@ -48,7 +48,7 @@ class ExportService {
     const statsData = [
       ['Total Complaints', stats?.total_complaints || 0],
       ['Pending', stats?.pending_complaints || 0],
-      ['Resolved', stats?.resolved_complaints || 0],
+      ['Completed', stats?.completed_complaints || stats?.resolved_complaints || 0],
       ['Resolution Rate', `${stats?.resolution_rate || 0}%`]
     ];
     
@@ -96,7 +96,7 @@ class ExportService {
       ['Metric', 'Value'],
       ['Total Complaints', stats?.total_complaints || 0],
       ['Pending', stats?.pending_complaints || 0],
-      ['Resolved', stats?.resolved_complaints || 0],
+      ['Completed', stats?.completed_complaints || stats?.resolved_complaints || 0],
       ['Resolution Rate', `${stats?.resolution_rate || 0}%`]
     ];
     const summarySheet = XLSX.utils.aoa_to_sheet(summaryData);

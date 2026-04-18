@@ -206,8 +206,8 @@ const LiveRealTimeMap = ({ token, user }) => {
                       <Grid item xs={6}><Box textAlign="center"><Typography variant="h4" color="#4CAF50">{complaints.length}</Typography><Typography variant="caption">Active Complaints</Typography></Box></Grid>
                       <Grid item xs={6}><Box textAlign="center"><Typography variant="h4" color="#F57C00">{complaints.filter(c => c.priority === 'high').length}</Typography><Typography variant="caption">High Priority</Typography></Box></Grid>
                       <Grid item xs={4}><Box textAlign="center"><Typography variant="h6" color="#FBC02D">{complaints.filter(c => c.status === 'pending').length}</Typography><Typography variant="caption">Pending</Typography></Box></Grid>
-                      <Grid item xs={4}><Box textAlign="center"><Typography variant="h6" color="#2196F3">{complaints.filter(c => c.status === 'in_progress').length}</Typography><Typography variant="caption">In Progress</Typography></Box></Grid>
-                      <Grid item xs={4}><Box textAlign="center"><Typography variant="h6" color="#4CAF50">{complaints.filter(c => c.status === 'resolved').length}</Typography><Typography variant="caption">Resolved</Typography></Box></Grid>
+                      <Grid item xs={4}><Box textAlign="center"><Typography variant="h6" color="#2196F3">{complaints.filter(c => c.status === 'assigned').length}</Typography><Typography variant="caption">Assigned</Typography></Box></Grid>
+                      <Grid item xs={4}><Box textAlign="center"><Typography variant="h6" color="#4CAF50">{complaints.filter(c => c.status === 'completed').length}</Typography><Typography variant="caption">Completed</Typography></Box></Grid>
                     </Grid>
                   </CardContent>
                 </Card>

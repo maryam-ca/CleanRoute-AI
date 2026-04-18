@@ -8,6 +8,14 @@ import pickle
 import os
 import sys
 
+
+def safe_log(message):
+    """Avoid Unicode console crashes on Windows/cp1252 terminals."""
+    try:
+        print(message)
+    except UnicodeEncodeError:
+        print(message.encode('ascii', errors='ignore').decode('ascii'))
+
 # Global model instance
 _waste_model = None
 _scaler = None
@@ -18,7 +26,7 @@ def load_model():
     global _waste_model, _scaler, _classes
     try:
         model_path = os.path.join(os.path.dirname(__file__), 'models', 'waste_detector.pkl')
-        print(f"🔍 Loading model from: {model_path}")
+        safe_log(f"[INFO] Loading model from: {model_path}")
         
         with open(model_path, 'rb') as f:
             saved = pickle.load(f)
@@ -26,10 +34,10 @@ def load_model():
             _scaler = saved['scaler']
             _classes = saved.get('classes', ['low', 'medium', 'high', 'urgent'])
         
-        print(f"✅ Model loaded! Classes: {_classes}")
+        safe_log(f"[OK] Model loaded. Classes: {_classes}")
         return True
     except Exception as e:
-        print(f"❌ Could not load model: {e}")
+        safe_log(f"[WARN] Could not load model: {e}")
         return False
 
 def extract_features_from_image(image_path):
@@ -37,7 +45,7 @@ def extract_features_from_image(image_path):
     try:
         img = cv2.imread(image_path)
         if img is None:
-            print(f"❌ Could not read image: {image_path}")
+            safe_log(f"[WARN] Could not read image: {image_path}")
             return None
         
         img = cv2.resize(img, (128, 128))
@@ -49,18 +57,18 @@ def extract_features_from_image(image_path):
         texture = np.std(gray) / 128.0
         
         features = [brightness, edge_density, texture]
-        print(f"📊 Extracted features: brightness={brightness:.3f}, edges={edge_density:.3f}, texture={texture:.3f}")
+        safe_log(f"[INFO] Extracted features: brightness={brightness:.3f}, edges={edge_density:.3f}, texture={texture:.3f}")
         
         return features
         
     except Exception as e:
-        print(f"❌ Feature extraction error: {e}")
+        safe_log(f"[WARN] Feature extraction error: {e}")
         return None
 
 def analyze_waste_image(image_path, complaint_type=None, use_ml=True):
     """Analyze waste image using trained ML model"""
     
-    print(f"\n🔍 Analyzing image: {image_path}")
+    safe_log(f"[INFO] Analyzing image: {image_path}")
     
     # Load model
     if use_ml:
@@ -96,7 +104,7 @@ def analyze_waste_image(image_path, complaint_type=None, use_ml=True):
             fill_level = fill_level_map[priority]
             recommendation = recommendation_map[priority]
             
-            print(f"🎯 ML Prediction: {priority.upper()} (confidence: {confidence:.1f}%)")
+            safe_log(f"[INFO] ML prediction: {priority.upper()} (confidence: {confidence:.1f}%)")
             
             return {
                 'success': True,
@@ -108,10 +116,10 @@ def analyze_waste_image(image_path, complaint_type=None, use_ml=True):
             }
             
         except Exception as e:
-            print(f"❌ ML prediction error: {e}")
+            safe_log(f"[WARN] ML prediction error: {e}")
     
     # Fallback: brightness-based detection
-    print("⚠️ Using fallback brightness detection")
+    safe_log("[WARN] Using fallback brightness detection")
     brightness = features[0]
     
     if brightness < 0.2:
@@ -136,4 +144,4 @@ def analyze_waste_image(image_path, complaint_type=None, use_ml=True):
         'method': 'Fallback (Brightness)'
     }
 
-print("✅ Enhanced waste detector ready")
+safe_log("[OK] Enhanced waste detector ready")

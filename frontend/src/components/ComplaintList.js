@@ -7,8 +7,8 @@ const ComplaintList = ({ complaints, onStatusUpdate }) => {
     const colors = {
       'pending': '#ffa502',
       'assigned': '#1e90ff',
-      'in_progress': '#3742fa',
-      'resolved': '#2ed573',
+      'pending_review': '#8b5cf6',
+      'completed': '#2ed573',
       'rejected': '#ff4757'
     };
     return colors[status] || '#747d8c';
@@ -73,8 +73,8 @@ const ComplaintList = ({ complaints, onStatusUpdate }) => {
                   >
                     <option value="pending">Pending</option>
                     <option value="assigned">Assigned</option>
-                    <option value="in_progress">In Progress</option>
-                    <option value="resolved">Resolved</option>
+                    <option value="pending_review">Pending Review</option>
+                    <option value="completed">Completed</option>
                     <option value="rejected">Rejected</option>
                   </select>
                 )}

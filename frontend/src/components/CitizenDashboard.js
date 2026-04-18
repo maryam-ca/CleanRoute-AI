@@ -7,8 +7,8 @@ const CitizenDashboard = () => {
   const [stats, setStats] = useState({
     total: 0,
     pending: 0,
-    resolved: 0,
-    inProgress: 0
+    completed: 0,
+    assigned: 0
   });
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
@@ -30,14 +30,14 @@ const CitizenDashboard = () => {
       
       // Calculate stats
       const pending = complaintsData.filter(c => c.status === 'pending').length;
-      const resolved = complaintsData.filter(c => c.status === 'resolved').length;
-      const inProgress = complaintsData.filter(c => c.status === 'in_progress').length;
+      const completed = complaintsData.filter(c => c.status === 'completed').length;
+      const assigned = complaintsData.filter(c => c.status === 'assigned').length;
       
       setStats({
         total: complaintsData.length,
         pending,
-        resolved,
-        inProgress
+        completed,
+        assigned
       });
     } catch (error) {
       console.error('Error fetching complaints:', error);
@@ -49,8 +49,9 @@ const CitizenDashboard = () => {
   const getStatusColor = (status) => {
     switch(status) {
       case 'pending': return '#ffa502';
-      case 'in_progress': return '#1e90ff';
-      case 'resolved': return '#2ed573';
+      case 'assigned': return '#1e90ff';
+      case 'completed': return '#2ed573';
+      case 'pending_review': return '#8b5cf6';
       case 'rejected': return '#ff4757';
       default: return '#747d8c';
     }
@@ -106,12 +107,12 @@ const CitizenDashboard = () => {
           <p className="stat-number pending">{stats.pending}</p>
         </div>
         <div className="stat-card">
-          <h3>In Progress</h3>
-          <p className="stat-number in-progress">{stats.inProgress}</p>
+          <h3>Assigned</h3>
+          <p className="stat-number in-progress">{stats.assigned}</p>
         </div>
         <div className="stat-card">
-          <h3>Resolved</h3>
-          <p className="stat-number resolved">{stats.resolved}</p>
+          <h3>Completed</h3>
+          <p className="stat-number resolved">{stats.completed}</p>
         </div>
       </div>
 

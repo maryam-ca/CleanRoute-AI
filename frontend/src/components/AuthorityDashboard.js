@@ -145,8 +145,8 @@ const AuthorityDashboard = () => {
           <p className="stat-number pending">{stats?.pending_complaints}</p>
         </div>
         <div className="stat-card">
-          <h3>Resolved</h3>
-          <p className="stat-number resolved">{stats?.resolved_complaints}</p>
+          <h3>Completed</h3>
+          <p className="stat-number resolved">{stats?.completed_complaints ?? stats?.resolved_complaints}</p>
         </div>
         <div className="stat-card">
           <h3>Urgent</h3>

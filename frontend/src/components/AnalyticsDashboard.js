@@ -96,7 +96,7 @@ const AnalyticsDashboard = ({ token, user }) => {
     { month: 'Jan', complaints: 12, resolved: 8 },
     { month: 'Feb', complaints: 15, resolved: 10 },
     { month: 'Mar', complaints: 18, resolved: 14 },
-    { month: 'Apr', complaints: complaints.length, resolved: stats?.resolved_complaints || 0 },
+    { month: 'Apr', complaints: complaints.length, resolved: stats?.completed_complaints || stats?.resolved_complaints || 0 },
     { month: 'May', complaints: 0, resolved: 0 },
     { month: 'Jun', complaints: 0, resolved: 0 }
   ];

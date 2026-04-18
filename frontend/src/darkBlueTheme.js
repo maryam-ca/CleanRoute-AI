@@ -110,7 +110,7 @@ const commonComponents = {
 export const darkBlueTheme = {
   light: createTheme({
     palette,
-    shape: { borderRadius: 24 },
+    shape: { borderRadius: 4 },
     typography: {
       fontFamily: '"Space Grotesk", "Manrope", "Segoe UI", sans-serif',
       h1: { fontWeight: 800, letterSpacing: '-0.04em' },
@@ -125,7 +125,7 @@ export const darkBlueTheme = {
   }),
   dark: createTheme({
     palette,
-    shape: { borderRadius: 24 },
+    shape: { borderRadius: 4 },
     typography: {
       fontFamily: '"Space Grotesk", "Manrope", "Segoe UI", sans-serif',
     },
