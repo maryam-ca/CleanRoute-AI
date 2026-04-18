@@ -14,7 +14,8 @@ CleanRoute-AI is an **AI-powered smart waste management system** that uses compu
 
 ### System Workflow
 
-```
+
+![System Workflow](docs/images/system_flow_diagram.png)
 ┌─────────────────────────────────────────────────────────────────────────────┐
 │                           CLEANROUTE-AI WORKFLOW                            │
 ├─────────────────────────────────────────────────────────────────────────────┤
