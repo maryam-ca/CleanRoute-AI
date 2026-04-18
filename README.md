@@ -386,10 +386,17 @@ Watch the full working demonstration of CleanRoute-AI:
 
 [CleanRoute-AI Demo Video](https://youtu.be/your-video-link)
 
+
 ### Project Blog (Medium)
 Read the detailed article explaining the development process, architecture, and insights:
 
 🔗 [Read Full Article on Medium](https://medium.com/@mminhas1405/cleanroute-ai-intelligent-waste-management-and-smart-route-optimization-system-33472cc58cb7)
+
+### 📄 Project Report (PDF)
+Download or view the complete project report:
+
+- 📘 [View PDF on GitHub](https://github.com/maryam-ca/CleanRoute-AI/blob/main/Clean_Route_AI_Report.pdf)  
+- ⬇️ [Download PDF directly](https://raw.githubusercontent.com/maryam-ca/CleanRoute-AI/main/Clean_Route_AI_Report.pdf)
 
 ### Live Demo
 
