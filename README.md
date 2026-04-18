@@ -34,7 +34,7 @@ CleanRoute-AI is an **AI-powered smart waste management system** that uses compu
 
 ## 3. SYSTEM ARCHITECTURE
 
-![System Architecture](system-architecture_diagram.png)
+![System Architecture](./system_architecture_diagram.png)
 
 ## 4. TECHNOLOGY STACK
 
