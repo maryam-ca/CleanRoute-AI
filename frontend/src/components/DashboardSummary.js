@@ -106,17 +106,21 @@ const DashboardSummary = ({ user }) => {
       <Toaster position="top-right" />
       
       {/* Welcome Header */}
-      <Box sx={{ mx: { xs: 2, md: 3 }, py: 3, px: 4, border: '1px solid rgba(10,102,255,0.3)', borderRadius: 6, background: 'linear-gradient(135deg, rgba(10,102,255,0.15) 0%, rgba(15,23,42,0.3) 100%)', mb: 4 }}>
+      <Box sx={{ mx: { xs: 2, md: 3 }, py: 3.5, px: 4, border: '1px solid rgba(139,225,255,0.22)', borderRadius: 6, background: 'linear-gradient(135deg, rgba(15,78,148,0.36) 0%, rgba(19,107,89,0.22) 58%, rgba(7,22,43,0.45) 100%)', backdropFilter: 'blur(16px)', mb: 4, position: 'relative', overflow: 'hidden' }}>
+        <Box sx={{ position: 'absolute', inset: 0, pointerEvents: 'none', background: 'radial-gradient(circle at 48% 20%, rgba(255,244,173,0.16), transparent 18%), radial-gradient(circle at 88% 12%, rgba(54,196,255,0.16), transparent 18%)' }} />
         <Container maxWidth="xl">
-          <Typography variant="h4" sx={{ fontWeight: 800, color: '#FFFFFF' }}>
-            Welcome back, {user || 'User'}! 👋
+          <Typography variant="overline" sx={{ color: '#D8FF72', fontWeight: 800, letterSpacing: '0.18em' }}>
+            Live Operations Command
           </Typography>
-          <Typography variant="body1" sx={{ color: '#9CA3AF', mt: 1 }}>
+          <Typography variant="h4" sx={{ fontWeight: 800, color: '#FFFFFF', position: 'relative' }}>
+            Welcome back, {user || 'User'}
+          </Typography>
+          <Typography variant="body1" sx={{ color: '#DDEDF8', mt: 1, maxWidth: 760, position: 'relative' }}>
             {slogan}
           </Typography>
           <Box sx={{ mt: 2, display: 'flex', gap: 2, flexWrap: 'wrap' }}>
-            <Chip icon={<SpeedIcon />} label={`Completion Rate: ${stats.completionRate}%`} sx={{ bgcolor: 'rgba(34,197,94,0.2)', color: '#22C55E' }} />
-            <Chip icon={<TrendingUpIcon />} label={`Total Resolved: ${stats.completed}`} sx={{ bgcolor: 'rgba(0,198,255,0.2)', color: '#00C6FF' }} />
+            <Chip icon={<SpeedIcon />} label={`Completion Rate: ${stats.completionRate}%`} sx={{ bgcolor: 'rgba(83,215,105,0.18)', color: '#D8FF72', border: '1px solid rgba(216,255,114,0.18)' }} />
+            <Chip icon={<TrendingUpIcon />} label={`Total Resolved: ${stats.completed}`} sx={{ bgcolor: 'rgba(54,196,255,0.16)', color: '#74DDFF', border: '1px solid rgba(116,221,255,0.18)' }} />
           </Box>
         </Container>
       </Box>
@@ -126,37 +130,37 @@ const DashboardSummary = ({ user }) => {
         <Grid container spacing={3} sx={{ mb: 4 }}>
           <Grid item xs={12} sm={6} md={3}>
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
-              <Card sx={{ bgcolor: 'rgba(15,23,42,0.85)', border: '1px solid rgba(10,102,255,0.2)', textAlign: 'center', py: 2 }}>
+              <Card sx={{ bgcolor: 'rgba(15,23,42,0.85)', border: '1px solid rgba(139,225,255,0.18)', textAlign: 'center', py: 2 }}>
                 <Typography variant="h2" sx={{ fontWeight: 800, color: '#FFFFFF' }}>{stats.total}</Typography>
-                <Typography variant="body2" sx={{ color: '#9CA3AF' }}>Total Complaints</Typography>
+                <Typography variant="body2" sx={{ color: '#BDD8EB' }}>Total Complaints</Typography>
                 <LinearProgress variant="determinate" value={100} sx={{ mt: 1, mx: 3, bgcolor: 'rgba(255,255,255,0.1)' }} />
               </Card>
             </motion.div>
           </Grid>
           <Grid item xs={12} sm={6} md={3}>
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
-              <Card sx={{ bgcolor: 'rgba(15,23,42,0.85)', border: '1px solid rgba(245,158,11,0.3)', textAlign: 'center', py: 2 }}>
+              <Card sx={{ bgcolor: 'rgba(15,23,42,0.85)', border: '1px solid rgba(255,209,102,0.3)', textAlign: 'center', py: 2 }}>
                 <Typography variant="h2" sx={{ fontWeight: 800, color: '#F59E0B' }}>{stats.pending}</Typography>
-                <Typography variant="body2" sx={{ color: '#9CA3AF' }}>Pending</Typography>
+                <Typography variant="body2" sx={{ color: '#BDD8EB' }}>Pending</Typography>
                 <LinearProgress variant="determinate" value={stats.total > 0 ? (stats.pending / stats.total) * 100 : 0} sx={{ mt: 1, mx: 3, bgcolor: 'rgba(255,255,255,0.1)', '& .MuiLinearProgress-bar': { bgcolor: '#F59E0B' } }} />
               </Card>
             </motion.div>
           </Grid>
           <Grid item xs={12} sm={6} md={3}>
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}>
-              <Card sx={{ bgcolor: 'rgba(15,23,42,0.85)', border: '1px solid rgba(10,102,255,0.3)', textAlign: 'center', py: 2 }}>
-                <Typography variant="h2" sx={{ fontWeight: 800, color: '#0A66FF' }}>{stats.assigned}</Typography>
-                <Typography variant="body2" sx={{ color: '#9CA3AF' }}>Assigned</Typography>
-                <LinearProgress variant="determinate" value={stats.total > 0 ? (stats.assigned / stats.total) * 100 : 0} sx={{ mt: 1, mx: 3, bgcolor: 'rgba(255,255,255,0.1)', '& .MuiLinearProgress-bar': { bgcolor: '#0A66FF' } }} />
+              <Card sx={{ bgcolor: 'rgba(15,23,42,0.85)', border: '1px solid rgba(54,196,255,0.3)', textAlign: 'center', py: 2 }}>
+                <Typography variant="h2" sx={{ fontWeight: 800, color: '#36C4FF' }}>{stats.assigned}</Typography>
+                <Typography variant="body2" sx={{ color: '#BDD8EB' }}>Assigned</Typography>
+                <LinearProgress variant="determinate" value={stats.total > 0 ? (stats.assigned / stats.total) * 100 : 0} sx={{ mt: 1, mx: 3, bgcolor: 'rgba(255,255,255,0.1)', '& .MuiLinearProgress-bar': { bgcolor: '#36C4FF' } }} />
               </Card>
             </motion.div>
           </Grid>
           <Grid item xs={12} sm={6} md={3}>
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }}>
-              <Card sx={{ bgcolor: 'rgba(15,23,42,0.85)', border: '1px solid rgba(34,197,94,0.3)', textAlign: 'center', py: 2 }}>
-                <Typography variant="h2" sx={{ fontWeight: 800, color: '#22C55E' }}>{stats.completed}</Typography>
-                <Typography variant="body2" sx={{ color: '#9CA3AF' }}>Completed</Typography>
-                <LinearProgress variant="determinate" value={stats.completionRate} sx={{ mt: 1, mx: 3, bgcolor: 'rgba(255,255,255,0.1)', '& .MuiLinearProgress-bar': { bgcolor: '#22C55E' } }} />
+              <Card sx={{ bgcolor: 'rgba(15,23,42,0.85)', border: '1px solid rgba(83,215,105,0.3)', textAlign: 'center', py: 2 }}>
+                <Typography variant="h2" sx={{ fontWeight: 800, color: '#53D769' }}>{stats.completed}</Typography>
+                <Typography variant="body2" sx={{ color: '#BDD8EB' }}>Completed</Typography>
+                <LinearProgress variant="determinate" value={stats.completionRate} sx={{ mt: 1, mx: 3, bgcolor: 'rgba(255,255,255,0.1)', '& .MuiLinearProgress-bar': { bgcolor: '#53D769' } }} />
               </Card>
             </motion.div>
           </Grid>
@@ -167,7 +171,7 @@ const DashboardSummary = ({ user }) => {
           {/* Pie Chart - Status Distribution */}
           <Grid item xs={12} md={6}>
             <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.5 }}>
-              <Paper sx={{ p: 3, borderRadius: 4, background: 'rgba(15,23,42,0.85)', border: '1px solid rgba(10,102,255,0.2)', height: '100%' }}>
+              <Paper sx={{ p: 3, borderRadius: 4, background: 'rgba(15,23,42,0.85)', border: '1px solid rgba(139,225,255,0.18)', height: '100%' }}>
                 <Typography variant="h6" sx={{ fontWeight: 700, color: '#FFFFFF', mb: 2, textAlign: 'center' }}>
                   📊 Complaint Status Distribution
                 </Typography>
@@ -192,11 +196,11 @@ const DashboardSummary = ({ user }) => {
                   </PieChart>
                 </ResponsiveContainer>
                 <Box sx={{ textAlign: 'center', mt: 2 }}>
-                  <Typography variant="body2" sx={{ color: '#9CA3AF' }}>
+                  <Typography variant="body2" sx={{ color: '#BDD8EB' }}>
                     {stats.completed} out of {stats.total} complaints resolved
                   </Typography>
-                  <Typography variant="caption" sx={{ color: '#22C55E', display: 'block', mt: 1 }}>
-                    🎯 {stats.completionRate}% Completion Rate
+                  <Typography variant="caption" sx={{ color: '#D8FF72', display: 'block', mt: 1 }}>
+                    {stats.completionRate}% completion rate
                   </Typography>
                 </Box>
               </Paper>
@@ -206,7 +210,7 @@ const DashboardSummary = ({ user }) => {
           {/* Bar Chart - Priority Distribution */}
           <Grid item xs={12} md={6}>
             <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.6 }}>
-              <Paper sx={{ p: 3, borderRadius: 4, background: 'rgba(15,23,42,0.85)', border: '1px solid rgba(10,102,255,0.2)', height: '100%' }}>
+              <Paper sx={{ p: 3, borderRadius: 4, background: 'rgba(15,23,42,0.85)', border: '1px solid rgba(139,225,255,0.18)', height: '100%' }}>
                 <Typography variant="h6" sx={{ fontWeight: 700, color: '#FFFFFF', mb: 2, textAlign: 'center' }}>
                   ⚡ Active Complaints by Priority
                 </Typography>
@@ -224,8 +228,8 @@ const DashboardSummary = ({ user }) => {
                   </BarChart>
                 </ResponsiveContainer>
                 <Box sx={{ textAlign: 'center', mt: 2 }}>
-                  <Typography variant="caption" sx={{ color: '#EF4444' }}>
-                    🔴 Urgent issues need immediate attention
+                  <Typography variant="caption" sx={{ color: '#FFD166' }}>
+                    Urgent issues need immediate attention
                   </Typography>
                 </Box>
               </Paper>
@@ -237,7 +241,7 @@ const DashboardSummary = ({ user }) => {
         <Grid container spacing={3} sx={{ mt: 2 }}>
           <Grid item xs={12}>
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.7 }}>
-              <Paper sx={{ p: 3, borderRadius: 4, background: 'rgba(15,23,42,0.85)', border: '1px solid rgba(10,102,255,0.2)' }}>
+              <Paper sx={{ p: 3, borderRadius: 4, background: 'rgba(15,23,42,0.85)', border: '1px solid rgba(139,225,255,0.18)' }}>
                 <Typography variant="h6" sx={{ fontWeight: 700, color: '#FFFFFF', mb: 2 }}>
                   📈 Weekly Complaint Trend (Last 7 Days)
                 </Typography>
@@ -246,15 +250,15 @@ const DashboardSummary = ({ user }) => {
                     <CartesianGrid strokeDasharray="3 3" stroke="#334155" />
                     <XAxis dataKey="day" stroke="#94A3B8" />
                     <YAxis stroke="#94A3B8" />
-                    <Tooltip contentStyle={{ backgroundColor: '#1E293B', border: '1px solid #0A66FF' }} />
+                    <Tooltip contentStyle={{ backgroundColor: '#102746', border: '1px solid #36C4FF' }} />
                     <Legend />
-                    <Line type="monotone" dataKey="complaints" stroke="#0A66FF" strokeWidth={3} name="New Complaints" dot={{ fill: '#0A66FF', r: 6 }} />
-                    <Line type="monotone" dataKey="completed" stroke="#22C55E" strokeWidth={3} name="Resolved" dot={{ fill: '#22C55E', r: 6 }} />
+                    <Line type="monotone" dataKey="complaints" stroke="#36C4FF" strokeWidth={3} name="New Complaints" dot={{ fill: '#36C4FF', r: 6 }} />
+                    <Line type="monotone" dataKey="completed" stroke="#53D769" strokeWidth={3} name="Resolved" dot={{ fill: '#53D769', r: 6 }} />
                   </LineChart>
                 </ResponsiveContainer>
                 <Box sx={{ textAlign: 'center', mt: 2 }}>
-                  <Typography variant="caption" sx={{ color: '#9CA3AF' }}>
-                    📅 Tracking complaints over time to identify patterns
+                  <Typography variant="caption" sx={{ color: '#BDD8EB' }}>
+                    Tracking complaints over time to identify patterns
                   </Typography>
                 </Box>
               </Paper>
@@ -264,9 +268,9 @@ const DashboardSummary = ({ user }) => {
 
         {/* Inspirational Message */}
         <Box sx={{ mt: 4, textAlign: 'center' }}>
-          <Paper sx={{ p: 3, borderRadius: 4, background: 'linear-gradient(135deg, rgba(10,102,255,0.1), rgba(0,198,255,0.05))', border: '1px solid rgba(10,102,255,0.3)' }}>
-            <Typography variant="body1" sx={{ color: '#00C6FF', fontWeight: 500 }}>
-              "Every complaint resolved is a step towards a cleaner, healthier city. Keep up the great work! 🌍💚"
+          <Paper sx={{ p: 3, borderRadius: 4, background: 'linear-gradient(135deg, rgba(54,196,255,0.12), rgba(83,215,105,0.08))', border: '1px solid rgba(139,225,255,0.22)' }}>
+            <Typography variant="body1" sx={{ color: '#E5F8FF', fontWeight: 600 }}>
+              Every optimized route brings cleaner streets, faster service, and smarter city operations.
             </Typography>
           </Paper>
         </Box>

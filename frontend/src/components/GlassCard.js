@@ -17,10 +17,10 @@ const GlassCard = ({ title, value, icon, color, loading, trend, trendValue, onCl
       <Card
         onClick={onClick}
         sx={{
-          background: 'linear-gradient(180deg, rgba(255,255,255,0.06) 0%, rgba(255,255,255,0.02) 100%), rgba(10, 22, 40, 0.82)',
+          background: 'linear-gradient(180deg, rgba(16, 56, 102, 0.88) 0%, rgba(6, 24, 47, 0.92) 100%)',
           backdropFilter: 'blur(18px)',
           borderRadius: '24px',
-          border: '1px solid rgba(148, 163, 184, 0.12)',
+          border: '1px solid rgba(139, 225, 255, 0.16)',
           boxShadow: '0 22px 44px rgba(2, 6, 23, 0.26)',
           cursor: onClick ? 'pointer' : 'default',
           minHeight: '100%',
@@ -31,20 +31,23 @@ const GlassCard = ({ title, value, icon, color, loading, trend, trendValue, onCl
             content: '""',
             position: 'absolute',
             inset: 0,
-            background: 'radial-gradient(circle at top right, rgba(114,180,255,0.16), transparent 36%)',
+            background: `
+              radial-gradient(circle at top right, rgba(54,196,255,0.22), transparent 36%),
+              radial-gradient(circle at bottom left, rgba(83,215,105,0.14), transparent 28%)
+            `,
             pointerEvents: 'none'
           },
           '&:hover': {
             boxShadow: '0 28px 56px rgba(2, 6, 23, 0.34)',
             transform: 'translateY(-4px)',
-            border: '1px solid rgba(94, 162, 255, 0.24)',
+            border: '1px solid rgba(216,255,114,0.24)',
           },
         }}
       >
         <CardContent sx={{ p: 3, position: 'relative', zIndex: 1 }}>
           <Box display="flex" justifyContent="space-between" alignItems="flex-start" gap={2}>
             <Box flex={1}>
-              <Typography variant="caption" sx={{ color: '#9fb0c9', fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase' }}>
+              <Typography variant="caption" sx={{ color: '#b8dbef', fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase' }}>
                 {title}
               </Typography>
               {loading ? (
@@ -59,7 +62,7 @@ const GlassCard = ({ title, value, icon, color, loading, trend, trendValue, onCl
                   <Typography variant="caption" sx={{ color: trendColor, fontWeight: 600 }}>
                     {trendIcon} {Math.abs(trend)}%
                   </Typography>
-                  <Typography variant="caption" sx={{ color: '#7d8ea7' }}>
+                  <Typography variant="caption" sx={{ color: '#8eb0c5' }}>
                     vs last week
                   </Typography>
                 </Box>
@@ -69,8 +72,8 @@ const GlassCard = ({ title, value, icon, color, loading, trend, trendValue, onCl
               sx={{
                 width: 56,
                 height: 56,
-                background: 'linear-gradient(135deg, rgba(114,180,255,0.18), rgba(47,123,246,0.12))',
-                border: '1px solid rgba(125,176,255,0.14)',
+                background: 'linear-gradient(135deg, rgba(216,255,114,0.18), rgba(54,196,255,0.18))',
+                border: '1px solid rgba(216,255,114,0.14)',
                 borderRadius: '18px',
                 display: 'flex',
                 alignItems: 'center',

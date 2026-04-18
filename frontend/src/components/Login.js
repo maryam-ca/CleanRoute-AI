@@ -94,6 +94,19 @@ const Login = ({ setToken }) => {
     { username: 'tester1', password: 'tester123', role: 'Tester', icon: <PersonIcon /> },
   ];
 
+  const inputStyles = {
+    '& .MuiOutlinedInput-root': {
+      color: '#F5FBFF',
+      borderRadius: '18px',
+      background: 'rgba(255,255,255,0.04)',
+      '& fieldset': { borderColor: 'rgba(189,216,235,0.22)' },
+      '&:hover fieldset': { borderColor: '#74DDFF' },
+      '&.Mui-focused fieldset': { borderColor: '#D8FF72' },
+    },
+    '& .MuiInputLabel-root': { color: '#BDD8EB' },
+    '& .MuiInputLabel-root.Mui-focused': { color: '#D8FF72' },
+  };
+
   return (
     <Box
       sx={{
@@ -101,7 +114,12 @@ const Login = ({ setToken }) => {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        background: 'linear-gradient(135deg, #020617 0%, #0F172A 100%)',
+        background: `
+          radial-gradient(circle at 20% 16%, rgba(54,196,255,0.24), transparent 22%),
+          radial-gradient(circle at 82% 18%, rgba(83,215,105,0.2), transparent 20%),
+          radial-gradient(circle at 48% 44%, rgba(255,244,173,0.18), transparent 16%),
+          linear-gradient(180deg, #0b3775 0%, #11729a 38%, #3f8a53 72%, #08182e 100%)
+        `,
         position: 'relative',
         overflow: 'hidden',
       }}
@@ -114,7 +132,7 @@ const Login = ({ setToken }) => {
           position: 'absolute',
           width: '500px',
           height: '500px',
-          background: 'radial-gradient(circle, rgba(10,102,255,0.15), transparent)',
+          background: 'radial-gradient(circle, rgba(54,196,255,0.16), transparent)',
           borderRadius: '50%',
           top: '-200px',
           right: '-200px',
@@ -126,11 +144,24 @@ const Login = ({ setToken }) => {
           position: 'absolute',
           width: '400px',
           height: '400px',
-          background: 'radial-gradient(circle, rgba(0,198,255,0.1), transparent)',
+          background: 'radial-gradient(circle, rgba(83,215,105,0.18), transparent)',
           borderRadius: '50%',
           bottom: '-150px',
           left: '-150px',
           animation: 'pulse 4s ease-in-out infinite reverse',
+        }}
+      />
+      <Box
+        sx={{
+          position: 'absolute',
+          left: '8%',
+          right: '8%',
+          bottom: '8%',
+          height: '8px',
+          borderRadius: '999px',
+          background: 'linear-gradient(90deg, rgba(216,255,114,0.15), rgba(216,255,114,0.95), rgba(83,215,105,0.88), rgba(54,196,255,0.95), rgba(255,255,255,0.18))',
+          filter: 'blur(0.4px)',
+          opacity: 0.85,
         }}
       />
 
@@ -145,10 +176,10 @@ const Login = ({ setToken }) => {
             sx={{
               p: { xs: 3, sm: 5 },
               borderRadius: '32px',
-              background: 'rgba(15, 23, 42, 0.95)',
-              backdropFilter: 'blur(12px)',
-              border: '1px solid rgba(10, 102, 255, 0.3)',
-              boxShadow: '0 25px 50px rgba(0,0,0,0.5)',
+              background: 'linear-gradient(180deg, rgba(11, 31, 61, 0.88) 0%, rgba(7, 22, 43, 0.94) 100%)',
+              backdropFilter: 'blur(18px)',
+              border: '1px solid rgba(139, 225, 255, 0.24)',
+              boxShadow: '0 25px 50px rgba(0,0,0,0.34)',
             }}
           >
             {/* Logo */}
@@ -157,25 +188,25 @@ const Login = ({ setToken }) => {
                 sx={{
                   width: 100,
                   height: 100,
-                  background: 'linear-gradient(135deg, #0A66FF, #00C6FF)',
+                  background: 'linear-gradient(135deg, rgba(216,255,114,0.2), rgba(54,196,255,0.22))',
+                  border: '1px solid rgba(216,255,114,0.24)',
                   borderRadius: '28px',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
                   margin: '0 auto',
                   mb: 2,
-                  boxShadow: '0 0 40px rgba(0,198,255,0.5)'
+                  boxShadow: '0 0 40px rgba(54,196,255,0.28)'
                 }}
               >
-                              <Box
+                <Box
                 component="img"
                 src="/logo.svg"
                 alt="CleanRoute-AI Logo"
                 sx={{
-                  width: 100,
-                  height: 100,
-                  borderRadius: '20px',
-                  mb: 2
+                  width: 84,
+                  height: 84,
+                  borderRadius: '20px'
                 }}
               />
               </Box>
@@ -183,17 +214,20 @@ const Login = ({ setToken }) => {
                 variant="h4"
                 sx={{
                   fontWeight: 800,
-                  background: 'linear-gradient(135deg, #FFFFFF, #00C6FF)',
+                  background: 'linear-gradient(135deg, #FFFFFF 18%, #D8FF72 55%, #53D769 72%)',
                   backgroundClip: 'text',
                   WebkitBackgroundClip: 'text',
                   color: 'transparent',
                   letterSpacing: '-0.02em',
                 }}
               >
-                CleanRoute-AI
+                CleanRouteAI
               </Typography>
-              <Typography variant="body2" sx={{ color: '#9CA3AF', mt: 1 }}>
-                ♻️ Smart Waste Management System
+              <Typography variant="body2" sx={{ color: '#DDEDF8', mt: 1, fontWeight: 600 }}>
+                Smart Route Optimization with AI
+              </Typography>
+              <Typography variant="body2" sx={{ color: '#BDD8EB', mt: 1.25, maxWidth: 420, mx: 'auto' }}>
+                Presentation-ready control center for smart waste operations, live routing, and field coordination.
               </Typography>
             </Box>
 
@@ -207,16 +241,7 @@ const Login = ({ setToken }) => {
                 margin="normal"
                 required
                 autoFocus
-                sx={{
-                  '& .MuiOutlinedInput-root': {
-                    color: '#FFFFFF',
-                    '& fieldset': { borderColor: 'rgba(255,255,255,0.2)' },
-                    '&:hover fieldset': { borderColor: '#0A66FF' },
-                    '&.Mui-focused fieldset': { borderColor: '#00C6FF' },
-                  },
-                  '& .MuiInputLabel-root': { color: '#9CA3AF' },
-                  '& .MuiInputLabel-root.Mui-focused': { color: '#00C6FF' },
-                }}
+                sx={inputStyles}
               />
               <TextField
                 fullWidth
@@ -235,16 +260,7 @@ const Login = ({ setToken }) => {
                     </InputAdornment>
                   ),
                 }}
-                sx={{
-                  '& .MuiOutlinedInput-root': {
-                    color: '#FFFFFF',
-                    '& fieldset': { borderColor: 'rgba(255,255,255,0.2)' },
-                    '&:hover fieldset': { borderColor: '#0A66FF' },
-                    '&.Mui-focused fieldset': { borderColor: '#00C6FF' },
-                  },
-                  '& .MuiInputLabel-root': { color: '#9CA3AF' },
-                  '& .MuiInputLabel-root.Mui-focused': { color: '#00C6FF' },
-                }}
+                sx={inputStyles}
               />
 
               <Box display="flex" justifyContent="space-between" alignItems="center" mt={1}>
@@ -253,12 +269,12 @@ const Login = ({ setToken }) => {
                     <Checkbox 
                       checked={rememberMe} 
                       onChange={(e) => setRememberMe(e.target.checked)}
-                      sx={{ color: '#0A66FF' }}
+                      sx={{ color: '#74DDFF' }}
                     />
                   }
-                  label={<Typography variant="caption" sx={{ color: '#9CA3AF' }}>Remember me</Typography>}
+                  label={<Typography variant="caption" sx={{ color: '#BDD8EB' }}>Remember me</Typography>}
                 />
-                <Button variant="text" size="small" sx={{ color: '#00C6FF' }}>
+                <Button variant="text" size="small" sx={{ color: '#74DDFF' }}>
                   Forgot password?
                 </Button>
               </Box>
@@ -278,13 +294,14 @@ const Login = ({ setToken }) => {
                   mt: 3,
                   mb: 2,
                   py: 1.5,
-                  background: 'linear-gradient(135deg, #0A66FF, #00C6FF)',
+                  background: 'linear-gradient(135deg, #D8FF72 0%, #53D769 45%, #36C4FF 100%)',
+                  color: '#041328',
                   borderRadius: '999px',
                   fontSize: '1rem',
-                  fontWeight: 600,
-                  boxShadow: '0 0 20px rgba(0,198,255,0.3)',
+                  fontWeight: 800,
+                  boxShadow: '0 0 20px rgba(54,196,255,0.3)',
                   '&:hover': {
-                    boxShadow: '0 0 30px rgba(0,198,255,0.5)',
+                    boxShadow: '0 0 30px rgba(54,196,255,0.4)',
                     transform: 'translateY(-2px)',
                   },
                 }}
@@ -309,13 +326,13 @@ const Login = ({ setToken }) => {
                       setPassword(user.password);
                     }}
                     sx={{
-                      borderColor: 'rgba(10,102,255,0.5)',
+                      borderColor: 'rgba(116,221,255,0.45)',
                       color: '#E5E7EB',
                       borderRadius: '999px',
                       textTransform: 'none',
                       '&:hover': {
-                        borderColor: '#00C6FF',
-                        backgroundColor: 'rgba(10,102,255,0.1)',
+                        borderColor: '#D8FF72',
+                        backgroundColor: 'rgba(83,215,105,0.1)',
                       },
                     }}
                   >

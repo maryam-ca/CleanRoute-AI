@@ -11,15 +11,12 @@ import {
   Description as DescriptionIcon,
   LocationOn as MapIcon,
   AdminPanelSettings as AdminIcon,
-  Archive as ArchiveIcon,
   Logout as LogoutIcon,
-  DeleteSweep as CleanIcon,
   Menu as MenuIcon,
   Person as PersonIcon,
   Settings as SettingsIcon,
   TaskAlt as TaskIcon,
   AutoGraph as PredictIcon,
-  Save as SaveIcon,
   Edit as EditIcon
 } from '@mui/icons-material';
 import toast, { Toaster } from 'react-hot-toast';
@@ -164,29 +161,34 @@ const Navigation = ({ user, setToken }) => {
       <Toaster position="top-right" />
       
       <AppBar position="fixed" elevation={0} sx={{ 
-        background: 'rgba(2, 6, 23, 0.95)',
-        backdropFilter: 'blur(12px)',
-        borderBottom: '1px solid rgba(10,102,255,0.3)',
-        boxShadow: '0 4px 20px rgba(0,0,0,0.3)',
+        background: 'linear-gradient(180deg, rgba(4, 19, 40, 0.95) 0%, rgba(8, 29, 58, 0.9) 100%)',
+        backdropFilter: 'blur(18px)',
+        borderBottom: '1px solid rgba(116,221,255,0.24)',
+        boxShadow: '0 12px 28px rgba(3,12,25,0.22)',
         zIndex: 1100
       }}>
         <Container maxWidth="xl">
           <Toolbar sx={{ justifyContent: 'space-between', minHeight: '64px', px: { xs: 1, sm: 2 } }}>
             {/* Logo */}
-            <Box display="flex" alignItems="center" gap={1} sx={{ cursor: 'pointer' }} onClick={() => navigateTo('/')}>
-                            <Box
+            <Box display="flex" alignItems="center" gap={1.5} sx={{ cursor: 'pointer' }} onClick={() => navigateTo('/')}>
+              <Box
                 component="img" className="logo-image"
                 src="/logo.svg"
-                alt="🗑️ CleanRoute-AI Logo"
+                alt="CleanRoute-AI Logo"
                 sx={{
-                  width: { xs: 40, sm: 48 },
-                  height: { xs: 40, sm: 48 },
-                  borderRadius: '12px'
+                  width: { xs: 44, sm: 54 },
+                  height: { xs: 44, sm: 54 },
+                  borderRadius: '14px'
                 }}
               />
-              <Typography variant="h6" sx={{ fontWeight: 700, color: '#FFFFFF', fontSize: '1rem' }}>
-                🗑️ CleanRoute-AI
-              </Typography>
+              <Box>
+                <Typography variant="h6" sx={{ fontWeight: 800, color: '#F5FBFF', fontSize: { xs: '1rem', sm: '1.15rem' }, lineHeight: 1.1 }}>
+                  CleanRoute<span style={{ color: '#d8ff72' }}>AI</span>
+                </Typography>
+                <Typography variant="caption" sx={{ color: '#bdd8eb', letterSpacing: '0.08em', textTransform: 'uppercase' }}>
+                  Smart Route Optimization with AI
+                </Typography>
+              </Box>
             </Box>
 
             {/* Desktop Navigation */}
@@ -198,15 +200,16 @@ const Navigation = ({ user, setToken }) => {
                     startIcon={item.icon}
                     onClick={() => navigateTo(item.path)}
                     sx={{
-                      color: isActive(item.path) ? '#00C6FF' : '#E5E7EB',
+                      color: isActive(item.path) ? '#d8ff72' : '#e9f7ff',
                       fontWeight: isActive(item.path) ? 600 : 500,
-                      borderRadius: '8px',
+                      borderRadius: '999px',
                       px: 2,
                       py: 1,
-                      bgcolor: isActive(item.path) ? 'rgba(10,102,255,0.15)' : 'transparent',
+                      bgcolor: isActive(item.path) ? 'rgba(83,215,105,0.14)' : 'transparent',
+                      border: isActive(item.path) ? '1px solid rgba(216,255,114,0.24)' : '1px solid transparent',
                       '&:hover': {
-                        bgcolor: 'rgba(10,102,255,0.1)',
-                        color: '#00C6FF',
+                        bgcolor: 'rgba(54,196,255,0.1)',
+                        color: '#74ddff',
                       },
                     }}
                   >
@@ -227,10 +230,11 @@ const Navigation = ({ user, setToken }) => {
                   display: 'flex',
                   alignItems: 'center',
                   gap: 1,
+                  borderRadius: '999px',
                   '&:hover': { bgcolor: 'rgba(255,255,255,0.05)' }
                 }}
               >
-                <Avatar sx={{ width: 32, height: 32, bgcolor: '#0A66FF', fontSize: '0.875rem' }}>
+                <Avatar sx={{ width: 34, height: 34, bgcolor: '#36c4ff', color: '#041328', fontWeight: 800, fontSize: '0.875rem' }}>
                   {user?.charAt(0).toUpperCase()}
                 </Avatar>
                 <Typography sx={{ display: { xs: 'none', sm: 'block' } }}>{user || 'User'}</Typography>
@@ -257,8 +261,8 @@ const Navigation = ({ user, setToken }) => {
           sx: {
             background: 'rgba(2, 6, 23, 0.98)',
             backdropFilter: 'blur(12px)',
-            border: '1px solid rgba(10,102,255,0.3)',
-            borderRadius: '12px',
+            border: '1px solid rgba(116,221,255,0.3)',
+            borderRadius: '18px',
             mt: 1,
             minWidth: 200,
           }
@@ -291,10 +295,10 @@ const Navigation = ({ user, setToken }) => {
       </Menu>
 
       {/* Profile Edit Dialog */}
-      <Dialog open={profileOpen} onClose={() => setProfileOpen(false)} maxWidth="sm" fullWidth>
-        <DialogTitle sx={{ bgcolor: 'rgba(10,102,255,0.15)', color: '#FFFFFF' }}>
+      <Dialog open={profileOpen} onClose={() => setProfileOpen(false)} maxWidth="sm" fullWidth PaperProps={{ sx: { background: 'linear-gradient(180deg, rgba(13, 42, 78, 0.96) 0%, rgba(8, 24, 46, 0.98) 100%)', border: '1px solid rgba(116,221,255,0.24)', borderRadius: 4 } }}>
+        <DialogTitle sx={{ bgcolor: 'rgba(54,196,255,0.1)', color: '#FFFFFF' }}>
           <Box display="flex" alignItems="center" gap={1}>
-            <EditIcon sx={{ color: '#00C6FF' }} />
+            <EditIcon sx={{ color: '#74ddff' }} />
             Edit Profile
           </Box>
         </DialogTitle>
@@ -342,10 +346,10 @@ const Navigation = ({ user, setToken }) => {
       </Dialog>
 
       {/* Settings Dialog */}
-      <Dialog open={settingsOpen} onClose={() => setSettingsOpen(false)} maxWidth="sm" fullWidth>
-        <DialogTitle sx={{ bgcolor: 'rgba(10,102,255,0.15)', color: '#FFFFFF' }}>
+      <Dialog open={settingsOpen} onClose={() => setSettingsOpen(false)} maxWidth="sm" fullWidth PaperProps={{ sx: { background: 'linear-gradient(180deg, rgba(13, 42, 78, 0.96) 0%, rgba(8, 24, 46, 0.98) 100%)', border: '1px solid rgba(116,221,255,0.24)', borderRadius: 4 } }}>
+        <DialogTitle sx={{ bgcolor: 'rgba(54,196,255,0.1)', color: '#FFFFFF' }}>
           <Box display="flex" alignItems="center" gap={1}>
-            <SettingsIcon sx={{ color: '#00C6FF' }} />
+            <SettingsIcon sx={{ color: '#74ddff' }} />
             Application Settings
           </Box>
         </DialogTitle>
@@ -409,8 +413,8 @@ const Navigation = ({ user, setToken }) => {
           sx: {
             background: 'rgba(2, 6, 23, 0.98)',
             backdropFilter: 'blur(12px)',
-            border: '1px solid rgba(10,102,255,0.3)',
-            borderRadius: 12,
+            border: '1px solid rgba(116,221,255,0.24)',
+            borderRadius: 18,
             width: 280,
             mt: 7,
           },

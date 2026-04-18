@@ -1,9 +1,35 @@
-/* DARK THEME ONLY - NO BEIGE, NO ORANGE */
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;700&display=swap');
+
+:root {
+  --cr-bg-deep: #041328;
+  --cr-bg-mid: #0a2e63;
+  --cr-sky: #36c4ff;
+  --cr-green: #53d769;
+  --cr-lime: #d8ff72;
+  --cr-text: #f5fbff;
+  --cr-muted: #bdd8eb;
+  --cr-panel: rgba(10, 28, 57, 0.72);
+  --cr-border: rgba(139, 225, 255, 0.18);
+}
+
 body {
   margin: 0;
-  font-family: 'Inter', 'Poppins', 'Segoe UI', 'Roboto', sans-serif;
-  background: linear-gradient(135deg, #020617 0%, #0F172A 100%);
-  color: #FFFFFF;
+  font-family: 'Manrope', 'Segoe UI', sans-serif;
+  color: var(--cr-text);
+  background:
+    radial-gradient(circle at 18% 20%, rgba(54, 196, 255, 0.24), transparent 26%),
+    radial-gradient(circle at 82% 18%, rgba(83, 215, 105, 0.2), transparent 24%),
+    radial-gradient(circle at 50% 56%, rgba(255, 241, 168, 0.13), transparent 18%),
+    linear-gradient(180deg, #0a2e63 0%, #0a4d87 36%, #157261 68%, #071427 100%);
+  min-height: 100vh;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+a {
+  color: inherit;
 }
 
 /* Remove any beige/light backgrounds */
@@ -11,71 +37,129 @@ body {
   background: transparent !important;
 }
 
-/* Leaflet Map Dark Theme */
+/* Eco-tech map styling */
 .leaflet-container {
-  background: #020617;
+  background: #0b1f3d;
+  border-radius: 20px;
 }
 
 .leaflet-popup-content-wrapper,
 .leaflet-popup-tip {
-  background: rgba(15, 23, 42, 0.95);
-  color: #FFFFFF;
-  border: 1px solid rgba(10, 102, 255, 0.3);
+  background: rgba(7, 22, 43, 0.94);
+  color: var(--cr-text);
+  border: 1px solid rgba(116, 221, 255, 0.35);
   border-radius: 12px;
+  box-shadow: 0 18px 36px rgba(3, 12, 25, 0.35);
 }
 
-/* Custom Scrollbar - Blue Theme */
+/* Custom Scrollbar */
 ::-webkit-scrollbar {
   width: 8px;
   height: 8px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #0F172A;
+  background: rgba(6, 21, 39, 0.9);
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #0A66FF;
+  background: linear-gradient(180deg, #53d769, #36c4ff);
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #00C6FF;
+  background: linear-gradient(180deg, #d8ff72, #53d769);
 }
 
-/* All cards - consistent dark glass */
+/* Shared glass look */
 .MuiCard-root {
-  background: rgba(15, 23, 42, 0.85) !important;
-  backdrop-filter: blur(12px) !important;
-  border: 1px solid rgba(10, 102, 255, 0.2) !important;
+  background: linear-gradient(180deg, rgba(13, 42, 78, 0.86) 0%, rgba(8, 24, 46, 0.9) 100%) !important;
+  backdrop-filter: blur(16px) !important;
+  border: 1px solid var(--cr-border) !important;
+  box-shadow: 0 22px 44px rgba(3, 12, 25, 0.28) !important;
 }
 
-/* All buttons - blue gradient only */
+/* Primary actions */
 .MuiButton-containedPrimary {
-  background: linear-gradient(135deg, #0A66FF, #00C6FF) !important;
+  background: linear-gradient(135deg, #d8ff72 0%, #53d769 45%, #36c4ff 100%) !important;
+  color: #051626 !important;
+  box-shadow: 0 18px 34px rgba(54, 196, 255, 0.28) !important;
 }
 
-/* All text - high contrast */
 .MuiTypography-root {
-  color: #E5E7EB !important;
+  color: var(--cr-text) !important;
 }
 
 h1, h2, h3, h4, h5, h6, .MuiTypography-h1, .MuiTypography-h2, .MuiTypography-h3, .MuiTypography-h4, .MuiTypography-h5, .MuiTypography-h6 {
-  color: #FFFFFF !important;
+  color: var(--cr-text) !important;
+  font-family: 'Space Grotesk', 'Manrope', sans-serif !important;
 }
 
-/* Logo styling */
 .logo-image {
   display: block;
   width: 48px;
   height: 48px;
   object-fit: contain;
+  filter: drop-shadow(0 10px 18px rgba(54, 196, 255, 0.35));
+}
+
+.presentation-shell {
+  position: relative;
+  min-height: 100vh;
+}
+
+.presentation-shell::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at center, rgba(255, 248, 188, 0.12), transparent 18%),
+    linear-gradient(120deg, transparent 0%, rgba(255,255,255,0.04) 46%, transparent 54%);
+  mix-blend-mode: screen;
+  opacity: 0.9;
+}
+
+.route-glow {
+  position: fixed;
+  inset: auto 0 0 0;
+  height: 34vh;
+  pointer-events: none;
+  opacity: 0.75;
+  background:
+    radial-gradient(circle at 14% 80%, rgba(216, 255, 114, 0.35), transparent 10%),
+    radial-gradient(circle at 68% 72%, rgba(54, 196, 255, 0.3), transparent 9%),
+    radial-gradient(circle at 88% 88%, rgba(255,255,255,0.16), transparent 8%);
+}
+
+.route-glow::before,
+.route-glow::after {
+  content: "";
+  position: absolute;
+  left: 8%;
+  right: 8%;
+  bottom: 12%;
+  height: 8px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, rgba(216, 255, 114, 0.05) 0%, rgba(216, 255, 114, 0.95) 12%, rgba(83, 215, 105, 0.92) 45%, rgba(54, 196, 255, 0.98) 72%, rgba(255,255,255,0.18) 100%);
+  filter: blur(1px);
+}
+
+.route-glow::after {
+  left: 42%;
+  right: 6%;
+  bottom: 5%;
+  opacity: 0.8;
 }
 
 @media (max-width: 600px) {
   .logo-image {
     width: 36px;
     height: 36px;
+  }
+
+  .route-glow {
+    height: 22vh;
   }
 }
