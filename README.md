@@ -3,9 +3,8 @@
 [![Django](https://img.shields.io/badge/Django-6.0-green)](https://www.djangoproject.com/)
 [![React](https://img.shields.io/badge/React-19-blue)](https://reactjs.org/)
 [![Material-UI](https://img.shields.io/badge/Material--UI-6.0-007FFF)](https://mui.com/)
-[![License](https://img.shields.io/badge/License-MIT-yellow)](LICENSE)
+[![Supabase](https://img.shields.io/badge/Supabase-Database-3ECF8E?logo=supabase&logoColor=white)](https://supabase.com/)
 [![Deployed](https://img.shields.io/badge/Deployed-Render%20%7C%20Vercel-success)](https://cleanroute-ai-prod.vercel.app)
-
 ---
 
 ## 1. PROJECT OVERVIEW
@@ -35,62 +34,14 @@ CleanRoute-AI is an **AI-powered smart waste management system** that uses compu
 
 ## 3. SYSTEM ARCHITECTURE
 
-```
-┌─────────────────────────────────────────────────────────────────────────────┐
-│                         CLEANROUTE-AI ARCHITECTURE                          │
-├─────────────────────────────────────────────────────────────────────────────┤
-│                                                                             │
-│  ┌─────────────────────────────────────────────────────────────────────┐   │
-│  │                         PRESENTATION LAYER                           │   │
-│  │  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐              │   │
-│  │  │ React.js     │  │ Material-UI  │  │ Leaflet Maps │              │   │
-│  │  │ Components   │  │ Styling      │  │ Integration  │              │   │
-│  │  └──────────────┘  └──────────────┘  └──────────────┘              │   │
-│  └─────────────────────────────────────────────────────────────────────┘   │
-│                                      │                                      │
-│                                      │ HTTPS/REST                          │
-│                                      ▼                                      │
-│  ┌─────────────────────────────────────────────────────────────────────┐   │
-│  │                           API GATEWAY                                │   │
-│  │                    (Django REST Framework + JWT)                     │   │
-│  └─────────────────────────────────────────────────────────────────────┘   │
-│                                      │                                      │
-│                                      ▼                                      │
-│  ┌─────────────────────────────────────────────────────────────────────┐   │
-│  │                         APPLICATION LAYER                            │   │
-│  │  ┌──────────────┐  ┌──────────────┐  ┌────────────────────────────┐ │   │
-│  │  │ Auth Service │  │ Complaint    │  │ User Management           │ │   │
-│  │  │ (JWT Tokens) │  │ Service      │  │ (Roles: Admin/Citizen/    │ │   │
-│  │  │              │  │ (CRUD Ops)   │  │  Tester)                   │ │   │
-│  │  └──────────────┘  └──────────────┘  └────────────────────────────┘ │   │
-│  │  ┌──────────────┐  ┌──────────────┐  ┌────────────────────────────┐ │   │
-│  │  │ Assignment   │  │ Route        │  │ Report Generation         │ │   │
-│  │  │ Service      │  │ Optimization │  │ (PDF/Excel Export)        │ │   │
-│  │  └──────────────┘  └──────────────┘  └────────────────────────────┘ │   │
-│  └─────────────────────────────────────────────────────────────────────┘   │
-│                                      │                                      │
-│                                      ▼                                      │
-│  ┌─────────────────────────────────────────────────────────────────────┐   │
-│  │                           DATA LAYER                                 │   │
-│  │  ┌──────────────┐  ┌──────────────┐  ┌────────────────────────────┐ │   │
-│  │  │   SQLite     │  │   File       │  │   ML Models               │ │   │
-│  │  │  (Dev) /     │  │   Storage    │  │   (.pkl files)            │ │   │
-│  │  │  PostgreSQL  │  │   (Images)   │  │                            │ │   │
-│  │  │  (Prod)      │  │              │  │                            │ │   │
-│  │  └──────────────┘  └──────────────┘  └────────────────────────────┘ │   │
-│  └─────────────────────────────────────────────────────────────────────┘   │
-│                                                                             │
-└─────────────────────────────────────────────────────────────────────────────┘
-```
-
----
+![System Architecture](./system_architecture_diagram.png)
 
 ## 4. TECHNOLOGY STACK
 
 | Layer | Technology |
 |-------|------------|
 | **Frontend** | React.js, Material-UI (MUI), Leaflet, Recharts, Axios |
-| **Backend** | Django, Django REST Framework, Django REST SimpleJWT, SQLite/PostgreSQL |
+| **Backend** | Django, Django REST Framework, Django REST SimpleJWT, Supabase |
 | **AI/ML** | scikit-learn, OpenCV, NumPy, Pandas, Joblib |
 | **Deployment** | Render (Backend), Vercel (Frontend), GitHub |
 
@@ -438,7 +389,7 @@ Watch the full working demonstration of CleanRoute-AI:
 ### Project Blog (Medium)
 Read the detailed article explaining the development process, architecture, and insights:
 
-🔗 [https://medium.com/@ruhmmachaudhary/cleanroute-ai](https://medium.com/@ruhmmachaudhary/cleanroute-ai)
+🔗 [Read Full Article on Medium](https://medium.com/@mminhas1405/cleanroute-ai-intelligent-waste-management-and-smart-route-optimization-system-33472cc58cb7)
 
 ### Live Demo
 
