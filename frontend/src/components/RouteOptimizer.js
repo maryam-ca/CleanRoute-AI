@@ -4,7 +4,7 @@ import {
   CircularProgress, Alert, FormControl, InputLabel, Select, MenuItem,
   Card, CardContent, Divider, Drawer, IconButton, useMediaQuery, useTheme
 } from '@mui/material';
-import { MapContainer, TileLayer, Marker, Popup, Polyline } from 'react-leaflet';
+import { MapContainer, TileLayer, Marker, Popup, Polyline, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import toast, { Toaster } from 'react-hot-toast';
@@ -25,6 +25,56 @@ L.Icon.Default.mergeOptions({
 });
 
 const routeColors = ['#36C4FF', '#53D769', '#D8FF72', '#FF8A65', '#A78BFA'];
+const AREA_CONFIG = {
+  Attock: {
+    center: [33.768, 72.36],
+    zoom: 11,
+    bounds: [
+      [33.68, 72.14],
+      [33.96, 72.52],
+    ],
+  },
+  'Mehria Town': {
+    center: [33.8115, 72.351],
+    zoom: 14,
+    bounds: [
+      [33.804, 72.345],
+      [33.819, 72.357],
+    ],
+  },
+};
+
+function MapViewportController({ area, points }) {
+  const map = useMap();
+
+  React.useEffect(() => {
+    const areaConfig = AREA_CONFIG[area] || AREA_CONFIG.Attock;
+    const areaBounds = L.latLngBounds(areaConfig.bounds);
+    map.setMaxBounds(areaBounds);
+
+    if (points.length > 0) {
+      const validPoints = points.filter(
+        ([lat, lng]) =>
+          Number.isFinite(lat) &&
+          Number.isFinite(lng) &&
+          areaBounds.contains([lat, lng])
+      );
+
+      if (validPoints.length > 0) {
+        map.fitBounds(L.latLngBounds(validPoints).pad(0.12), {
+          maxZoom: area === 'Attock' ? 13 : 15,
+        });
+        return;
+      }
+    }
+
+    map.fitBounds(areaBounds, {
+      maxZoom: areaConfig.zoom,
+    });
+  }, [area, map, points]);
+
+  return null;
+}
 
 const RouteOptimizer = () => {
   const [area, setArea] = useState('Attock');
@@ -77,20 +127,16 @@ const RouteOptimizer = () => {
     // Only show active complaints (not completed)
   const validComplaints = allComplaints.filter(c => c.latitude && c.longitude && c.status !== 'completed');
   const displayedComplaints = uniqueRoutedComplaints.length > 0 ? uniqueRoutedComplaints : validComplaints;
-  const mapCenter = displayedComplaints.length > 0
-    ? [
-        displayedComplaints.reduce((sum, complaint) => sum + Number(complaint.latitude), 0) / displayedComplaints.length,
-        displayedComplaints.reduce((sum, complaint) => sum + Number(complaint.longitude), 0) / displayedComplaints.length,
-      ]
-    : [33.805787, 72.351681];
-  const mapZoom = area === 'Attock' ? 10 : 13;
+  const areaConfig = AREA_CONFIG[area] || AREA_CONFIG.Attock;
+  const mapCenter = areaConfig.center;
+  const mapZoom = areaConfig.zoom;
 
   // Build route paths for polylines
   const getRoutePaths = () => {
     if (!routes?.routes) return [];
     return routes.routes.map(route => {
-      if (Array.isArray(route.path) && route.path.length > 1) {
-        return route.path;
+      if (route.path?.type === 'LineString' && Array.isArray(route.path.coordinates)) {
+        return route.path.coordinates.map(([lng, lat]) => [lat, lng]);
       }
       return (route.complaints || [])
         .filter(c => c.latitude && c.longitude)
@@ -99,6 +145,10 @@ const RouteOptimizer = () => {
   };
 
   const routePaths = getRoutePaths();
+  const mapPoints = [
+    ...displayedComplaints.map((complaint) => [Number(complaint.latitude), Number(complaint.longitude)]),
+    ...routePaths.flat(),
+  ];
   const glassPanelSx = {
     borderRadius: 6,
     border: '1px solid rgba(139,225,255,0.18)',
@@ -220,12 +270,15 @@ const RouteOptimizer = () => {
             }}
           >
             <MapContainer
-              key={mapCenter.join(',')}
+              key={`${area}-${mapCenter.join(',')}`}
               center={mapCenter}
               zoom={mapZoom}
               style={{ height: '100%', width: '100%' }}
               scrollWheelZoom={true}
+              maxBounds={areaConfig.bounds}
+              maxBoundsViscosity={1.0}
             >
+              <MapViewportController area={area} points={mapPoints} />
               <TileLayer
                 attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"

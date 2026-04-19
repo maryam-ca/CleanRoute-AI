@@ -74,6 +74,17 @@ def get_active_route_anchor(tester):
     return (avg_lat, avg_lng, len(complaints))
 
 
+def get_tester_active_complaints(tester):
+    return list(
+        Complaint.objects.filter(
+            assigned_to=tester,
+            status="assigned",
+            latitude__isnull=False,
+            longitude__isnull=False,
+        ).order_by("id")
+    )
+
+
 def choose_best_tester_for_point(latitude, longitude, testers=None):
     testers = testers or get_testers()
     if not testers:
@@ -81,21 +92,27 @@ def choose_best_tester_for_point(latitude, longitude, testers=None):
 
     ranked = []
     for tester in testers:
-        active_count = Complaint.objects.filter(assigned_to=tester, status="assigned").count()
-        anchor = get_active_route_anchor(tester)
+        active_complaints = get_tester_active_complaints(tester)
+        active_count = len(active_complaints)
 
-        if anchor:
-            anchor_lat, anchor_lng, route_load = anchor
-            distance_km = haversine_distance_km(latitude, longitude, anchor_lat, anchor_lng)
-            proximity_score = max(0, 70 - (distance_km * 10))
-            load_penalty = route_load * 4
+        if active_complaints:
+            distances = [
+                haversine_distance_km(
+                    latitude,
+                    longitude,
+                    float(complaint.latitude),
+                    float(complaint.longitude),
+                )
+                for complaint in active_complaints
+            ]
+            distance_km = min(distances)
+            proximity_score = max(0, 100 - (distance_km * 20))
         else:
             distance_km = None
-            proximity_score = 25
-            load_penalty = 0
+            proximity_score = 15
 
-        workload_score = max(0, 30 - (active_count * 5))
-        total_score = proximity_score + workload_score - load_penalty
+        load_penalty = active_count * 3
+        total_score = proximity_score - load_penalty
 
         ranked.append(
             {
@@ -189,19 +206,54 @@ def get_road_route_geometry(points):
 
 
 def split_complaints_into_clusters(complaints, cluster_target):
+    valid_complaints = [
+        complaint
+        for complaint in complaints
+        if complaint.latitude is not None and complaint.longitude is not None
+    ]
+
+    if cluster_target <= 1 or len(valid_complaints) <= 1:
+        return [valid_complaints]
+
     ordered = sorted(
-        complaints,
+        valid_complaints,
         key=lambda complaint: (float(complaint.latitude), float(complaint.longitude), complaint.id),
     )
+    step = max(1, len(ordered) // cluster_target)
+    seeds = []
 
-    if cluster_target <= 1 or len(ordered) <= 1:
-        return [ordered]
+    for index in range(cluster_target):
+        seed_index = min(index * step, len(ordered) - 1)
+        seed = ordered[seed_index]
+        seeds.append((float(seed.latitude), float(seed.longitude)))
 
-    clusters = [[] for _ in range(cluster_target)]
-    for index, complaint in enumerate(ordered):
-        clusters[index % cluster_target].append(complaint)
+    for _ in range(3):
+        clusters = [[] for _ in range(cluster_target)]
 
-    return [cluster for cluster in clusters if cluster]
+        for complaint in ordered:
+            point = (float(complaint.latitude), float(complaint.longitude))
+            best_cluster = min(
+                range(cluster_target),
+                key=lambda idx: haversine_distance_km(
+                    point[0],
+                    point[1],
+                    seeds[idx][0],
+                    seeds[idx][1],
+                ),
+            )
+            clusters[best_cluster].append(complaint)
+
+        new_seeds = []
+        for index, cluster in enumerate(clusters):
+            if cluster:
+                avg_lat = sum(float(item.latitude) for item in cluster) / len(cluster)
+                avg_lng = sum(float(item.longitude) for item in cluster) / len(cluster)
+                new_seeds.append((avg_lat, avg_lng))
+            else:
+                new_seeds.append(seeds[index])
+        seeds = new_seeds
+
+    return [nearest_neighbor_order(cluster) for cluster in clusters if cluster]
 
 
 def build_clustered_routes(complaints, area_name):
