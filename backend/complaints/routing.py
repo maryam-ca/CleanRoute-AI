@@ -1,7 +1,6 @@
 from math import atan2, ceil, cos, radians, sin, sqrt
 
 import numpy as np
-import requests
 from django.contrib.auth.models import User
 from django.utils import timezone
 from sklearn.cluster import KMeans
@@ -162,41 +161,33 @@ def nearest_neighbor_order(complaints):
 
 
 def compute_path_distance_km(points):
-    if len(points) < 2:
+    if isinstance(points, dict):
+        coordinates = points.get("coordinates") or []
+        normalized_points = [(lat, lng) for lng, lat in coordinates]
+    else:
+        normalized_points = list(points)
+
+    if len(normalized_points) < 2:
         return 0.0
 
     total = 0.0
-    for index in range(1, len(points)):
-        prev_lat, prev_lng = points[index - 1]
-        curr_lat, curr_lng = points[index]
+    for index in range(1, len(normalized_points)):
+        prev_lat, prev_lng = normalized_points[index - 1]
+        curr_lat, curr_lng = normalized_points[index]
         total += haversine_distance_km(prev_lat, prev_lng, curr_lat, curr_lng)
     return total
 
 
 def get_road_route_geometry(points):
-    if len(points) < 2:
-        return points
+    coordinates = [[lng, lat] for lat, lng in points]
 
-    try:
-        coordinates = ";".join(f"{lng},{lat}" for lat, lng in points)
-        response = requests.get(
-            f"https://router.project-osrm.org/trip/v1/driving/{coordinates}",
-            params={"source": "first", "roundtrip": "false", "overview": "full", "geometries": "geojson"},
-            timeout=8,
-        )
-        response.raise_for_status()
-        data = response.json()
-        trips = data.get("trips") or []
-        if not trips:
-            return points
+    if len(coordinates) == 1:
+        coordinates.append(coordinates[0][:])
 
-        geometry = trips[0].get("geometry", {}).get("coordinates") or []
-        if not geometry:
-            return points
-
-        return [[lat, lng] for lng, lat in geometry]
-    except Exception:
-        return points
+    return {
+        "type": "LineString",
+        "coordinates": coordinates,
+    }
 
 
 def build_clustered_routes(complaints, area_name):
