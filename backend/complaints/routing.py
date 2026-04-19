@@ -1,9 +1,7 @@
 from math import atan2, ceil, cos, radians, sin, sqrt
 
-import numpy as np
 from django.contrib.auth.models import User
 from django.utils import timezone
-from sklearn.cluster import KMeans
 
 from .models import Complaint
 
@@ -190,6 +188,22 @@ def get_road_route_geometry(points):
     }
 
 
+def split_complaints_into_clusters(complaints, cluster_target):
+    ordered = sorted(
+        complaints,
+        key=lambda complaint: (float(complaint.latitude), float(complaint.longitude), complaint.id),
+    )
+
+    if cluster_target <= 1 or len(ordered) <= 1:
+        return [ordered]
+
+    clusters = [[] for _ in range(cluster_target)]
+    for index, complaint in enumerate(ordered):
+        clusters[index % cluster_target].append(complaint)
+
+    return [cluster for cluster in clusters if cluster]
+
+
 def build_clustered_routes(complaints, area_name):
     if not complaints:
         return {
@@ -203,22 +217,15 @@ def build_clustered_routes(complaints, area_name):
         }
 
     testers = get_testers()
-    coords = np.array([[float(c.latitude), float(c.longitude)] for c in complaints])
     complaints_count = len(complaints)
     testers_count = max(1, len(testers))
     cluster_target = max(1, min(testers_count, complaints_count, ceil(complaints_count / 4)))
-
-    if complaints_count == 1 or cluster_target == 1:
-        labels = np.zeros(complaints_count, dtype=int)
-    else:
-        kmeans = KMeans(n_clusters=cluster_target, random_state=42, n_init=10)
-        labels = kmeans.fit_predict(coords)
+    complaint_clusters = split_complaints_into_clusters(complaints, cluster_target)
 
     routes = []
     used_tester_ids = set()
 
-    for cluster_index in sorted(set(labels.tolist())):
-        cluster_items = [complaints[idx] for idx, label in enumerate(labels) if label == cluster_index]
+    for cluster_items in complaint_clusters:
         ordered_items = nearest_neighbor_order(cluster_items)
         center_lat = sum(float(c.latitude) for c in ordered_items) / len(ordered_items)
         center_lng = sum(float(c.longitude) for c in ordered_items) / len(ordered_items)
@@ -229,10 +236,11 @@ def build_clustered_routes(complaints, area_name):
             assigned_match = choose_best_tester_for_point(center_lat, center_lng, available_testers)
             if assigned_match:
                 used_tester_ids.add(assigned_match["tester"].id)
+                assigned_at = timezone.now()
                 for complaint in ordered_items:
                     complaint.assigned_to = assigned_match["tester"]
                     complaint.status = "assigned"
-                    complaint.assigned_at = timezone.now()
+                    complaint.assigned_at = assigned_at
                     complaint.save(update_fields=["assigned_to", "status", "assigned_at"])
 
         ordered_points = [[float(c.latitude), float(c.longitude)] for c in ordered_items]
