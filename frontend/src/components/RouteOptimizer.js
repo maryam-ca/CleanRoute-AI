@@ -41,14 +41,6 @@ const RouteOptimizer = () => {
     setError('');
     
     try {
-      const token = localStorage.getItem('token');
-      const complaintsRes = await fetch('https://cleanroute-ai.onrender.com/api/complaints/', {
-        headers: { 'Authorization': `Bearer ${token}` }
-      });
-      const complaintsData = await complaintsRes.json();
-      const complaints = Array.isArray(complaintsData) ? complaintsData : (complaintsData.results || []);
-      setAllComplaints(complaints);
-      
       const data = await api.optimizeRoutes(area);
       console.log('Optimization response:', data);
       
@@ -58,21 +50,10 @@ const RouteOptimizer = () => {
           setAllComplaints(data.complaints);
         }
         toast.success(`Optimized into ${data.total_clusters || data.routes.length} routes`);
-      } else if (complaints.length > 0) {
-        const chunkSize = Math.ceil(complaints.length / 3);
-        const sampleRoutes = {
-          total_clusters: 3,
-          time_saved: 25,
-          routes: [
-            { route_id: 'R001', complaints: complaints.slice(0, chunkSize), total_complaints: chunkSize, high_priority: 2, distance: '4.2 km', estimated_time: '18 min' },
-            { route_id: 'R002', complaints: complaints.slice(chunkSize, chunkSize * 2), total_complaints: chunkSize, high_priority: 1, distance: '3.8 km', estimated_time: '15 min' },
-            { route_id: 'R003', complaints: complaints.slice(chunkSize * 2), total_complaints: complaints.length - (chunkSize * 2), high_priority: 0, distance: '3.1 km', estimated_time: '12 min' }
-          ]
-        };
-        setRoutes(sampleRoutes);
-        toast.success(`Created ${sampleRoutes.routes.length} routes`);
       } else {
-        setError('No complaints found. Please add complaints first.');
+        setRoutes(data);
+        setAllComplaints(Array.isArray(data?.complaints) ? data.complaints : []);
+        setError('No active complaints found in this area.');
       }
     } catch (requestError) {
       console.error('Error:', requestError);
@@ -96,18 +77,24 @@ const RouteOptimizer = () => {
     // Only show active complaints (not completed)
   const validComplaints = allComplaints.filter(c => c.latitude && c.longitude && c.status !== 'completed');
   const displayedComplaints = uniqueRoutedComplaints.length > 0 ? uniqueRoutedComplaints : validComplaints;
-  const mapCenter = displayedComplaints.length > 0 
-    ? [displayedComplaints[0].latitude, displayedComplaints[0].longitude] 
+  const mapCenter = displayedComplaints.length > 0
+    ? [
+        displayedComplaints.reduce((sum, complaint) => sum + Number(complaint.latitude), 0) / displayedComplaints.length,
+        displayedComplaints.reduce((sum, complaint) => sum + Number(complaint.longitude), 0) / displayedComplaints.length,
+      ]
     : [33.805787, 72.351681];
+  const mapZoom = area === 'Attock' ? 10 : 13;
 
   // Build route paths for polylines
   const getRoutePaths = () => {
     if (!routes?.routes) return [];
     return routes.routes.map(route => {
-      const points = (route.complaints || [])
+      if (Array.isArray(route.path) && route.path.length > 1) {
+        return route.path;
+      }
+      return (route.complaints || [])
         .filter(c => c.latitude && c.longitude)
         .map(c => [c.latitude, c.longitude]);
-      return points;
     });
   };
 
@@ -178,7 +165,7 @@ const RouteOptimizer = () => {
                 >
                   <InputLabel sx={{ color: '#BDD8EB' }}>Area</InputLabel>
                   <Select value={area} label="Area" onChange={(e) => setArea(e.target.value)}>
-                    <MenuItem value="Attock">Whole Attock City</MenuItem>
+                    <MenuItem value="Attock">Whole Attock Area</MenuItem>
                     <MenuItem value="Mehria Town">Mehria Town</MenuItem>
                   </Select>
                 </FormControl>
@@ -235,7 +222,7 @@ const RouteOptimizer = () => {
             <MapContainer
               key={mapCenter.join(',')}
               center={mapCenter}
-              zoom={13}
+              zoom={mapZoom}
               style={{ height: '100%', width: '100%' }}
               scrollWheelZoom={true}
             >
@@ -409,6 +396,11 @@ const RouteOptimizer = () => {
                           <Typography variant="caption" sx={{ color: '#9CA3AF' }}>
                             {(route.complaints?.length || route.total_complaints || 0)} stops
                           </Typography>
+                          {route.assigned_tester && (
+                            <Typography variant="caption" sx={{ color: '#74DDFF', display: 'block', mt: 0.25 }}>
+                              {route.assigned_tester}
+                            </Typography>
+                          )}
                         </Box>
                         <Box textAlign="right">
                           <Typography variant="caption" sx={{ color: '#74DDFF', fontWeight: 700 }}>

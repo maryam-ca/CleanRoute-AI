@@ -7,7 +7,7 @@ from django.utils import timezone
 from .models import Complaint
 from .serializers import ComplaintSerializer
 import random
-from math import radians, sin, cos, sqrt, atan2
+from .routing import auto_assign_complaint, choose_best_tester_for_point
 
 class ComplaintViewSet(viewsets.ModelViewSet):
     queryset = Complaint.objects.all().order_by('-created_at')
@@ -42,11 +42,13 @@ class ComplaintViewSet(viewsets.ModelViewSet):
         serializer.is_valid(raise_exception=True)
         
         if role == 'citizen':
-            serializer.save(user=user)
+            complaint = serializer.save(user=user)
         else:
-            serializer.save()
-        
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
+            complaint = serializer.save()
+
+        auto_assign_complaint(complaint)
+        response_serializer = self.get_serializer(complaint)
+        return Response(response_serializer.data, status=status.HTTP_201_CREATED)
 
     @action(detail=True, methods=['post'])
     def assign(self, request, pk=None):
@@ -78,7 +80,7 @@ class ComplaintViewSet(viewsets.ModelViewSet):
 
     @action(detail=False, methods=['post'])
     def auto_assign(self, request):
-        """Prefer testers already working near the complaint, then balance workload."""
+        """Assign complaint to the tester whose active route is nearest."""
         try:
             complaint_id = request.data.get('complaint_id')
             
@@ -90,73 +92,25 @@ class ComplaintViewSet(viewsets.ModelViewSet):
             except Complaint.DoesNotExist:
                 return Response({'error': 'Complaint not found'}, status=404)
             
-            testers = list(User.objects.filter(username__startswith='tester').order_by('id'))
-            
-            if not testers:
-                return Response({'error': 'No testers available'}, status=400)
-            
-            tester_scores = []
-            
-            for tester in testers:
-                assigned_count = Complaint.objects.filter(assigned_to=tester, status='assigned').count()
-                workload_score = max(0, 25 - (assigned_count * 3))
-                
-                route_score = 0
-                if complaint.latitude and complaint.longitude:
-                    tester_complaints = Complaint.objects.filter(assigned_to=tester, status='assigned').exclude(latitude=None, longitude=None)
-                    
-                    if tester_complaints.count() > 0:
-                        total_distance = 0
-                        min_distance = None
-                        for tc in tester_complaints:
-                            if tc.latitude and tc.longitude:
-                                lat1, lon1 = radians(complaint.latitude), radians(complaint.longitude)
-                                lat2, lon2 = radians(tc.latitude), radians(tc.longitude)
-                                dlat = lat2 - lat1
-                                dlon = lon2 - lon1
-                                a = sin(dlat/2)**2 + cos(lat1) * cos(lat2) * sin(dlon/2)**2
-                                distance = 6371 * 2 * atan2(sqrt(a), sqrt(1-a))
-                                total_distance += distance
-                                min_distance = distance if min_distance is None else min(min_distance, distance)
-                        
-                        avg_distance = total_distance / tester_complaints.count()
-                        proximity_score = max(0, 55 - (avg_distance * 12))
-                        nearest_bonus = max(0, 20 - ((min_distance or avg_distance) * 8))
-                        route_score = min(75, proximity_score + nearest_bonus)
+            if not complaint.latitude or not complaint.longitude:
+                return Response({'error': 'Complaint coordinates required for auto-assign'}, status=400)
 
-                        if (min_distance or avg_distance) > 4:
-                            route_score = max(0, route_score - 15)
-                    else:
-                        route_score = 20
-                else:
-                    route_score = 20
-                
-                total_score = workload_score + route_score
-                
-                tester_scores.append({
-                    'tester': tester,
-                    'score': round(total_score, 2),
-                    'assigned_count': assigned_count,
-                    'workload_score': round(workload_score, 2),
-                    'route_score': round(route_score, 2)
-                })
-            
-            tester_scores.sort(key=lambda x: x['score'], reverse=True)
-            best_match = tester_scores[0]
-            
+            best_match = choose_best_tester_for_point(float(complaint.latitude), float(complaint.longitude))
+            if not best_match:
+                return Response({'error': 'No testers available'}, status=400)
+
             complaint.assigned_to = best_match['tester']
             complaint.status = 'assigned'
             complaint.assigned_at = timezone.now()
-            complaint.save()
+            complaint.save(update_fields=['assigned_to', 'status', 'assigned_at'])
             
             return Response({
                 'success': True,
                 'complaint_id': complaint.id,
                 'assigned_to': best_match['tester'].username,
                 'score': best_match['score'],
-                'workload_score': best_match['workload_score'],
-                'route_score': best_match['route_score'],
-                'assigned_count': best_match['assigned_count'],
+                'distance_km': best_match['distance_km'],
+                'assigned_count': best_match['active_count'],
                 'message': f'Route-optimized assignment to {best_match["tester"].username}'
             })
             
