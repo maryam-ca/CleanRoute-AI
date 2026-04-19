@@ -7,7 +7,7 @@ from django.utils import timezone
 from .models import Complaint
 from .serializers import ComplaintSerializer
 import random
-from .routing import auto_assign_complaint, choose_best_tester_for_point
+from .routing import auto_assign_complaint, choose_best_tester_for_point, optimize_area_for_complaint
 
 class ComplaintViewSet(viewsets.ModelViewSet):
     queryset = Complaint.objects.all().order_by('-created_at')
@@ -47,6 +47,7 @@ class ComplaintViewSet(viewsets.ModelViewSet):
             complaint = serializer.save()
 
         auto_assign_complaint(complaint)
+        optimize_area_for_complaint(complaint)
         response_serializer = self.get_serializer(complaint)
         return Response(response_serializer.data, status=status.HTTP_201_CREATED)
 

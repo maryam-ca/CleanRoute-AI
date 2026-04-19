@@ -45,6 +45,16 @@ def get_area_definition(area_name):
     return AREA_BOUNDS.get(area_name.strip().lower(), AREA_BOUNDS["attock"])
 
 
+def get_area_name_for_point(latitude, longitude):
+    for area_key, area in AREA_BOUNDS.items():
+        if (
+            area["lat_min"] <= latitude <= area["lat_max"]
+            and area["lng_min"] <= longitude <= area["lng_max"]
+        ):
+            return area_key
+    return "attock"
+
+
 def get_area_queryset(area_name):
     area = get_area_definition(area_name)
     return Complaint.objects.filter(
@@ -148,6 +158,15 @@ def auto_assign_complaint(complaint):
     complaint.assigned_at = timezone.now()
     complaint.save(update_fields=["assigned_to", "status", "assigned_at"])
     return match
+
+
+def optimize_area_for_complaint(complaint):
+    if complaint.latitude is None or complaint.longitude is None:
+        return None
+
+    area_name = get_area_name_for_point(float(complaint.latitude), float(complaint.longitude))
+    complaints = list(get_area_queryset(area_name).order_by("id"))
+    return build_clustered_routes(complaints, area_name)
 
 
 def nearest_neighbor_order(complaints):

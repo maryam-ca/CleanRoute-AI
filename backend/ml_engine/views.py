@@ -1,4 +1,5 @@
 from django.http import JsonResponse
+from django.core.management import call_command
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from complaints.models import Complaint
@@ -7,18 +8,23 @@ from django.utils import timezone
 import random
 from complaints.routing import build_clustered_routes, get_area_queryset
 
+
+SETUP_COORDS = [
+    (33.814890, 72.348424), (33.814060, 72.349107), (33.814301, 72.349665),
+    (33.813543, 72.350030), (33.813459, 72.351639), (33.812157, 72.351564),
+    (33.811381, 72.349215), (33.809857, 72.349365), (33.808252, 72.349655),
+    (33.808216, 72.352219), (33.806594, 72.351511), (33.806910, 72.348550),
+    (33.805965, 72.355588), (33.805162, 72.354901), (33.810600, 72.346404),
+    (33.813649, 72.346726), (33.817722, 72.346500),
+]
+
+
 @api_view(['GET'])
 @permission_classes([AllowAny])
 def setup_database(request):
     """One-click setup - runs migrations and seeds data"""
-    from django.core.management import call_command
-    import sys
-    from io import StringIO
-    
-    # Run migrations
-    out = StringIO()
-    call_command('migrate', verbosity=0, stdout=out)
-    
+    call_command('migrate', verbosity=0)
+
     # Create users
     users_data = [
         ('admin', 'admin123', True),
@@ -41,22 +47,12 @@ def setup_database(request):
             user.save()
             created_users.append(username)
     
-    # Create sample complaints in Mehria Town, Attock
-    mehria_coords = [
-        (33.814890, 72.348424), (33.814060, 72.349107), (33.814301, 72.349665),
-        (33.813543, 72.350030), (33.813459, 72.351639), (33.812157, 72.351564),
-        (33.811381, 72.349215), (33.809857, 72.349365), (33.808252, 72.349655),
-        (33.808216, 72.352219), (33.806594, 72.351511), (33.806910, 72.348550),
-        (33.805965, 72.355588), (33.805162, 72.354901), (33.810600, 72.346404),
-        (33.813649, 72.346726), (33.817722, 72.346500)
-    ]
-    
     priorities = ['urgent', 'high', 'medium', 'low']
     types = ['overflowing', 'missed', 'illegal', 'other']
     citizen = User.objects.get(username='citizen')
     
     created_complaints = 0
-    for i, (lat, lng) in enumerate(mehria_coords):
+    for i, (lat, lng) in enumerate(SETUP_COORDS):
         complaint, created = Complaint.objects.get_or_create(
             latitude=lat,
             longitude=lng,
@@ -76,7 +72,7 @@ def setup_database(request):
     return JsonResponse({
         'status': 'success',
         'migrations': 'completed',
-        'users_created': created_users,
+        'users_created': created_users or [username for username, _, _ in users_data],
         'complaints_created': created_complaints,
         'message': 'Database ready! You can now login.'
     })

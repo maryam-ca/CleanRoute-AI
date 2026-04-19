@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Box, Container, Typography, Button, Paper, Grid, Chip,
   CircularProgress, Alert, FormControl, InputLabel, Select, MenuItem,
@@ -86,7 +86,7 @@ const RouteOptimizer = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
 
-  const optimizeRoutes = async () => {
+  const optimizeRoutes = async ({ silent = false } = {}) => {
     setLoading(true);
     setError('');
     
@@ -99,7 +99,9 @@ const RouteOptimizer = () => {
         if (Array.isArray(data.complaints)) {
           setAllComplaints(data.complaints);
         }
-        toast.success(`Optimized into ${data.total_clusters || data.routes.length} routes`);
+        if (!silent) {
+          toast.success(`Optimized into ${data.total_clusters || data.routes.length} routes`);
+        }
       } else {
         setRoutes(data);
         setAllComplaints(Array.isArray(data?.complaints) ? data.complaints : []);
@@ -112,6 +114,18 @@ const RouteOptimizer = () => {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    optimizeRoutes({ silent: true });
+  }, [area]);
+
+  useEffect(() => {
+    const intervalId = window.setInterval(() => {
+      optimizeRoutes({ silent: true });
+    }, 20000);
+
+    return () => window.clearInterval(intervalId);
+  }, [area]);
 
   const routedComplaints = routes?.routes
     ? routes.routes.flatMap((route) => route.complaints || [])
@@ -222,11 +236,11 @@ const RouteOptimizer = () => {
                 <Button 
                   variant="contained" 
                   startIcon={loading ? <CircularProgress size={18} sx={{ color: '#041328' }} /> : <OptimizeIcon />} 
-                  onClick={optimizeRoutes} 
+                  onClick={() => optimizeRoutes()} 
                   disabled={loading}
                   sx={{ borderRadius: '999px', px: 2.75, minWidth: { xs: '100%', sm: 'auto' } }}
                 >
-                  {loading ? 'Optimizing...' : 'Optimize Routes'}
+                  {loading ? 'Refreshing...' : 'Refresh Routes'}
                 </Button>
                 <IconButton onClick={() => setDrawerOpen(!drawerOpen)} sx={{ color: '#74DDFF', border: '1px solid rgba(116,221,255,0.22)', bgcolor: 'rgba(255,255,255,0.04)' }}>
                   {drawerOpen ? <CloseIcon /> : <MenuIcon />}
@@ -401,7 +415,7 @@ const RouteOptimizer = () => {
               <Box textAlign="center" py={4}>
                 <RouteIcon sx={{ fontSize: 48, color: '#36C4FF', mb: 2, opacity: 0.7 }} />
                 <Typography variant="body2" sx={{ color: '#BDD8EB' }}>
-                  Click "Optimize Routes" to generate routes
+                  Routes load automatically. Use "Refresh Routes" anytime.
                 </Typography>
               </Box>
             )}
@@ -409,7 +423,7 @@ const RouteOptimizer = () => {
             {loading && (
               <Box textAlign="center" py={4}>
                 <CircularProgress sx={{ color: '#36C4FF' }} />
-                <Typography variant="body2" sx={{ color: '#BDD8EB', mt: 2 }}>Optimizing routes...</Typography>
+                <Typography variant="body2" sx={{ color: '#BDD8EB', mt: 2 }}>Refreshing routes...</Typography>
               </Box>
             )}
             
