@@ -65,3 +65,4 @@ Desktop.ini
 *.bak
 *.backup
 backend/media/
+*.sqlite3-journal
